@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
-const categoryData = {
+const categories = {
   "Fresh Produce": [
     "Vegetables",
     "Fruits",
@@ -63,7 +63,7 @@ const categoryData = {
   ],
 } as const;
 
-type Category = keyof typeof categoryData;
+type Category = keyof typeof categories;
 
 const listings = [
   {
@@ -100,34 +100,35 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] =
     useState<Category | null>(null);
 
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    null
-  );
+  const [selectedSubcategory, setSelectedSubcategory] =
+    useState<string | null>(null);
 
-  const filteredListings = useMemo(() => {
-    if (!selectedCategory) return listings;
-
-    return listings.filter(
-      (listing) =>
-        listing.category === selectedCategory &&
-        (!selectedSubcategory ||
-          listing.subcategory === selectedSubcategory)
-    );
-  }, [selectedCategory, selectedSubcategory]);
-
-  function chooseCategory(category: Category) {
+  function openCategory(category: Category) {
     setSelectedCategory(category);
     setSelectedSubcategory(null);
   }
 
-  function chooseSubcategory(subcategory: string) {
+  function openSubcategory(subcategory: string) {
     setSelectedSubcategory(subcategory);
   }
 
-  function showAll() {
+  function backToCategories() {
     setSelectedCategory(null);
     setSelectedSubcategory(null);
   }
+
+  const visibleListings = listings.filter((listing) => {
+    if (!selectedCategory) return true;
+
+    if (!selectedSubcategory) {
+      return listing.category === selectedCategory;
+    }
+
+    return (
+      listing.category === selectedCategory &&
+      listing.subcategory === selectedSubcategory
+    );
+  });
 
   return (
     <main>
@@ -184,64 +185,97 @@ export default function Home() {
         <div className="sectionHead">
           <div>
             <p className="eyebrow">EXPLORE</p>
-            <h2>Find what’s around you</h2>
+
+            <h2>
+              {selectedCategory
+                ? selectedSubcategory
+                  ? selectedSubcategory
+                  : selectedCategory
+                : "Find what’s around you"}
+            </h2>
           </div>
 
-          <button onClick={showAll}>View all →</button>
+          {selectedCategory && (
+            <button onClick={backToCategories}>← Categories</button>
+          )}
         </div>
 
-        <div className="categories">
-          {(Object.keys(categoryData) as Category[]).map((category) => (
-            <button
-              className="category"
-              key={category}
-              onClick={() => chooseCategory(category)}
-            >
-              {category}
-              <span>→</span>
-            </button>
-          ))}
-        </div>
-
-        {selectedCategory && (
-          <div style={{ marginTop: "25px" }}>
-            <p className="eyebrow">SUBCATEGORIES</p>
+        {!selectedCategory && (
+          <>
+            <p className="lead" style={{ fontSize: "15px" }}>
+              Choose a category to browse local products, services and
+              businesses.
+            </p>
 
             <div className="categories">
-              {categoryData[selectedCategory].map((subcategory) => (
+              {(Object.keys(categories) as Category[]).map((category) => (
                 <button
                   className="category"
-                  key={subcategory}
-                  onClick={() => chooseSubcategory(subcategory)}
+                  key={category}
+                  onClick={() => openCategory(category)}
                 >
-                  {subcategory}
+                  <span>{category}</span>
                   <span>→</span>
                 </button>
               ))}
             </div>
+          </>
+        )}
+
+        {selectedCategory && !selectedSubcategory && (
+          <>
+            <p className="eyebrow" style={{ marginTop: "30px" }}>
+              BROWSE {selectedCategory.toUpperCase()}
+            </p>
+
+            <div className="categories">
+              {categories[selectedCategory].map((subcategory) => (
+                <button
+                  className="category"
+                  key={subcategory}
+                  onClick={() => openSubcategory(subcategory)}
+                >
+                  <span>{subcategory}</span>
+                  <span>→</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {selectedSubcategory && (
+          <div style={{ marginTop: "30px" }}>
+            <button
+              className="secondary"
+              onClick={() => setSelectedSubcategory(null)}
+            >
+              ← Back to {selectedCategory}
+            </button>
           </div>
         )}
 
-        <div className="listings">
-          {filteredListings.length > 0 ? (
-            filteredListings.map((listing) => (
-              <article className="listing" key={listing.name}>
-                <div className="photo">{listing.name[0]}</div>
+        {selectedCategory && (
+          <div className="listings">
+            {visibleListings.length > 0 ? (
+              visibleListings.map((listing) => (
+                <article className="listing" key={listing.name}>
+                  <div className="photo">{listing.name[0]}</div>
 
-                <div>
-                  <h3>{listing.name}</h3>
-                  <p>📍 {listing.location}</p>
-                  <p>{listing.subcategory}</p>
-                  <strong>{listing.price}</strong>
-                </div>
-              </article>
-            ))
-          ) : (
-            <p style={{ color: "#697067" }}>
-              No listings yet in this category. Be the first to add one.
-            </p>
-          )}
-        </div>
+                  <div>
+                    <h3>{listing.name}</h3>
+                    <p>📍 {listing.location}</p>
+                    <p>{listing.subcategory}</p>
+                    <strong>{listing.price}</strong>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <p style={{ color: "#697067" }}>
+                No listings yet in this section. Be the first to add one.
+              </p>
+            )}
+          </div>
+        )}
       </section>
 
       <section id="how" className="how">
@@ -253,25 +287,19 @@ export default function Home() {
           <div>
             <b>01</b>
             <h3>Post what you need</h3>
-            <p>
-              Describe the product or service you are looking for.
-            </p>
+            <p>Describe the product or service you are looking for.</p>
           </div>
 
           <div>
             <b>02</b>
             <h3>Discover local offers</h3>
-            <p>
-              See relevant listings from people and businesses nearby.
-            </p>
+            <p>See relevant listings from people and businesses nearby.</p>
           </div>
 
           <div>
             <b>03</b>
             <h3>Connect directly</h3>
-            <p>
-              Chat, agree on details and complete your transaction.
-            </p>
+            <p>Chat, agree on details and complete your transaction.</p>
           </div>
         </div>
       </section>
