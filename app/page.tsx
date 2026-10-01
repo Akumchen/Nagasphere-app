@@ -1,3 +1,300 @@
-const categories=['Fresh Produce','Food & Groceries','Fashion','Home & Living','Services','Electronics','Local Businesses','Other'];
-const listings=[['Fresh Naga King Chilli','Kohima','₹120 / pack'],['Handwoven Traditional Shawl','Dimapur','₹1,800'],['Organic Pineapple','Mokokchung','₹80 / kg'],['Home Catering Service','Dimapur','From ₹250 / plate']];
-export default function Home(){return <main><header><div className="brand">Naga<span>Sphere</span></div><nav><a href="#browse">Browse</a><a href="#how">How it works</a><a href="#sell">Sell / Offer</a><button>Sign in</button></nav></header><section className="hero"><div><p className="eyebrow">NAGALAND'S LOCAL MARKETPLACE</p><h1>What you need.<br/><em>Someone here has it.</em></h1><p className="lead">Find products, services and local businesses around Nagaland — or tell people what you have to offer.</p><div className="actions"><button className="primary">I Need Something</button><button className="secondary">I Have Something</button></div></div><div className="heroCard"><div className="pulse"/><b>Local-first matching</b><p>Connect buyers and sellers without the noise of a generic social feed.</p><div className="mini">📍 Nagaland &nbsp; • &nbsp; Verified listings</div></div></section><section id="browse" className="section"><div className="sectionHead"><div><p className="eyebrow">EXPLORE</p><h2>Find what’s around you</h2></div><a href="#all">View all →</a></div><div className="categories">{categories.map(c=><div className="category" key={c}>{c}<span>→</span></div>)}</div><div className="listings">{listings.map(([n,l,p])=><article className="listing" key={n}><div className="photo">{n[0]}</div><div><h3>{n}</h3><p>📍 {l}</p><strong>{p}</strong></div></article>)}</div></section><section id="how" className="how"><p className="eyebrow">SIMPLE BY DESIGN</p><h2>From need to connection.</h2><div className="steps"><div><b>01</b><h3>Post what you need</h3><p>Describe the product or service you are looking for.</p></div><div><b>02</b><h3>Discover local offers</h3><p>See relevant listings from people and businesses nearby.</p></div><div><b>03</b><h3>Connect directly</h3><p>Chat, agree on details and complete your transaction.</p></div></div></section><section id="sell" className="cta"><div><p className="eyebrow">FOR SELLERS & BUSINESSES</p><h2>Turn local reach into real customers.</h2><p>Create a listing, receive enquiries and grow your local business.</p></div><button className="primary">Create a listing →</button></section><footer><b>NagaSphere</b><span>Built for local commerce in Nagaland.</span><span>© 2026 NagaSphere</span></footer></main>}
+"use client";
+
+import { useMemo, useState } from "react";
+
+const categoryData = {
+  "Fresh Produce": [
+    "Vegetables",
+    "Fruits",
+    "Rice & Grains",
+    "Spices",
+    "Meat & Fish",
+    "Flowers & Plants",
+  ],
+  "Food & Groceries": [
+    "Packaged Food",
+    "Bakery",
+    "Homemade Food",
+    "Beverages",
+    "Groceries",
+    "Household Supplies",
+  ],
+  Fashion: [
+    "Traditional Naga Wear",
+    "Clothing",
+    "Shoes",
+    "Bags & Accessories",
+    "Tailoring",
+  ],
+  "Home & Living": [
+    "Furniture",
+    "Home Appliances",
+    "Kitchen Items",
+    "Home Decor",
+    "Construction Supplies",
+  ],
+  Services: [
+    "Transport",
+    "Repair & Maintenance",
+    "Education & Tutoring",
+    "Photography",
+    "Catering",
+    "Professional Services",
+  ],
+  Electronics: [
+    "Mobile Phones",
+    "Computers",
+    "Accessories",
+    "Appliances",
+    "Used Electronics",
+  ],
+  "Local Businesses": [
+    "Shops",
+    "Restaurants",
+    "Hotels & Homestays",
+    "Farms",
+    "Local Manufacturers",
+  ],
+  Other: [
+    "Jobs",
+    "Vehicles",
+    "Rentals",
+    "Other Local Offers",
+  ],
+} as const;
+
+type Category = keyof typeof categoryData;
+
+const listings = [
+  {
+    name: "Fresh Naga King Chilli",
+    location: "Kohima",
+    price: "₹120 / pack",
+    category: "Fresh Produce",
+    subcategory: "Spices",
+  },
+  {
+    name: "Organic Pineapple",
+    location: "Mokokchung",
+    price: "₹80 / kg",
+    category: "Fresh Produce",
+    subcategory: "Fruits",
+  },
+  {
+    name: "Handwoven Traditional Shawl",
+    location: "Dimapur",
+    price: "₹1,800",
+    category: "Fashion",
+    subcategory: "Traditional Naga Wear",
+  },
+  {
+    name: "Home Catering Service",
+    location: "Dimapur",
+    price: "From ₹250 / plate",
+    category: "Services",
+    subcategory: "Catering",
+  },
+];
+
+export default function Home() {
+  const [selectedCategory, setSelectedCategory] =
+    useState<Category | null>(null);
+
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null
+  );
+
+  const filteredListings = useMemo(() => {
+    if (!selectedCategory) return listings;
+
+    return listings.filter(
+      (listing) =>
+        listing.category === selectedCategory &&
+        (!selectedSubcategory ||
+          listing.subcategory === selectedSubcategory)
+    );
+  }, [selectedCategory, selectedSubcategory]);
+
+  function chooseCategory(category: Category) {
+    setSelectedCategory(category);
+    setSelectedSubcategory(null);
+  }
+
+  function chooseSubcategory(subcategory: string) {
+    setSelectedSubcategory(subcategory);
+  }
+
+  function showAll() {
+    setSelectedCategory(null);
+    setSelectedSubcategory(null);
+  }
+
+  return (
+    <main>
+      <header>
+        <div className="brand">
+          Naga<span>Sphere</span>
+        </div>
+
+        <nav>
+          <a href="#browse">Browse</a>
+          <a href="#how">How it works</a>
+          <a href="#sell">Sell / Offer</a>
+          <button>Sign in</button>
+        </nav>
+      </header>
+
+      <section className="hero">
+        <div>
+          <p className="eyebrow">NAGALAND'S LOCAL MARKETPLACE</p>
+
+          <h1>
+            What you need.
+            <br />
+            <em>Someone here has it.</em>
+          </h1>
+
+          <p className="lead">
+            Find products, services and local businesses around Nagaland — or
+            tell people what you have to offer.
+          </p>
+
+          <div className="actions">
+            <button className="primary">I Need Something</button>
+            <button className="secondary">I Have Something</button>
+          </div>
+        </div>
+
+        <div className="heroCard">
+          <div className="pulse" />
+          <b>Local-first matching</b>
+
+          <p>
+            Connect buyers and sellers without the noise of a generic social
+            feed.
+          </p>
+
+          <div className="mini">
+            📍 Nagaland &nbsp; • &nbsp; Verified listings
+          </div>
+        </div>
+      </section>
+
+      <section id="browse" className="section">
+        <div className="sectionHead">
+          <div>
+            <p className="eyebrow">EXPLORE</p>
+            <h2>Find what’s around you</h2>
+          </div>
+
+          <button onClick={showAll}>View all →</button>
+        </div>
+
+        <div className="categories">
+          {(Object.keys(categoryData) as Category[]).map((category) => (
+            <button
+              className="category"
+              key={category}
+              onClick={() => chooseCategory(category)}
+            >
+              {category}
+              <span>→</span>
+            </button>
+          ))}
+        </div>
+
+        {selectedCategory && (
+          <div style={{ marginTop: "25px" }}>
+            <p className="eyebrow">SUBCATEGORIES</p>
+
+            <div className="categories">
+              {categoryData[selectedCategory].map((subcategory) => (
+                <button
+                  className="category"
+                  key={subcategory}
+                  onClick={() => chooseSubcategory(subcategory)}
+                >
+                  {subcategory}
+                  <span>→</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="listings">
+          {filteredListings.length > 0 ? (
+            filteredListings.map((listing) => (
+              <article className="listing" key={listing.name}>
+                <div className="photo">{listing.name[0]}</div>
+
+                <div>
+                  <h3>{listing.name}</h3>
+                  <p>📍 {listing.location}</p>
+                  <p>{listing.subcategory}</p>
+                  <strong>{listing.price}</strong>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p style={{ color: "#697067" }}>
+              No listings yet in this category. Be the first to add one.
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section id="how" className="how">
+        <p className="eyebrow">SIMPLE BY DESIGN</p>
+
+        <h2>From need to connection.</h2>
+
+        <div className="steps">
+          <div>
+            <b>01</b>
+            <h3>Post what you need</h3>
+            <p>
+              Describe the product or service you are looking for.
+            </p>
+          </div>
+
+          <div>
+            <b>02</b>
+            <h3>Discover local offers</h3>
+            <p>
+              See relevant listings from people and businesses nearby.
+            </p>
+          </div>
+
+          <div>
+            <b>03</b>
+            <h3>Connect directly</h3>
+            <p>
+              Chat, agree on details and complete your transaction.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="sell" className="cta">
+        <div>
+          <p className="eyebrow">FOR SELLERS & BUSINESSES</p>
+
+          <h2>Turn local reach into real customers.</h2>
+
+          <p>
+            Create a listing, receive enquiries and grow your local business.
+          </p>
+        </div>
+
+        <button className="primary">Create a listing →</button>
+      </section>
+
+      <footer>
+        <b>NagaSphere</b>
+        <span>Built for local commerce in Nagaland.</span>
+        <span>© 2026 NagaSphere</span>
+      </footer>
+    </main>
+  );
+}
