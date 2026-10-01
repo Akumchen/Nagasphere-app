@@ -99,6 +99,7 @@ const listings = [
 
 export default function Home() {
   const router = useRouter();
+
   const [selectedCategory, setSelectedCategory] =
     useState<Category | null>(null);
 
@@ -143,7 +144,10 @@ export default function Home() {
           <a href="#browse">Browse</a>
           <a href="#how">How it works</a>
           <a href="#sell">Sell / Offer</a>
-          <button onClick={() => router.push("/auth")}>Sign in</button>
+
+          <button onClick={() => router.push("/auth")}>
+            Sign in
+          </button>
         </nav>
       </header>
 
@@ -163,8 +167,19 @@ export default function Home() {
           </p>
 
           <div className="actions">
-            <button className="primary">I Need Something</button>
-            <button className="secondary">I Have Something</button>
+            <button
+              className="primary"
+              onClick={() => router.push("/auth?mode=signup")}
+            >
+              I Need Something
+            </button>
+
+            <button
+              className="secondary"
+              onClick={() => router.push("/auth?mode=signup")}
+            >
+              I Have Something
+            </button>
           </div>
         </div>
 
@@ -198,7 +213,9 @@ export default function Home() {
           </div>
 
           {selectedCategory && (
-            <button onClick={backToCategories}>← Categories</button>
+            <button onClick={backToCategories}>
+              ← Categories
+            </button>
           )}
         </div>
 
@@ -289,19 +306,25 @@ export default function Home() {
           <div>
             <b>01</b>
             <h3>Post what you need</h3>
-            <p>Describe the product or service you are looking for.</p>
+            <p>
+              Describe the product or service you are looking for.
+            </p>
           </div>
 
           <div>
             <b>02</b>
             <h3>Discover local offers</h3>
-            <p>See relevant listings from people and businesses nearby.</p>
+            <p>
+              See relevant listings from people and businesses nearby.
+            </p>
           </div>
 
           <div>
             <b>03</b>
             <h3>Connect directly</h3>
-            <p>Chat, agree on details and complete your transaction.</p>
+            <p>
+              Chat, agree on details and complete your transaction.
+            </p>
           </div>
         </div>
       </section>
@@ -317,7 +340,12 @@ export default function Home() {
           </p>
         </div>
 
-        <button className="primary">Create a listing →</button>
+        <button
+          className="primary"
+          onClick={() => router.push("/auth?mode=signup")}
+        >
+          Create a listing →
+        </button>
       </section>
 
       <footer>
