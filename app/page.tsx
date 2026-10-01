@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const categories = {
   "Fresh Produce": [
@@ -97,6 +98,7 @@ const listings = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] =
     useState<Category | null>(null);
 
@@ -141,7 +143,7 @@ export default function Home() {
           <a href="#browse">Browse</a>
           <a href="#how">How it works</a>
           <a href="#sell">Sell / Offer</a>
-          <button>Sign in</button>
+          <button onClick={() => router.push("/auth")}>Sign in</button>
         </nav>
       </header>
 
