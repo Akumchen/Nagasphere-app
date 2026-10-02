@@ -418,7 +418,24 @@ export default function Home() {
               <p style={{ color: "#b42318" }}>{listingError}</p>
             ) : visibleListings.length > 0 ? (
               visibleListings.map((listing) => (
-                <article className="listing" key={listing.id}>
+                <article
+                  className="listing"
+                  key={listing.id}
+                  role="link"
+                  tabIndex={0}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => router.push(`/listing/${listing.id}`)}
+                  onKeyDown={(event) => {
+                    if (
+                      event.key === "Enter" ||
+                      event.key === " "
+                    ) {
+                      event.preventDefault();
+                      router.push(`/listing/${listing.id}`);
+                    }
+                  }}
+                  aria-label={`Open listing ${listing.name}`}
+                >
                   <div className="photo">
                     {listing.name.charAt(0).toUpperCase()}
                   </div>
