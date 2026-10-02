@@ -1,23 +1,18 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 
-export default function ProfilePage() {
+export default function DashboardPage() {
   const router = useRouter();
   const supabase = createClient();
 
   const [email, setEmail] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    async function loadProfile() {
+    async function loadUser() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -28,57 +23,16 @@ export default function ProfilePage() {
       }
 
       setEmail(user.email ?? "");
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name, phone, role")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        setMessage(error.message);
-      } else if (data) {
-        setFullName(data.full_name ?? "");
-        setPhone(data.phone ?? "");
-        setRole(data.role ?? "user");
-      }
-
       setLoading(false);
     }
 
-    loadProfile();
+    loadUser();
   }, [router, supabase]);
 
-  async function handleSave(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSaving(true);
-    setMessage("");
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      router.replace("/auth");
-      return;
-    }
-
-    const { error } = await supabase
-      .from("profiles")
-      .upsert({
-        id: user.id,
-        full_name: fullName,
-        phone,
-        role,
-      });
-
-    if (error) {
-      setMessage(error.message);
-    } else {
-      setMessage("Profile saved successfully.");
-    }
-
-    setSaving(false);
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.replace("/");
+    router.refresh();
   }
 
   if (loading) {
@@ -91,7 +45,7 @@ export default function ProfilePage() {
           background: "#f6f7f2",
         }}
       >
-        Loading your profile...
+        Loading your dashboard...
       </main>
     );
   }
@@ -106,162 +60,121 @@ export default function ProfilePage() {
     >
       <div
         style={{
-          maxWidth: "700px",
+          maxWidth: "1100px",
           margin: "0 auto",
         }}
       >
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard")}
-          style={{
-            border: 0,
-            background: "transparent",
-            cursor: "pointer",
-            marginBottom: "20px",
-            padding: 0,
-          }}
-        >
-          ← Back to Dashboard
-        </button>
-
-        <section
+        <header
           style={{
             background: "white",
-            padding: "28px",
             borderRadius: "20px",
+            padding: "18px 22px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "16px",
             boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
           }}
         >
-          <h1 style={{ marginBottom: "8px" }}>My Profile</h1>
+          <img
+            src="/nagasphere-logo.png"
+            alt="NagaSphere"
+            style={{
+              width: "170px",
+              height: "auto",
+            }}
+          />
 
-          <p style={{ color: "#697067", marginBottom: "28px" }}>
-            Manage your NagaSphere account information.
+          <button
+            onClick={handleLogout}
+            style={{
+              border: "1px solid #d7dcd5",
+              background: "white",
+              padding: "10px 16px",
+              borderRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            Sign out
+          </button>
+        </header>
+
+        <section style={{ marginTop: "28px" }}>
+          <h1 style={{ marginBottom: "8px" }}>
+            Welcome to NagaSphere
+          </h1>
+
+          <p style={{ color: "#697067" }}>
+            {email}
           </p>
+        </section>
 
-          <form onSubmit={handleSave}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "20px",
-              }}
-            >
-              Email
-              <input
-                type="email"
-                value={email}
-                disabled
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  marginTop: "7px",
-                  border: "1px solid #d7dcd5",
-                  borderRadius: "10px",
-                  boxSizing: "border-box",
-                  background: "#f3f4f1",
-                }}
-              />
-            </label>
-
-            <label
-              style={{
-                display: "block",
-                marginBottom: "20px",
-              }}
-            >
-              Full name
-              <input
-                type="text"
-                value={fullName}
-                onChange={(event) => setFullName(event.target.value)}
-                placeholder="Enter your full name"
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  marginTop: "7px",
-                  border: "1px solid #d7dcd5",
-                  borderRadius: "10px",
-                  boxSizing: "border-box",
-                }}
-              />
-            </label>
-
-            <label
-              style={{
-                display: "block",
-                marginBottom: "20px",
-              }}
-            >
-              Phone number
-              <input
-                type="tel"
-                value={phone}
-                onChange={(event) => setPhone(event.target.value)}
-                placeholder="Enter your phone number"
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  marginTop: "7px",
-                  border: "1px solid #d7dcd5",
-                  borderRadius: "10px",
-                  boxSizing: "border-box",
-                }}
-              />
-            </label>
-
-            <label
-              style={{
-                display: "block",
-                marginBottom: "24px",
-              }}
-            >
-              Account type
-              <select
-                value={role}
-                onChange={(event) => setRole(event.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  marginTop: "7px",
-                  border: "1px solid #d7dcd5",
-                  borderRadius: "10px",
-                  boxSizing: "border-box",
-                  background: "white",
-                }}
-              >
-                <option value="user">Personal user</option>
-                <option value="business">Business</option>
-              </select>
-            </label>
-
-            <button
-              type="submit"
-              disabled={saving}
-              style={{
-                width: "100%",
-                padding: "14px",
-                border: 0,
-                borderRadius: "10px",
-                background: "#18251b",
-                color: "white",
-                fontWeight: 600,
-                cursor: saving ? "wait" : "pointer",
-              }}
-            >
-              {saving ? "Saving..." : "Save profile"}
-            </button>
-          </form>
-
-          {message && (
-            <p
-              style={{
-                marginTop: "18px",
-                color: "#59615a",
-                lineHeight: 1.5,
-              }}
-            >
-              {message}
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "18px",
+            marginTop: "28px",
+          }}
+        >
+          <div
+            style={{
+              background: "white",
+              padding: "24px",
+              borderRadius: "18px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+            }}
+          >
+            <h2>My Listings</h2>
+            <p style={{ color: "#697067" }}>
+              Manage the products and services you offer.
             </p>
-          )}
+          </div>
+
+          <div
+            style={{
+              background: "white",
+              padding: "24px",
+              borderRadius: "18px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+            }}
+          >
+            <h2>My Requests</h2>
+            <p style={{ color: "#697067" }}>
+              Find products and services you need.
+            </p>
+          </div>
+
+          <div
+            style={{
+              background: "white",
+              padding: "24px",
+              borderRadius: "18px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+            }}
+          >
+            <h2>Messages</h2>
+            <p style={{ color: "#697067" }}>
+              Connect with buyers and sellers.
+            </p>
+          </div>
+
+          <div
+            onClick={() => router.push("/profile")}
+            style={{
+              background: "white",
+              padding: "24px",
+              borderRadius: "18px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+              cursor: "pointer",
+            }}
+          >
+            <h2>Profile</h2>
+            <p style={{ color: "#697067" }}>
+              Complete and manage your NagaSphere profile.
+            </p>
+          </div>
         </section>
       </div>
     </main>
