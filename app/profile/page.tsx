@@ -62,11 +62,12 @@ export default function ProfilePage() {
     }
 
     const { error } = await supabase
-      .from("profiles")
-      .upsert({
-        id: user.id,
-        full_name: fullName,
-        phone,
+  .from("profiles")
+  .update({
+    full_name: fullName,
+    phone,
+  })
+  .eq("id", user.id);
       });
 
     if (error) {
