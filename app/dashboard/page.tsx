@@ -119,13 +119,15 @@ export default function DashboardPage() {
           }}
         >
           <div
-            style={{
-              background: "white",
-              padding: "24px",
-              borderRadius: "18px",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-            }}
-          >
+  onClick={() => router.push("/create-listing")}
+  style={{
+    background: "white",
+    padding: "24px",
+    borderRadius: "18px",
+    boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+    cursor: "pointer",
+  }}
+>
             <h2>My Listings</h2>
             <p style={{ color: "#697067" }}>
               Manage the products and services you offer.
