@@ -6,6 +6,7 @@ import { createClient } from "../../../lib/supabase/client";
 
 type Listing = {
   id: string;
+  owner_id: string;
   type: string;
   title: string;
   description: string | null;
@@ -21,6 +22,12 @@ type Listing = {
 type Category = {
   id: string;
   name: string;
+};
+
+type Seller = {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
 };
 
 const supabase = createClient();
@@ -58,6 +65,7 @@ export default function ListingDetailPage() {
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
+  const [seller, setSeller] = useState<Seller | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -71,7 +79,7 @@ export default function ListingDetailPage() {
       const { data, error: listingError } = await supabase
         .from("posts")
         .select(
-          "id,type,title,description,quantity,unit,budget_min,budget_max,city,state,category_id"
+          "id,owner_id,type,title,description,quantity,unit,budget_min,budget_max,city,state,category_id"
         )
         .eq("id", id)
         .eq("status", "active")
@@ -108,6 +116,17 @@ export default function ListingDetailPage() {
         }
       }
 
+      const { data: sellerData, error: sellerError } =
+        await supabase
+          .from("public_seller_profiles")
+          .select("id,full_name,avatar_url")
+          .eq("id", loadedListing.owner_id)
+          .maybeSingle();
+
+      if (!sellerError && sellerData) {
+        setSeller(sellerData as Seller);
+      }
+
       setLoading(false);
     }
 
@@ -116,7 +135,13 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <main style={{ padding: "32px", maxWidth: "900px", margin: "0 auto" }}>
+      <main
+        style={{
+          padding: "32px",
+          maxWidth: "900px",
+          margin: "0 auto",
+        }}
+      >
         <p>Loading listing...</p>
       </main>
     );
@@ -124,7 +149,13 @@ export default function ListingDetailPage() {
 
   if (error || !listing) {
     return (
-      <main style={{ padding: "32px", maxWidth: "900px", margin: "0 auto" }}>
+      <main
+        style={{
+          padding: "32px",
+          maxWidth: "900px",
+          margin: "0 auto",
+        }}
+      >
         <button onClick={() => router.push("/")}>
           ← Back to marketplace
         </button>
@@ -150,6 +181,9 @@ export default function ListingDetailPage() {
     listing.type.toLowerCase().includes("request")
       ? "Looking for"
       : "Offering";
+
+  const sellerName =
+    seller?.full_name?.trim() || "NagaSphere Seller";
 
   return (
     <main
@@ -218,7 +252,12 @@ export default function ListingDetailPage() {
           {listing.title}
         </h1>
 
-        <p style={{ margin: "0 0 18px", color: "#596057" }}>
+        <p
+          style={{
+            margin: "0 0 18px",
+            color: "#596057",
+          }}
+        >
           📍 {location}
         </p>
 
@@ -310,22 +349,80 @@ export default function ListingDetailPage() {
         <div
           style={{
             marginTop: "28px",
-            padding: "16px",
-            borderRadius: "12px",
+            padding: "20px",
+            borderRadius: "14px",
             background: "#f4f5ef",
+            border: "1px solid #e2e5da",
           }}
         >
-          <strong>Seller information</strong>
+          <h2 style={{ marginTop: 0 }}>
+            Seller Information
+          </h2>
 
-          <p
+          <div
             style={{
-              marginBottom: 0,
-              color: "#697067",
+              display: "flex",
+              alignItems: "center",
+              gap: "14px",
+              marginBottom: "16px",
             }}
           >
-            Seller contact and messaging will be connected
-            in the NagaSphere messaging section.
-          </p>
+            <div
+              style={{
+                width: "52px",
+                height: "52px",
+                borderRadius: "50%",
+                background: "#dfe5d5",
+                display: "grid",
+                placeItems: "center",
+                fontWeight: 700,
+                fontSize: "20px",
+                color: "#59674f",
+              }}
+            >
+              {sellerName.charAt(0).toUpperCase()}
+            </div>
+
+            <div>
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: "17px",
+                }}
+              >
+                {sellerName}
+              </strong>
+
+              <span
+                style={{
+                  color: "#697067",
+                  fontSize: "14px",
+                }}
+              >
+                NagaSphere Seller
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => {
+              alert(
+                "Messaging will be connected in the NagaSphere messaging section."
+              );
+            }}
+            style={{
+              width: "100%",
+              padding: "13px 16px",
+              border: "none",
+              borderRadius: "10px",
+              background: "#59674f",
+              color: "#fff",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Contact Seller
+          </button>
         </div>
       </section>
     </main>
