@@ -68,7 +68,6 @@ export default function ProfilePage() {
     phone,
   })
   .eq("id", user.id);
-      });
 
     if (error) {
       setMessage(error.message);
