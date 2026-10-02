@@ -1,10 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { createClient } from "../lib/supabase/client";
+import { useRouter } from "next/navigation";
 
-const categories = {
+type Listing = {
+  id: string;
+  title: string;
+  description?: string | null;
+  type: string;
+  quantity?: number | null;
+  unit?: string | null;
+  budget_min?: number | null;
+  budget_max?: number | null;
+  city?: string | null;
+  state?: string | null;
+  category_id?: string | null;
+  categoryName?: string;
+  subcategory?: string;
+  location?: string;
+};
+
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+const categories: Record<string, string[]> = {
   "Fresh Produce": [
     "Vegetables",
     "Fruits",
@@ -63,41 +86,10 @@ const categories = {
     "Rentals",
     "Other Local Offers",
   ],
-} as const;
-
-type Category = keyof typeof categories;
-
-type DatabasePost = {
-  id: string;
-  title: string;
-  description: string | null;
-  quantity: number | string | null;
-  unit: string | null;
-  budget_min: number | string | null;
-  budget_max: number | string | null;
-  city: string | null;
-  state: string | null;
-  category_id: string | null;
 };
 
-type DatabaseCategory = {
-  id: string;
-  name: string;
-};
-
-type Listing = {
-  id: string;
-  name: string;
-  location: string;
-  price: string;
-  category: Category;
-  subcategory: string;
-};
-
-const supabase = createClient();
-
-function mapCategory(categoryName: string | null): Category {
-  const name = (categoryName ?? "").toLowerCase();
+function mapCategory(categoryName?: string) {
+  const name = (categoryName || "").toLowerCase();
 
   if (
     name.includes("food") ||
@@ -118,401 +110,764 @@ function mapCategory(categoryName: string | null): Category {
   return "Other";
 }
 
-function formatPrice(
-  budgetMin: number | string | null,
-  budgetMax: number | string | null,
-  unit: string | null
-) {
-  if (budgetMin == null && budgetMax == null) {
-    return "Price on request";
-  }
-
-  const min = budgetMin == null ? null : Number(budgetMin);
-  const max = budgetMax == null ? null : Number(budgetMax);
-
-  if (min == null || Number.isNaN(min)) {
-    return "Price on request";
-  }
-
-  let price = "";
-
-  if (max != null && !Number.isNaN(max) && max !== min) {
-    price = `₹${min.toLocaleString("en-IN")} - ₹${max.toLocaleString(
-      "en-IN"
-    )}`;
-  } else {
-    price = `₹${min.toLocaleString("en-IN")}`;
-  }
-
-  return unit ? `${price} / ${unit}` : price;
-}
-
-export default function Home() {
+export default function HomePage() {
+  const supabase = createClient();
   const router = useRouter();
 
-  const [selectedCategory, setSelectedCategory] =
-    useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    null
+  );
 
-  const [selectedSubcategory, setSelectedSubcategory] =
-    useState<string | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
+    null
+  );
 
   const [listings, setListings] = useState<Listing[]>([]);
-  const [loadingListings, setLoadingListings] = useState(true);
-  const [listingError, setListingError] = useState("");
+  const [dbCategories, setDbCategories] = useState<Category[]>([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
 
   useEffect(() => {
-    async function loadListings() {
-      setLoadingListings(true);
-      setListingError("");
+    async function loadData() {
+      const { data: categoryData } = await supabase
+        .from("categories")
+        .select("id,name,slug")
+        .order("name");
 
-      const { data: posts, error: postsError } = await supabase
+      if (categoryData) {
+        setDbCategories(categoryData);
+      }
+
+      const { data: postData } = await supabase
         .from("posts")
         .select(
-          "id,title,description,quantity,unit,budget_min,budget_max,city,state,category_id"
+          "id,title,description,type,quantity,unit,budget_min,budget_max,city,state,category_id"
         )
         .eq("status", "active")
         .order("created_at", { ascending: false });
 
-      if (postsError) {
-        console.error(postsError);
-        setListingError("Unable to load listings right now.");
-        setLoadingListings(false);
+      if (!postData) {
+        setListings([]);
         return;
       }
 
-      const databasePosts = (posts ?? []) as DatabasePost[];
-
-      const categoryIds = [
-        ...new Set(
-          databasePosts
-            .map((post) => post.category_id)
-            .filter((id): id is string => Boolean(id))
-        ),
-      ];
-
-      let databaseCategories: DatabaseCategory[] = [];
-
-      if (categoryIds.length > 0) {
-        const { data: categoriesData, error: categoriesError } =
-          await supabase
-            .from("categories")
-            .select("id,name")
-            .in("id", categoryIds);
-
-        if (categoriesError) {
-          console.error(categoriesError);
-        } else {
-          databaseCategories = (categoriesData ?? []) as DatabaseCategory[];
-        }
-      }
-
       const categoryMap = new Map(
-        databaseCategories.map((category) => [category.id, category.name])
+        (categoryData || []).map((category) => [
+          category.id,
+          category.name,
+        ])
       );
 
-      const liveListings: Listing[] = databasePosts.map((post) => {
+      const mappedListings: Listing[] = postData.map((post) => {
         const categoryName = post.category_id
-          ? categoryMap.get(post.category_id) ?? null
-          : null;
+          ? categoryMap.get(post.category_id)
+          : undefined;
 
-        const category = mapCategory(categoryName);
+        const location =
+          post.city && post.state
+            ? `${post.city}, ${post.state}`
+            : post.city || post.state || "Nagaland";
 
         return {
-          id: post.id,
-          name: post.title,
-          location:
-            post.city && post.state
-              ? `${post.city}, ${post.state}`
-              : post.city || post.state || "Nagaland",
-          price: formatPrice(
-            post.budget_min,
-            post.budget_max,
-            post.unit
-          ),
-          category,
-          subcategory: categoryName ?? "Other Local Offers",
+          ...post,
+          categoryName,
+          subcategory: categoryName,
+          location,
         };
       });
 
-      setListings(liveListings);
-      setLoadingListings(false);
+      setListings(mappedListings);
     }
 
-    loadListings();
-  }, []);
+    loadData();
+  }, [supabase]);
 
-  function openCategory(category: Category) {
-    setSelectedCategory(category);
-    setSelectedSubcategory(null);
-  }
+  const locations = useMemo(() => {
+    return Array.from(
+      new Set(
+        listings
+          .map((listing) => listing.location)
+          .filter((location): location is string => Boolean(location))
+      )
+    ).sort();
+  }, [listings]);
 
-  function openSubcategory(subcategory: string) {
-    setSelectedSubcategory(subcategory);
-  }
+  const visibleListings = useMemo(() => {
+    const search = searchTerm.trim().toLowerCase();
 
-  function backToCategories() {
+    return listings.filter((listing) => {
+      const mappedCategory = mapCategory(listing.categoryName);
+
+      if (
+        selectedCategory &&
+        mappedCategory !== selectedCategory
+      ) {
+        return false;
+      }
+
+      if (
+        selectedSubcategory &&
+        listing.subcategory !== selectedSubcategory
+      ) {
+        return false;
+      }
+
+      if (
+        locationFilter &&
+        listing.location !== locationFilter
+      ) {
+        return false;
+      }
+
+      if (search) {
+        const searchableText = [
+          listing.title,
+          listing.description,
+          listing.location,
+          listing.categoryName,
+          listing.subcategory,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        if (!searchableText.includes(search)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [
+    listings,
+    selectedCategory,
+    selectedSubcategory,
+    locationFilter,
+    searchTerm,
+  ]);
+
+  function clearFilters() {
+    setSearchTerm("");
+    setLocationFilter("");
     setSelectedCategory(null);
     setSelectedSubcategory(null);
   }
 
-  const visibleListings = listings.filter((listing) => {
-    if (!selectedCategory) return true;
-
-    if (!selectedSubcategory) {
-      return listing.category === selectedCategory;
-    }
-
-    return (
-      listing.category === selectedCategory &&
-      listing.subcategory === selectedSubcategory
-    );
-  });
+  const filtersActive =
+    Boolean(searchTerm) ||
+    Boolean(locationFilter) ||
+    Boolean(selectedCategory) ||
+    Boolean(selectedSubcategory);
 
   return (
-    <main>
-      <header>
-        <div className="brand">
-          Naga<span>Sphere</span>
-        </div>
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "#f8fafc",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
+      {/* HEADER */}
+      <header
+        style={{
+          background: "#ffffff",
+          borderBottom: "1px solid #e5e7eb",
+          padding: "16px 24px",
+          position: "sticky",
+          top: 0,
+          zIndex: 20,
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 26,
+              fontWeight: 800,
+              color: "#166534",
+              cursor: "pointer",
+            }}
+            onClick={() => router.push("/")}
+          >
+            NagaSphere
+          </div>
 
-        <nav>
-          <a href="#browse">Browse</a>
-          <a href="#how">How it works</a>
-          <a href="#sell">Sell / Offer</a>
-
-          <button onClick={() => router.push("/auth")}>
-            Sign in
-          </button>
-        </nav>
-      </header>
-
-      <section className="hero">
-        <div>
-          <p className="eyebrow">NAGALAND'S LOCAL MARKETPLACE</p>
-
-          <h1>
-            What you need.
-            <br />
-            <em>Someone here has it.</em>
-          </h1>
-
-          <p className="lead">
-            Find products, services and local businesses around Nagaland —
-            or tell people what you have to offer.
-          </p>
-
-          <div className="actions">
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              alignItems: "center",
+            }}
+          >
             <button
-              className="primary"
-              onClick={() => router.push("/auth?mode=signup")}
+              onClick={() => router.push("/auth")}
+              style={{
+                border: "1px solid #166534",
+                background: "#ffffff",
+                color: "#166534",
+                padding: "10px 16px",
+                borderRadius: 8,
+                cursor: "pointer",
+              }}
             >
-              I Need Something
+              Login
             </button>
 
             <button
-              className="secondary"
               onClick={() => router.push("/auth?mode=signup")}
+              style={{
+                border: "none",
+                background: "#166534",
+                color: "#ffffff",
+                padding: "10px 16px",
+                borderRadius: 8,
+                cursor: "pointer",
+              }}
             >
-              I Have Something
+              Sign Up
             </button>
           </div>
         </div>
+      </header>
 
-        <div className="heroCard">
-          <div className="pulse" />
-          <b>Local-first matching</b>
+      {/* HERO */}
+      <section
+        style={{
+          background:
+            "linear-gradient(135deg, #166534 0%, #15803d 50%, #22c55e 100%)",
+          color: "#ffffff",
+          padding: "70px 24px",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1000,
+            margin: "0 auto",
+            textAlign: "center",
+          }}
+        >
+          <h1
+            style={{
+              fontSize: "clamp(36px, 7vw, 64px)",
+              margin: 0,
+              fontWeight: 800,
+            }}
+          >
+            Welcome to NagaSphere
+          </h1>
 
-          <p>
-            Connect buyers and sellers without the noise of a generic
-            social feed.
+          <p
+            style={{
+              fontSize: 20,
+              marginTop: 18,
+              marginBottom: 30,
+              opacity: 0.95,
+            }}
+          >
+            Discover products, services, businesses and local opportunities
+            across Nagaland.
           </p>
 
-          <div className="mini">
-            📍 Nagaland &nbsp; • &nbsp; Verified listings
+          {/* SEARCH */}
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              maxWidth: 850,
+              margin: "0 auto",
+              flexWrap: "wrap",
+            }}
+          >
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search products, services, businesses..."
+              style={{
+                flex: "1 1 320px",
+                padding: "15px 16px",
+                borderRadius: 10,
+                border: "none",
+                fontSize: 16,
+                minWidth: 0,
+                outline: "none",
+              }}
+            />
+
+            <select
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+              style={{
+                flex: "0 1 220px",
+                padding: "15px 16px",
+                borderRadius: 10,
+                border: "none",
+                fontSize: 16,
+                background: "#ffffff",
+                color: "#111827",
+                outline: "none",
+              }}
+            >
+              <option value="">All locations</option>
+
+              {locations.map((location) => (
+                <option key={location} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+
+            {filtersActive && (
+              <button
+                onClick={clearFilters}
+                style={{
+                  padding: "15px 18px",
+                  borderRadius: 10,
+                  border: "none",
+                  background: "#ffffff",
+                  color: "#166534",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                Clear
+              </button>
+            )}
           </div>
         </div>
       </section>
 
-      <section id="browse" className="section">
-        <div className="sectionHead">
-          <div>
-            <p className="eyebrow">EXPLORE</p>
+      {/* CATEGORIES */}
+      <section
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto",
+          padding: "45px 24px 20px",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: 30,
+            marginBottom: 20,
+          }}
+        >
+          Browse Categories
+        </h2>
 
-            <h2>
-              {selectedCategory
-                ? selectedSubcategory
-                  ? selectedSubcategory
-                  : selectedCategory
-                : "Find what’s around you"}
-            </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit, minmax(150px, 1fr))",
+            gap: 12,
+          }}
+        >
+          {Object.keys(categories).map((category) => {
+            const active = selectedCategory === category;
+
+            return (
+              <button
+                key={category}
+                onClick={() => {
+                  setSelectedCategory(
+                    active ? null : category
+                  );
+                  setSelectedSubcategory(null);
+                }}
+                style={{
+                  padding: "16px 12px",
+                  borderRadius: 10,
+                  border: active
+                    ? "2px solid #166534"
+                    : "1px solid #d1d5db",
+                  background: active
+                    ? "#dcfce7"
+                    : "#ffffff",
+                  color: "#111827",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                {category}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* SUBCATEGORIES */}
+        {selectedCategory && (
+          <div
+            style={{
+              marginTop: 20,
+              padding: 20,
+              background: "#ffffff",
+              borderRadius: 12,
+              border: "1px solid #e5e7eb",
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>
+              {selectedCategory}
+            </h3>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                flexWrap: "wrap",
+              }}
+            >
+              {categories[selectedCategory].map(
+                (subcategory) => {
+                  const active =
+                    selectedSubcategory === subcategory;
+
+                  return (
+                    <button
+                      key={subcategory}
+                      onClick={() =>
+                        setSelectedSubcategory(
+                          active ? null : subcategory
+                        )
+                      }
+                      style={{
+                        padding: "9px 14px",
+                        borderRadius: 20,
+                        border: active
+                          ? "2px solid #166534"
+                          : "1px solid #d1d5db",
+                        background: active
+                          ? "#dcfce7"
+                          : "#ffffff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {subcategory}
+                    </button>
+                  );
+                }
+              )}
+            </div>
           </div>
+        )}
+      </section>
 
-          {selectedCategory && (
-            <button onClick={backToCategories}>
-              ← Categories
-            </button>
+      {/* LISTINGS */}
+      <section
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto",
+          padding: "20px 24px 60px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            marginBottom: 20,
+            flexWrap: "wrap",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 30,
+              margin: 0,
+            }}
+          >
+            Latest Listings
+          </h2>
+
+          {filtersActive && (
+            <span
+              style={{
+                color: "#4b5563",
+                fontSize: 14,
+              }}
+            >
+              {visibleListings.length} result
+              {visibleListings.length === 1 ? "" : "s"}
+            </span>
           )}
         </div>
 
-        {!selectedCategory && (
-          <>
-            <p className="lead" style={{ fontSize: "15px" }}>
-              Choose a category to browse local products, services and
-              businesses.
-            </p>
-
-            <div className="categories">
-              {(Object.keys(categories) as Category[]).map((category) => (
-                <button
-                  className="category"
-                  key={category}
-                  onClick={() => openCategory(category)}
-                >
-                  <span>{category}</span>
-                  <span>→</span>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
-        {selectedCategory && !selectedSubcategory && (
-          <>
-            <p className="eyebrow" style={{ marginTop: "30px" }}>
-              BROWSE {selectedCategory.toUpperCase()}
-            </p>
-
-            <div className="categories">
-              {categories[selectedCategory].map((subcategory) => (
-                <button
-                  className="category"
-                  key={subcategory}
-                  onClick={() => openSubcategory(subcategory)}
-                >
-                  <span>{subcategory}</span>
-                  <span>→</span>
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
-        {selectedSubcategory && (
-          <div style={{ marginTop: "30px" }}>
-            <button
-              className="secondary"
-              onClick={() => setSelectedSubcategory(null)}
-            >
-              ← Back to {selectedCategory}
-            </button>
+        {visibleListings.length === 0 ? (
+          <div
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e5e7eb",
+              borderRadius: 12,
+              padding: 40,
+              textAlign: "center",
+              color: "#6b7280",
+            }}
+          >
+            No listings match your current search or filters.
           </div>
-        )}
-
-        {selectedCategory && (
-          <div className="listings">
-            {loadingListings ? (
-              <p style={{ color: "#697067" }}>
-                Loading local listings...
-              </p>
-            ) : listingError ? (
-              <p style={{ color: "#b42318" }}>{listingError}</p>
-            ) : visibleListings.length > 0 ? (
-              visibleListings.map((listing) => (
-                <article
-                  className="listing"
-                  key={listing.id}
-                  role="link"
-                  tabIndex={0}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => router.push(`/listing/${listing.id}`)}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key === "Enter" ||
-                      event.key === " "
-                    ) {
-                      event.preventDefault();
-                      router.push(`/listing/${listing.id}`);
-                    }
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: 18,
+            }}
+          >
+            {visibleListings.map((listing) => (
+              <article
+                key={listing.id}
+                onClick={() =>
+                  router.push(`/listing/${listing.id}`)
+                }
+                onKeyDown={(event) => {
+                  if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                  ) {
+                    event.preventDefault();
+                    router.push(`/listing/${listing.id}`);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                style={{
+                  background: "#ffffff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 14,
+                  padding: 20,
+                  cursor: "pointer",
+                  boxShadow:
+                    "0 2px 8px rgba(0,0,0,0.04)",
+                  transition: "transform 0.15s ease",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: "#166534",
+                    fontWeight: 700,
+                    marginBottom: 8,
                   }}
-                  aria-label={`Open listing ${listing.name}`}
                 >
-                  <div className="photo">
-                    {listing.name.charAt(0).toUpperCase()}
-                  </div>
+                  {listing.categoryName ||
+                    "Local Listing"}
+                </div>
 
-                  <div>
-                    <h3>{listing.name}</h3>
-                    <p>📍 {listing.location}</p>
-                    <p>{listing.subcategory}</p>
-                    <strong>{listing.price}</strong>
-                  </div>
-                </article>
-              ))
-            ) : (
-              <p style={{ color: "#697067" }}>
-                No listings yet in this section. Be the first to add one.
-              </p>
-            )}
+                <h3
+                  style={{
+                    margin: "0 0 10px",
+                    fontSize: 20,
+                  }}
+                >
+                  {listing.title}
+                </h3>
+
+                {listing.description && (
+                  <p
+                    style={{
+                      margin: "0 0 12px",
+                      color: "#4b5563",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {listing.description}
+                  </p>
+                )}
+
+                <p
+                  style={{
+                    margin: "8px 0",
+                    color: "#374151",
+                  }}
+                >
+                  Quantity:{" "}
+                  {listing.quantity ?? "—"}{" "}
+                  {listing.unit || ""}
+                </p>
+
+                <p
+                  style={{
+                    margin: "8px 0",
+                    color: "#374151",
+                  }}
+                >
+                  Price: ₹
+                  {listing.budget_min ??
+                    listing.budget_max ??
+                    "—"}
+                </p>
+
+                <p
+                  style={{
+                    margin: "8px 0 0",
+                    color: "#6b7280",
+                    fontSize: 14,
+                  }}
+                >
+                  📍 {listing.location}
+                </p>
+              </article>
+            ))}
           </div>
         )}
       </section>
 
-      <section id="how" className="how">
-        <p className="eyebrow">SIMPLE BY DESIGN</p>
+      {/* HOW IT WORKS */}
+      <section
+        style={{
+          background: "#ffffff",
+          borderTop: "1px solid #e5e7eb",
+          borderBottom: "1px solid #e5e7eb",
+          padding: "55px 24px",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1000,
+            margin: "0 auto",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 30,
+              textAlign: "center",
+              marginBottom: 35,
+            }}
+          >
+            How NagaSphere Works
+          </h2>
 
-        <h2>From need to connection.</h2>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(220px, 1fr))",
+              gap: 20,
+            }}
+          >
+            <div
+              style={{
+                padding: 24,
+                borderRadius: 12,
+                background: "#f8fafc",
+              }}
+            >
+              <h3>1. Discover</h3>
+              <p>
+                Search and browse products, services and
+                businesses available across Nagaland.
+              </p>
+            </div>
 
-        <div className="steps">
-          <div>
-            <b>01</b>
-            <h3>Post what you need</h3>
-            <p>
-              Describe the product or service you are looking for.
-            </p>
-          </div>
+            <div
+              style={{
+                padding: 24,
+                borderRadius: 12,
+                background: "#f8fafc",
+              }}
+            >
+              <h3>2. Connect</h3>
+              <p>
+                Find sellers and connect directly through
+                NagaSphere.
+              </p>
+            </div>
 
-          <div>
-            <b>02</b>
-            <h3>Discover local offers</h3>
-            <p>
-              See relevant listings from people and businesses nearby.
-            </p>
-          </div>
-
-          <div>
-            <b>03</b>
-            <h3>Connect directly</h3>
-            <p>
-              Chat, agree on details and complete your transaction.
-            </p>
+            <div
+              style={{
+                padding: 24,
+                borderRadius: 12,
+                background: "#f8fafc",
+              }}
+            >
+              <h3>3. Trade</h3>
+              <p>
+                Discuss requirements and complete your
+                transaction with confidence.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="sell" className="cta">
-        <div>
-          <p className="eyebrow">FOR SELLERS & BUSINESSES</p>
+      {/* CTA */}
+      <section
+        style={{
+          padding: "60px 24px",
+          textAlign: "center",
+          background: "#f0fdf4",
+        }}
+      >
+        <h2
+          style={{
+            fontSize: 32,
+            marginBottom: 14,
+          }}
+        >
+          Have something to sell?
+        </h2>
 
-          <h2>Turn local reach into real customers.</h2>
-
-          <p>
-            Create a listing, receive enquiries and grow your local
-            business.
-          </p>
-        </div>
+        <p
+          style={{
+            color: "#4b5563",
+            marginBottom: 25,
+          }}
+        >
+          Create your NagaSphere listing and reach
+          customers across Nagaland.
+        </p>
 
         <button
-          className="primary"
-          onClick={() => router.push("/auth?mode=signup")}
+          onClick={() => router.push("/create-listing")}
+          style={{
+            background: "#166534",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: 9,
+            padding: "13px 22px",
+            fontSize: 16,
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
         >
-          Create a listing →
+          Create a Listing
         </button>
       </section>
 
-      <footer>
-        <b>NagaSphere</b>
-        <span>Built for local commerce in Nagaland.</span>
-        <span>© 2026 NagaSphere</span>
+      {/* FOOTER */}
+      <footer
+        style={{
+          background: "#111827",
+          color: "#d1d5db",
+          padding: "35px 24px",
+          textAlign: "center",
+        }}
+      >
+        <strong
+          style={{
+            color: "#ffffff",
+            fontSize: 20,
+          }}
+        >
+          NagaSphere
+        </strong>
+
+        <p
+          style={{
+            marginBottom: 0,
+            fontSize: 14,
+          }}
+        >
+          A local marketplace connecting Nagaland.
+        </p>
       </footer>
     </main>
   );
