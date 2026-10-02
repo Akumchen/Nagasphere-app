@@ -135,7 +135,12 @@ export default function CreateListingPage() {
                 onChange={(e) =>
                   setType(e.target.value as "have" | "need")
                 }
-                style={{ width: "100%", padding: 12, margin: "6px 0 16px" }}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  margin: "6px 0 16px",
+                  boxSizing: "border-box"
+                }}
               >
                 <option value="have">I Have Something</option>
                 <option value="need">I Need Something</option>
@@ -148,7 +153,12 @@ export default function CreateListingPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Example: Fresh Naga King Chilli"
-                style={{ width: "100%", padding: 12, margin: "6px 0 16px" }}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  margin: "6px 0 16px",
+                  boxSizing: "border-box"
+                }}
               />
             </label>
 
@@ -159,7 +169,15 @@ export default function CreateListingPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your product or requirement."
                 rows={4}
-                style={{ width: "100%", padding: 12, margin: "6px 0 16px" }}
+                style={{
+                  width: "100%",
+                  minHeight: 120,
+                  padding: 12,
+                  margin: "6px 0 16px",
+                  boxSizing: "border-box",
+                  resize: "vertical",
+                  display: "block"
+                }}
               />
             </label>
 
@@ -168,7 +186,12 @@ export default function CreateListingPage() {
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
-                style={{ width: "100%", padding: 12, margin: "6px 0 16px" }}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  margin: "6px 0 16px",
+                  boxSizing: "border-box"
+                }}
               >
                 <option value="">Select a category</option>
                 {categories.map((category) => (
@@ -185,18 +208,39 @@ export default function CreateListingPage() {
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
-                style={{ width: "100%", padding: 12, margin: "6px 0 16px" }}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  margin: "6px 0 16px",
+                  boxSizing: "border-box"
+                }}
               />
             </label>
 
             <label>
               Unit
-              <input
+              <select
                 value={unit}
                 onChange={(e) => setUnit(e.target.value)}
-                placeholder="kg, pack, piece"
-                style={{ width: "100%", padding: 12, margin: "6px 0 16px" }}
-              />
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  margin: "6px 0 16px",
+                  boxSizing: "border-box"
+                }}
+              >
+                <option value="">Select a unit</option>
+                <option value="kg">kg</option>
+                <option value="gram">gram</option>
+                <option value="litre">litre</option>
+                <option value="piece">piece</option>
+                <option value="pack">pack</option>
+                <option value="dozen">dozen</option>
+                <option value="box">box</option>
+                <option value="bundle">bundle</option>
+                <option value="tonne">tonne</option>
+                <option value="other">other</option>
+              </select>
             </label>
 
             <label>
@@ -206,7 +250,12 @@ export default function CreateListingPage() {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="₹"
-                style={{ width: "100%", padding: 12, margin: "6px 0 16px" }}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  margin: "6px 0 16px",
+                  boxSizing: "border-box"
+                }}
               />
             </label>
 
@@ -216,7 +265,12 @@ export default function CreateListingPage() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="Example: Dimapur"
-                style={{ width: "100%", padding: 12, margin: "6px 0 20px" }}
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  margin: "6px 0 20px",
+                  boxSizing: "border-box"
+                }}
               />
             </label>
 
