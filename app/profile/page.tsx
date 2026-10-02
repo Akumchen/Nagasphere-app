@@ -11,7 +11,6 @@ export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -31,7 +30,7 @@ export default function ProfilePage() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name, phone, role")
+        .select("full_name, phone")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -40,7 +39,6 @@ export default function ProfilePage() {
       } else if (data) {
         setFullName(data.full_name ?? "");
         setPhone(data.phone ?? "");
-        setRole(data.role ?? "user");
       }
 
       setLoading(false);
@@ -69,7 +67,6 @@ export default function ProfilePage() {
         id: user.id,
         full_name: fullName,
         phone,
-        role,
       });
 
     if (error) {
@@ -175,7 +172,7 @@ export default function ProfilePage() {
               />
             </label>
 
-            <label style={{ display: "block", marginBottom: "20px" }}>
+            <label style={{ display: "block", marginBottom: "24px" }}>
               Phone number
               <input
                 type="tel"
@@ -191,26 +188,6 @@ export default function ProfilePage() {
                   boxSizing: "border-box",
                 }}
               />
-            </label>
-
-            <label style={{ display: "block", marginBottom: "24px" }}>
-              Account type
-              <select
-                value={role}
-                onChange={(event) => setRole(event.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "13px",
-                  marginTop: "7px",
-                  border: "1px solid #d7dcd5",
-                  borderRadius: "10px",
-                  boxSizing: "border-box",
-                  background: "white",
-                }}
-              >
-                <option value="user">Personal user</option>
-                <option value="business">Business</option>
-              </select>
             </label>
 
             <button
