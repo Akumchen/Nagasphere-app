@@ -161,18 +161,20 @@ export default function DashboardPage() {
           </div>
 
           <div
-            style={{
-              background: "white",
-              padding: "24px",
-              borderRadius: "18px",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-            }}
-          >
-            <h2>Profile</h2>
-            <p style={{ color: "#697067" }}>
-              Complete and manage your NagaSphere profile.
-            </p>
-          </div>
+  onClick={() => router.push("/profile")}
+  style={{
+    background: "white",
+    padding: "24px",
+    borderRadius: "18px",
+    boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+    cursor: "pointer",
+  }}
+>
+  <h2>Profile</h2>
+  <p style={{ color: "#697067" }}>
+    Complete and manage your NagaSphere profile.
+  </p>
+</div>
         </section>
       </div>
     </main>
