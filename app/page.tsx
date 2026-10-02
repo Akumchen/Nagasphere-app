@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "../lib/supabase/client";
 
 const categories = {
   "Fresh Produce": [
@@ -66,36 +67,85 @@ const categories = {
 
 type Category = keyof typeof categories;
 
-const listings = [
-  {
-    name: "Fresh Naga King Chilli",
-    location: "Kohima",
-    price: "₹120 / pack",
-    category: "Fresh Produce",
-    subcategory: "Spices",
-  },
-  {
-    name: "Organic Pineapple",
-    location: "Mokokchung",
-    price: "₹80 / kg",
-    category: "Fresh Produce",
-    subcategory: "Fruits",
-  },
-  {
-    name: "Handwoven Traditional Shawl",
-    location: "Dimapur",
-    price: "₹1,800",
-    category: "Fashion",
-    subcategory: "Traditional Naga Wear",
-  },
-  {
-    name: "Home Catering Service",
-    location: "Dimapur",
-    price: "From ₹250 / plate",
-    category: "Services",
-    subcategory: "Catering",
-  },
-];
+type DatabasePost = {
+  id: string;
+  title: string;
+  description: string | null;
+  quantity: number | string | null;
+  unit: string | null;
+  budget_min: number | string | null;
+  budget_max: number | string | null;
+  city: string | null;
+  state: string | null;
+  category_id: string | null;
+};
+
+type DatabaseCategory = {
+  id: string;
+  name: string;
+};
+
+type Listing = {
+  id: string;
+  name: string;
+  location: string;
+  price: string;
+  category: Category;
+  subcategory: string;
+};
+
+const supabase = createClient();
+
+function mapCategory(categoryName: string | null): Category {
+  const name = (categoryName ?? "").toLowerCase();
+
+  if (
+    name.includes("food") ||
+    name.includes("agriculture") ||
+    name.includes("produce")
+  ) {
+    return "Fresh Produce";
+  }
+
+  if (name.includes("service")) {
+    return "Services";
+  }
+
+  if (name.includes("business")) {
+    return "Local Businesses";
+  }
+
+  return "Other";
+}
+
+function formatPrice(
+  budgetMin: number | string | null,
+  budgetMax: number | string | null,
+  unit: string | null
+) {
+  if (budgetMin == null && budgetMax == null) {
+    return "Price on request";
+  }
+
+  const min = budgetMin == null ? null : Number(budgetMin);
+  const max = budgetMax == null ? null : Number(budgetMax);
+
+  if (min == null || Number.isNaN(min)) {
+    return "Price on request";
+  }
+
+  let price = "";
+
+  if (max != null && !Number.isNaN(max) && max !== min) {
+    price = `₹${min.toLocaleString("en-IN")} - ₹${max.toLocaleString(
+      "en-IN"
+    )}`;
+  } else {
+    price = `₹${min.toLocaleString("en-IN")}`;
+  }
+
+  return unit ? `${price} / ${unit}` : price;
+}
 
 export default function Home() {
   const router = useRouter();
@@ -105,6 +155,91 @@ export default function Home() {
 
   const [selectedSubcategory, setSelectedSubcategory] =
     useState<string | null>(null);
+
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loadingListings, setLoadingListings] = useState(true);
+  const [listingError, setListingError] = useState("");
+
+  useEffect(() => {
+    async function loadListings() {
+      setLoadingListings(true);
+      setListingError("");
+
+      const { data: posts, error: postsError } = await supabase
+        .from("posts")
+        .select(
+          "id,title,description,quantity,unit,budget_min,budget_max,city,state,category_id"
+        )
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+
+      if (postsError) {
+        console.error(postsError);
+        setListingError("Unable to load listings right now.");
+        setLoadingListings(false);
+        return;
+      }
+
+      const databasePosts = (posts ?? []) as DatabasePost[];
+
+      const categoryIds = [
+        ...new Set(
+          databasePosts
+            .map((post) => post.category_id)
+            .filter((id): id is string => Boolean(id))
+        ),
+      ];
+
+      let databaseCategories: DatabaseCategory[] = [];
+
+      if (categoryIds.length > 0) {
+        const { data: categoriesData, error: categoriesError } =
+          await supabase
+            .from("categories")
+            .select("id,name")
+            .in("id", categoryIds);
+
+        if (categoriesError) {
+          console.error(categoriesError);
+        } else {
+          databaseCategories = (categoriesData ?? []) as DatabaseCategory[];
+        }
+      }
+
+      const categoryMap = new Map(
+        databaseCategories.map((category) => [category.id, category.name])
+      );
+
+      const liveListings: Listing[] = databasePosts.map((post) => {
+        const categoryName = post.category_id
+          ? categoryMap.get(post.category_id) ?? null
+          : null;
+
+        const category = mapCategory(categoryName);
+
+        return {
+          id: post.id,
+          name: post.title,
+          location:
+            post.city && post.state
+              ? `${post.city}, ${post.state}`
+              : post.city || post.state || "Nagaland",
+          price: formatPrice(
+            post.budget_min,
+            post.budget_max,
+            post.unit
+          ),
+          category,
+          subcategory: categoryName ?? "Other Local Offers",
+        };
+      });
+
+      setListings(liveListings);
+      setLoadingListings(false);
+    }
+
+    loadListings();
+  }, []);
 
   function openCategory(category: Category) {
     setSelectedCategory(category);
@@ -162,8 +297,8 @@ export default function Home() {
           </h1>
 
           <p className="lead">
-            Find products, services and local businesses around Nagaland — or
-            tell people what you have to offer.
+            Find products, services and local businesses around Nagaland —
+            or tell people what you have to offer.
           </p>
 
           <div className="actions">
@@ -188,8 +323,8 @@ export default function Home() {
           <b>Local-first matching</b>
 
           <p>
-            Connect buyers and sellers without the noise of a generic social
-            feed.
+            Connect buyers and sellers without the noise of a generic
+            social feed.
           </p>
 
           <div className="mini">
@@ -275,10 +410,18 @@ export default function Home() {
 
         {selectedCategory && (
           <div className="listings">
-            {visibleListings.length > 0 ? (
+            {loadingListings ? (
+              <p style={{ color: "#697067" }}>
+                Loading local listings...
+              </p>
+            ) : listingError ? (
+              <p style={{ color: "#b42318" }}>{listingError}</p>
+            ) : visibleListings.length > 0 ? (
               visibleListings.map((listing) => (
-                <article className="listing" key={listing.name}>
-                  <div className="photo">{listing.name[0]}</div>
+                <article className="listing" key={listing.id}>
+                  <div className="photo">
+                    {listing.name.charAt(0).toUpperCase()}
+                  </div>
 
                   <div>
                     <h3>{listing.name}</h3>
@@ -336,7 +479,8 @@ export default function Home() {
           <h2>Turn local reach into real customers.</h2>
 
           <p>
-            Create a listing, receive enquiries and grow your local business.
+            Create a listing, receive enquiries and grow your local
+            business.
           </p>
         </div>
 
