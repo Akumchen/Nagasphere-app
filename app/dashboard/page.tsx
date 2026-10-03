@@ -97,54 +97,45 @@ export default function DashboardPage() {
             justifyContent: "space-between",
             gap: "16px",
             boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-            flexWrap: "wrap",
           }}
         >
-          <img
-            src="/nagasphere-logo.png"
-            alt="NagaSphere"
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            aria-label="Go to NagaSphere home"
             style={{
-              width: "170px",
-              height: "auto",
-            }}
-          />
-
-          <div
-            style={{
+              border: 0,
+              background: "transparent",
+              padding: 0,
+              cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: "10px",
-              flexWrap: "wrap",
             }}
           >
-            <button
-              type="button"
-              onClick={() => router.push("/")}
+            <img
+              src="/nagasphere-logo.png"
+              alt="NagaSphere"
               style={{
-                border: "1px solid #d7dcd5",
-                background: "white",
-                padding: "10px 16px",
-                borderRadius: "10px",
-                cursor: "pointer",
+                width: "170px",
+                height: "auto",
+                display: "block",
               }}
-            >
-              ← Home
-            </button>
+            />
+          </button>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              style={{
-                border: "1px solid #d7dcd5",
-                background: "white",
-                padding: "10px 16px",
-                borderRadius: "10px",
-                cursor: "pointer",
-              }}
-            >
-              Sign out
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            style={{
+              border: "1px solid #d7dcd5",
+              background: "white",
+              padding: "10px 16px",
+              borderRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            Sign out
+          </button>
         </header>
 
         <section style={{ marginTop: "28px" }}>
