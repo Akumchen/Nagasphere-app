@@ -119,7 +119,7 @@ export default function DashboardPage() {
           }}
         >
           <div
-  onClick={() => router.push("/create-listing")}
+  onClick={() => router.push("/my-listings")}
   style={{
     background: "white",
     padding: "24px",
