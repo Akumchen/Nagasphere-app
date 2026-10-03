@@ -241,7 +241,7 @@ export default function MyListingsPage() {
 
           <button
             type="button"
-            onClick={() => router.push("/listing/create")}
+            onClick={() => router.push("/create-listing")}
             style={{
               marginTop: "10px",
               border: 0,
