@@ -276,12 +276,30 @@ export default function MyListingsPage() {
                         "Uncategorized"}
                     </p>
 
+                    {/* LISTING TITLE - NOW OPENS THE LISTING PAGE */}
                     <h2
                       style={{
                         margin: "0 0 8px",
                       }}
                     >
-                      {listing.title}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          router.push("/listing/" + listing.id)
+                        }
+                        style={{
+                          padding: 0,
+                          border: 0,
+                          background: "transparent",
+                          color: "inherit",
+                          font: "inherit",
+                          fontWeight: "inherit",
+                          textAlign: "left",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {listing.title}
+                      </button>
                     </h2>
 
                     {listing.description && (
