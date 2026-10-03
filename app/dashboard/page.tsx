@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
@@ -63,8 +63,8 @@ export default function DashboardPage() {
     },
     {
       title: "Messages",
-      description: "Connect with buyers and sellers.",
-      path: null,
+      description: "View and reply to buyers and sellers.",
+      path: "/messages",
     },
     {
       title: "Profile",
@@ -150,18 +150,15 @@ export default function DashboardPage() {
           {cards.map((card) => (
             <div
               key={card.title}
-              onClick={() => {
-                if (card.path) {
-                  router.push(card.path);
-                }
-              }}
-              role={card.path ? "button" : undefined}
-              tabIndex={card.path ? 0 : undefined}
+              onClick={() => router.push(card.path)}
+              role="button"
+              tabIndex={0}
               onKeyDown={(event) => {
                 if (
-                  card.path &&
-                  (event.key === "Enter" || event.key === " ")
+                  event.key === "Enter" ||
+                  event.key === " "
                 ) {
+                  event.preventDefault();
                   router.push(card.path);
                 }
               }}
@@ -170,11 +167,13 @@ export default function DashboardPage() {
                 padding: "24px",
                 borderRadius: "18px",
                 boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-                cursor: card.path ? "pointer" : "default",
+                cursor: "pointer",
                 transition: "transform 0.15s ease",
               }}
             >
-              <h2 style={{ marginTop: 0 }}>{card.title}</h2>
+              <h2 style={{ marginTop: 0 }}>
+                {card.title}
+              </h2>
 
               <p
                 style={{
