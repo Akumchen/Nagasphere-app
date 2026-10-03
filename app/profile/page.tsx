@@ -62,12 +62,12 @@ export default function ProfilePage() {
     }
 
     const { error } = await supabase
-  .from("profiles")
-  .update({
-    full_name: fullName,
-    phone,
-  })
-  .eq("id", user.id);
+      .from("profiles")
+      .update({
+        full_name: fullName,
+        phone,
+      })
+      .eq("id", user.id);
 
     if (error) {
       setMessage(error.message);
@@ -107,19 +107,57 @@ export default function ProfilePage() {
           margin: "0 auto",
         }}
       >
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard")}
+        <header
           style={{
-            border: 0,
-            background: "transparent",
-            cursor: "pointer",
+            background: "white",
+            borderRadius: "20px",
+            padding: "18px 22px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "16px",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
             marginBottom: "20px",
-            padding: 0,
           }}
         >
-          ← Back to Dashboard
-        </button>
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            aria-label="Go to NagaSphere home"
+            style={{
+              border: 0,
+              background: "transparent",
+              padding: 0,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src="/nagasphere-logo.png"
+              alt="NagaSphere"
+              style={{
+                width: "150px",
+                height: "auto",
+                display: "block",
+              }}
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard")}
+            style={{
+              border: "1px solid #d7dcd5",
+              background: "white",
+              padding: "10px 16px",
+              borderRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            Dashboard
+          </button>
+        </header>
 
         <section
           style={{
