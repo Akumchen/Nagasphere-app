@@ -49,7 +49,7 @@ export default function AuthPage() {
       if (error) {
         setMessage(error.message);
       } else {
-        router.push("/dashboard");
+        router.push("/");
         router.refresh();
       }
     }
