@@ -32,6 +32,7 @@ export default function MyRequestsPage() {
   const [categories, setCategories] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   async function loadRequests() {
     setLoading(true);
@@ -46,22 +47,24 @@ export default function MyRequestsPage() {
       return;
     }
 
-    const [{ data: requestData, error: requestError }, { data: categoryData }] =
-      await Promise.all([
-        supabase
-          .from("posts")
-          .select(
-            "id,type,title,description,quantity,unit,budget_min,city,state,category_id,status,created_at"
-          )
-          .eq("owner_id", user.id)
-          .eq("type", "need")
-          .order("created_at", { ascending: false }),
+    const [
+      { data: requestData, error: requestError },
+      { data: categoryData },
+    ] = await Promise.all([
+      supabase
+        .from("posts")
+        .select(
+          "id,type,title,description,quantity,unit,budget_min,city,state,category_id,status,created_at"
+        )
+        .eq("owner_id", user.id)
+        .eq("type", "need")
+        .order("created_at", { ascending: false }),
 
-        supabase
-          .from("categories")
-          .select("id,name")
-          .order("name"),
-      ]);
+      supabase
+        .from("categories")
+        .select("id,name")
+        .order("name"),
+    ]);
 
     if (requestError) {
       setMessage(requestError.message);
@@ -83,6 +86,66 @@ export default function MyRequestsPage() {
   useEffect(() => {
     loadRequests();
   }, []);
+
+  async function changeStatus(
+    id: string,
+    status: "active" | "paused" | "closed"
+  ) {
+    setBusyId(id);
+    setMessage("");
+
+    const { data, error } = await supabase
+      .from("posts")
+      .update({ status })
+      .eq("id", id)
+      .select("id,status")
+      .maybeSingle();
+
+    if (error) {
+      setMessage(error.message);
+    } else if (!data) {
+      setMessage(
+        "The request status was not changed. Please try again."
+      );
+    } else {
+      setRequests((current) =>
+        current.map((request) =>
+          request.id === id
+            ? {
+                ...request,
+                status: data.status as RequestItem["status"],
+              }
+            : request
+        )
+      );
+    }
+
+    setBusyId(null);
+  }
+
+  async function deleteRequest(id: string) {
+    if (!window.confirm("Delete this request permanently?")) {
+      return;
+    }
+
+    setBusyId(id);
+    setMessage("");
+
+    const { error } = await supabase
+      .from("posts")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setRequests((current) =>
+        current.filter((request) => request.id !== id)
+      );
+    }
+
+    setBusyId(null);
+  }
 
   if (loading) {
     return (
@@ -201,119 +264,4 @@ export default function MyRequestsPage() {
               <article
                 key={request.id}
                 style={{
-                  background: "#fff",
-                  padding: 22,
-                  borderRadius: 16,
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <div>
-                    <p
-                      style={{
-                        margin: "0 0 6px",
-                        color: "#166534",
-                        fontWeight: 700,
-                      }}
-                    >
-                      I Need ·{" "}
-                      {categories[request.category_id ?? ""] ??
-                        "Uncategorized"}
-                    </p>
-
-                    <h2
-                      style={{
-                        margin: "0 0 8px",
-                      }}
-                    >
-                      {request.title}
-                    </h2>
-
-                    {request.description && (
-                      <p
-                        style={{
-                          color: "#4b5563",
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {request.description}
-                      </p>
-                    )}
-
-                    <p
-                      style={{
-                        color: "#697067",
-                        marginBottom: 0,
-                      }}
-                    >
-                      {request.quantity ?? "—"}{" "}
-                      {request.unit ?? ""} ·{" "}
-                      {request.budget_min != null
-                        ? "Budget ₹" +
-                          request.budget_min.toLocaleString("en-IN")
-                        : "Budget not specified"}{" "}
-                      · {request.city || request.state || "Nagaland"}
-                    </p>
-                  </div>
-
-                  <span
-                    style={{
-                      alignSelf: "flex-start",
-                      padding: "7px 11px",
-                      borderRadius: 999,
-                      background:
-                        request.status === "active"
-                          ? "#dcfce7"
-                          : request.status === "paused"
-                            ? "#fef3c7"
-                            : "#e5e7eb",
-                      color: "#374151",
-                      fontSize: 13,
-                      fontWeight: 700,
-                    }}
-                  >
-                    {request.status}
-                  </span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 10,
-                    flexWrap: "wrap",
-                    marginTop: 18,
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      router.push("/edit-listing/" + request.id)
-                    }
-                  >
-                    Edit Request
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      router.push("/listing/" + request.id)
-                    }
-                  >
-                    View Request
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
-  );
-}
+                  background
