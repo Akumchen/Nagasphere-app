@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 
 type Listing = {
   id: string;
-  type: "have" | "need";
   title: string;
   description: string | null;
+  type: string;
   quantity: number | null;
   unit: string | null;
   budget_min: number | null;
+  budget_max: number | null;
   city: string | null;
   state: string | null;
+  status: string;
   category_id: string | null;
-  status: "active" | "paused" | "closed" | "removed";
-  created_at: string;
 };
 
 type Category = {
@@ -24,124 +24,126 @@ type Category = {
   name: string;
 };
 
+const categoryNames: Record<string, string> = {
+  fresh_produce: "Fresh Produce",
+  food_agriculture: "Food & Agriculture",
+  food_groceries: "Food & Groceries",
+  fashion: "Fashion",
+  home_living: "Home & Living",
+  services: "Services",
+  electronics: "Electronics",
+  local_businesses: "Local Businesses",
+  other: "Other",
+};
+
 export default function MyListingsPage() {
   const router = useRouter();
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [listings, setListings] = useState<Listing[]>([]);
-  const [categories, setCategories] = useState<Record<string, string>>({});
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
-  const [busyId, setBusyId] = useState<string | null>(null);
-
-  async function loadListings() {
-    setLoading(true);
-    setMessage("");
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      router.replace("/auth");
-      return;
-    }
-
-    const [{ data: postData, error: postError }, { data: categoryData }] =
-      await Promise.all([
-        supabase
-          .from("posts")
-          .select(
-            "id,type,title,description,quantity,unit,budget_min,city,state,category_id,status,created_at"
-          )
-          .eq("owner_id", user.id)
-          .order("created_at", { ascending: false }),
-
-        supabase
-          .from("categories")
-          .select("id,name")
-          .order("name"),
-      ]);
-
-    if (postError) {
-      setMessage(postError.message);
-      setLoading(false);
-      return;
-    }
-
-    const categoryMap: Record<string, string> = {};
-
-    (categoryData as Category[] | null)?.forEach((category) => {
-      categoryMap[category.id] = category.name;
-    });
-
-    setCategories(categoryMap);
-    setListings((postData ?? []) as Listing[]);
-    setLoading(false);
-  }
 
   useEffect(() => {
-    loadListings();
-  }, []);
+    async function loadListings() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  async function changeStatus(
-    id: string,
-    status: "active" | "paused" | "closed"
+      if (!user) {
+        router.replace("/auth");
+        return;
+      }
+
+      const [{ data: listingData, error: listingError }, { data: categoryData }] =
+        await Promise.all([
+          supabase
+            .from("posts")
+            .select(
+              "id,title,description,type,quantity,unit,budget_min,budget_max,city,state,status,category_id"
+            )
+            .eq("owner_id", user.id)
+            .order("created_at", { ascending: false }),
+
+          supabase
+            .from("categories")
+            .select("id,name")
+            .order("name"),
+        ]);
+
+      if (listingError) {
+        setMessage(listingError.message);
+      } else {
+        setListings(listingData ?? []);
+      }
+
+      setCategories(categoryData ?? []);
+      setLoading(false);
+    }
+
+    loadListings();
+  }, [router, supabase]);
+
+  function getCategoryName(categoryId: string | null) {
+    if (!categoryId) return "Other";
+
+    const category = categories.find(
+      (item) => item.id === categoryId
+    );
+
+    if (category) return category.name;
+
+    return categoryNames[categoryId] ?? "Other";
+  }
+
+  async function updateStatus(
+    listingId: string,
+    status: string
   ) {
-    setBusyId(id);
     setMessage("");
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("posts")
       .update({ status })
-      .eq("id", id)
-      .select("id,status")
-      .maybeSingle();
+      .eq("id", listingId);
 
     if (error) {
       setMessage(error.message);
-    } else if (!data) {
-      setMessage(
-        "The listing status was not changed. Please try again."
-      );
-    } else {
-      setListings((current) =>
-        current.map((listing) =>
-          listing.id === id
-            ? {
-                ...listing,
-                status: data.status as Listing["status"],
-              }
-            : listing
-        )
-      );
-    }
-
-    setBusyId(null);
-  }
-
-  async function deleteListing(id: string) {
-    if (!window.confirm("Delete this listing permanently?")) {
       return;
     }
 
-    setBusyId(id);
+    setListings((current) =>
+      current.map((listing) =>
+        listing.id === listingId
+          ? { ...listing, status }
+          : listing
+      )
+    );
+  }
+
+  async function deleteListing(listingId: string) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this listing?"
+    );
+
+    if (!confirmed) return;
+
     setMessage("");
 
     const { error } = await supabase
       .from("posts")
       .delete()
-      .eq("id", id);
+      .eq("id", listingId);
 
     if (error) {
       setMessage(error.message);
-    } else {
-      setListings((current) =>
-        current.filter((listing) => listing.id !== id)
-      );
+      return;
     }
 
-    setBusyId(null);
+    setListings((current) =>
+      current.filter((listing) => listing.id !== listingId)
+    );
   }
 
   if (loading) {
@@ -149,7 +151,8 @@ export default function MyListingsPage() {
       <main
         style={{
           minHeight: "100vh",
-          padding: 24,
+          display: "grid",
+          placeItems: "center",
           background: "#f6f7f2",
         }}
       >
@@ -163,272 +166,334 @@ export default function MyListingsPage() {
       style={{
         minHeight: "100vh",
         background: "#f6f7f2",
-        padding: 24,
+        padding: "24px",
       }}
     >
       <div
         style={{
-          maxWidth: 1100,
+          maxWidth: "1100px",
           margin: "0 auto",
         }}
       >
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard")}
+        <header
           style={{
-            marginBottom: 18,
+            background: "white",
+            borderRadius: "20px",
+            padding: "18px 22px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "16px",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
           }}
         >
-          ← Back to Dashboard
-        </button>
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            aria-label="Go to NagaSphere home"
+            style={{
+              border: 0,
+              background: "transparent",
+              padding: 0,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src="/nagasphere-logo.png"
+              alt="NagaSphere"
+              style={{
+                width: "170px",
+                height: "auto",
+                display: "block",
+              }}
+            />
+          </button>
 
-        <header style={{ marginBottom: 24 }}>
-          <h1 style={{ marginBottom: 8 }}>My Listings</h1>
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard")}
+            style={{
+              border: "1px solid #d7dcd5",
+              background: "white",
+              padding: "10px 16px",
+              borderRadius: "10px",
+              cursor: "pointer",
+            }}
+          >
+            Dashboard
+          </button>
+        </header>
+
+        <section style={{ marginTop: "28px" }}>
+          <h1>My Listings</h1>
 
           <p
             style={{
               color: "#697067",
-              margin: 0,
+              lineHeight: 1.5,
             }}
           >
-            Manage everything you have listed on NagaSphere.
+            Manage the products and services you have listed
+            on NagaSphere.
           </p>
-        </header>
+
+          <button
+            type="button"
+            onClick={() => router.push("/listing/create")}
+            style={{
+              marginTop: "10px",
+              border: 0,
+              background: "#18251b",
+              color: "white",
+              padding: "12px 18px",
+              borderRadius: "10px",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            Create Listing
+          </button>
+        </section>
 
         {message && (
           <p
             style={{
-              color: "#b42318",
-              marginBottom: 18,
+              marginTop: "20px",
+              color: "#a33",
+              background: "#fff",
+              padding: "14px",
+              borderRadius: "10px",
             }}
           >
             {message}
           </p>
         )}
 
-        <button
-          type="button"
-          onClick={() => router.push("/create-listing")}
+        <section
           style={{
-            width: "100%",
-            padding: 14,
-            marginBottom: 20,
-            border: 0,
-            borderRadius: 10,
-            background: "#18251b",
-            color: "#fff",
-            fontWeight: 600,
+            display: "grid",
+            gap: "18px",
+            marginTop: "28px",
           }}
         >
-          + Create New Listing
-        </button>
-
-        {listings.length === 0 ? (
-          <section
-            style={{
-              background: "#fff",
-              padding: 32,
-              borderRadius: 16,
-              textAlign: "center",
-            }}
-          >
-            <h2>No listings yet</h2>
-
-            <p style={{ color: "#697067" }}>
-              Create your first listing to start offering something locally.
-            </p>
-          </section>
-        ) : (
-          <div
-            style={{
-              display: "grid",
-              gap: 18,
-            }}
-          >
-            {listings.map((listing) => (
+          {listings.length === 0 ? (
+            <div
+              style={{
+                background: "white",
+                padding: "28px",
+                borderRadius: "18px",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+              }}
+            >
+              <h2>No listings yet</h2>
+              <p style={{ color: "#697067" }}>
+                Create your first listing to start reaching
+                customers across Nagaland.
+              </p>
+            </div>
+          ) : (
+            listings.map((listing) => (
               <article
                 key={listing.id}
                 style={{
-                  background: "#fff",
-                  padding: 22,
-                  borderRadius: 16,
+                  background: "white",
+                  padding: "24px",
+                  borderRadius: "18px",
                   boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
                 }}
               >
-                <div
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.push(`/listing/${listing.id}`)
+                  }
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: 12,
-                    flexWrap: "wrap",
+                    border: 0,
+                    background: "transparent",
+                    padding: 0,
+                    cursor: "pointer",
+                    textAlign: "left",
                   }}
                 >
-                  <div>
-                    <p
-                      style={{
-                        margin: "0 0 6px",
-                        color: "#166534",
-                        fontWeight: 700,
-                      }}
-                    >
-                      {listing.type === "have" ? "I Have" : "I Need"} ·{" "}
-                      {categories[listing.category_id ?? ""] ??
-                        "Uncategorized"}
-                    </p>
-
-                    {/* LISTING TITLE - NOW OPENS THE LISTING PAGE */}
-                    <h2
-                      style={{
-                        margin: "0 0 8px",
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={() =>
-                          router.push("/listing/" + listing.id)
-                        }
-                        style={{
-                          padding: 0,
-                          border: 0,
-                          background: "transparent",
-                          color: "inherit",
-                          font: "inherit",
-                          fontWeight: "inherit",
-                          textAlign: "left",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {listing.title}
-                      </button>
-                    </h2>
-
-                    {listing.description && (
-                      <p
-                        style={{
-                          color: "#4b5563",
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {listing.description}
-                      </p>
-                    )}
-
-                    <p
-                      style={{
-                        color: "#697067",
-                        marginBottom: 0,
-                      }}
-                    >
-                      {listing.quantity ?? "—"} {listing.unit ?? ""} ·{" "}
-                      {listing.budget_min != null
-                        ? "₹" +
-                          listing.budget_min.toLocaleString("en-IN")
-                        : "Price on request"}{" "}
-                      · {listing.city || listing.state || "Nagaland"}
-                    </p>
-                  </div>
-
-                  <span
+                  <h2
                     style={{
-                      alignSelf: "flex-start",
-                      padding: "7px 11px",
-                      borderRadius: 999,
-                      background:
-                        listing.status === "active"
-                          ? "#dcfce7"
-                          : listing.status === "paused"
-                            ? "#fef3c7"
-                            : "#e5e7eb",
-                      color: "#374151",
-                      fontSize: 13,
-                      fontWeight: 700,
+                      marginTop: 0,
+                      marginBottom: "8px",
+                      color: "#18251b",
                     }}
                   >
-                    {listing.status}
-                  </span>
-                </div>
+                    {listing.title}
+                  </h2>
+                </button>
+
+                <p
+                  style={{
+                    color: "#697067",
+                    marginTop: 0,
+                  }}
+                >
+                  {listing.description}
+                </p>
+
+                <p>
+                  <strong>Category:</strong>{" "}
+                  {getCategoryName(listing.category_id)}
+                </p>
+
+                <p>
+                  <strong>Type:</strong>{" "}
+                  {listing.type === "have"
+                    ? "I Have"
+                    : "I Need"}
+                </p>
+
+                {listing.quantity !== null && (
+                  <p>
+                    <strong>Quantity:</strong>{" "}
+                    {listing.quantity}{" "}
+                    {listing.unit ?? ""}
+                  </p>
+                )}
+
+                {listing.budget_min !== null && (
+                  <p>
+                    <strong>Price:</strong> ₹
+                    {listing.budget_min}
+                    {listing.budget_max !== null &&
+                    listing.budget_max !== listing.budget_min
+                      ? ` - ₹${listing.budget_max}`
+                      : ""}
+                  </p>
+                )}
+
+                {(listing.city || listing.state) && (
+                  <p>
+                    📍 {listing.city ?? ""}
+                    {listing.city && listing.state ? ", " : ""}
+                    {listing.state ?? ""}
+                  </p>
+                )}
+
+                <p>
+                  <strong>Status:</strong> {listing.status}
+                </p>
 
                 <div
                   style={{
                     display: "flex",
-                    gap: 10,
                     flexWrap: "wrap",
-                    marginTop: 18,
+                    gap: "10px",
+                    marginTop: "18px",
                   }}
                 >
                   <button
                     type="button"
                     onClick={() =>
-                      router.push("/edit-listing/" + listing.id)
+                      router.push(
+                        `/listing/${listing.id}/edit`
+                      )
                     }
-                    disabled={busyId === listing.id}
+                    style={{
+                      border: "1px solid #d7dcd5",
+                      background: "white",
+                      padding: "10px 14px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                    }}
                   >
                     Edit
                   </button>
 
-                  {listing.status === "active" && (
+                  {listing.status === "active" ? (
                     <button
                       type="button"
                       onClick={() =>
-                        changeStatus(listing.id, "paused")
+                        updateStatus(listing.id, "paused")
                       }
-                      disabled={busyId === listing.id}
+                      style={{
+                        border: "1px solid #d7dcd5",
+                        background: "white",
+                        padding: "10px 14px",
+                        borderRadius: "10px",
+                        cursor: "pointer",
+                      }}
                     >
                       Pause
                     </button>
-                  )}
-
-                  {listing.status === "paused" && (
+                  ) : listing.status === "paused" ? (
                     <button
                       type="button"
                       onClick={() =>
-                        changeStatus(listing.id, "active")
+                        updateStatus(listing.id, "active")
                       }
-                      disabled={busyId === listing.id}
+                      style={{
+                        border: "1px solid #d7dcd5",
+                        background: "white",
+                        padding: "10px 14px",
+                        borderRadius: "10px",
+                        cursor: "pointer",
+                      }}
                     >
                       Resume
                     </button>
-                  )}
+                  ) : null}
 
-                  {listing.status !== "closed" && (
+                  {listing.status === "closed" ? (
                     <button
                       type="button"
                       onClick={() =>
-                        changeStatus(listing.id, "closed")
+                        updateStatus(listing.id, "active")
                       }
-                      disabled={busyId === listing.id}
+                      style={{
+                        border: "1px solid #d7dcd5",
+                        background: "white",
+                        padding: "10px 14px",
+                        borderRadius: "10px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Reopen
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateStatus(listing.id, "closed")
+                      }
+                      style={{
+                        border: "1px solid #d7dcd5",
+                        background: "white",
+                        padding: "10px 14px",
+                        borderRadius: "10px",
+                        cursor: "pointer",
+                      }}
                     >
                       Close
                     </button>
                   )}
 
-                  {listing.status === "closed" && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        changeStatus(listing.id, "active")
-                      }
-                      disabled={busyId === listing.id}
-                    >
-                      Reopen
-                    </button>
-                  )}
-
                   <button
                     type="button"
-                    onClick={() => deleteListing(listing.id)}
-                    disabled={busyId === listing.id}
+                    onClick={() =>
+                      deleteListing(listing.id)
+                    }
                     style={{
-                      color: "#b42318",
+                      border: "1px solid #d7dcd5",
+                      background: "white",
+                      padding: "10px 14px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
                     }}
                   >
                     Delete
                   </button>
                 </div>
               </article>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </section>
       </div>
     </main>
   );
