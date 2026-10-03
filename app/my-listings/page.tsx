@@ -91,17 +91,28 @@ export default function MyListingsPage() {
     setBusyId(id);
     setMessage("");
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("posts")
       .update({ status })
-      .eq("id", id);
+      .eq("id", id)
+      .select("id,status")
+      .maybeSingle();
 
     if (error) {
       setMessage(error.message);
+    } else if (!data) {
+      setMessage(
+        "The listing status was not changed. Please try again."
+      );
     } else {
       setListings((current) =>
         current.map((listing) =>
-          listing.id === id ? { ...listing, status } : listing
+          listing.id === id
+            ? {
+                ...listing,
+                status: data.status as Listing["status"],
+              }
+            : listing
         )
       );
     }
@@ -172,9 +183,7 @@ export default function MyListingsPage() {
         </button>
 
         <header style={{ marginBottom: 24 }}>
-          <h1 style={{ marginBottom: 8 }}>
-            My Listings
-          </h1>
+          <h1 style={{ marginBottom: 8 }}>My Listings</h1>
 
           <p
             style={{
@@ -226,8 +235,7 @@ export default function MyListingsPage() {
             <h2>No listings yet</h2>
 
             <p style={{ color: "#697067" }}>
-              Create your first listing to start offering
-              something locally.
+              Create your first listing to start offering something locally.
             </p>
           </section>
         ) : (
@@ -244,8 +252,7 @@ export default function MyListingsPage() {
                   background: "#fff",
                   padding: 22,
                   borderRadius: 16,
-                  boxShadow:
-                    "0 8px 30px rgba(0,0,0,0.05)",
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
                 }}
               >
                 <div
@@ -264,13 +271,9 @@ export default function MyListingsPage() {
                         fontWeight: 700,
                       }}
                     >
-                      {listing.type === "have"
-                        ? "I Have"
-                        : "I Need"}{" "}
-                      ·{" "}
-                      {categories[
-                        listing.category_id ?? ""
-                      ] ?? "Uncategorized"}
+                      {listing.type === "have" ? "I Have" : "I Need"} ·{" "}
+                      {categories[listing.category_id ?? ""] ??
+                        "Uncategorized"}
                     </p>
 
                     <h2
@@ -298,18 +301,12 @@ export default function MyListingsPage() {
                         marginBottom: 0,
                       }}
                     >
-                      {listing.quantity ?? "—"}{" "}
-                      {listing.unit ?? ""} ·{" "}
+                      {listing.quantity ?? "—"} {listing.unit ?? ""} ·{" "}
                       {listing.budget_min != null
                         ? "₹" +
-                          listing.budget_min.toLocaleString(
-                            "en-IN"
-                          )
+                          listing.budget_min.toLocaleString("en-IN")
                         : "Price on request"}{" "}
-                      ·{" "}
-                      {listing.city ||
-                        listing.state ||
-                        "Nagaland"}
+                      · {listing.city || listing.state || "Nagaland"}
                     </p>
                   </div>
 
@@ -344,9 +341,7 @@ export default function MyListingsPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      router.push(
-                        "/edit-listing/" + listing.id
-                      )
+                      router.push("/edit-listing/" + listing.id)
                     }
                     disabled={busyId === listing.id}
                   >
@@ -357,10 +352,7 @@ export default function MyListingsPage() {
                     <button
                       type="button"
                       onClick={() =>
-                        changeStatus(
-                          listing.id,
-                          "paused"
-                        )
+                        changeStatus(listing.id, "paused")
                       }
                       disabled={busyId === listing.id}
                     >
@@ -372,10 +364,7 @@ export default function MyListingsPage() {
                     <button
                       type="button"
                       onClick={() =>
-                        changeStatus(
-                          listing.id,
-                          "active"
-                        )
+                        changeStatus(listing.id, "active")
                       }
                       disabled={busyId === listing.id}
                     >
@@ -387,10 +376,7 @@ export default function MyListingsPage() {
                     <button
                       type="button"
                       onClick={() =>
-                        changeStatus(
-                          listing.id,
-                          "closed"
-                        )
+                        changeStatus(listing.id, "closed")
                       }
                       disabled={busyId === listing.id}
                     >
@@ -402,10 +388,7 @@ export default function MyListingsPage() {
                     <button
                       type="button"
                       onClick={() =>
-                        changeStatus(
-                          listing.id,
-                          "active"
-                        )
+                        changeStatus(listing.id, "active")
                       }
                       disabled={busyId === listing.id}
                     >
@@ -415,9 +398,7 @@ export default function MyListingsPage() {
 
                   <button
                     type="button"
-                    onClick={() =>
-                      deleteListing(listing.id)
-                    }
+                    onClick={() => deleteListing(listing.id)}
                     disabled={busyId === listing.id}
                     style={{
                       color: "#b42318",
