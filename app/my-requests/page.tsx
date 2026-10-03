@@ -104,9 +104,7 @@ export default function MyRequestsPage() {
     if (error) {
       setMessage(error.message);
     } else if (!data) {
-      setMessage(
-        "The request status was not changed. Please try again."
-      );
+      setMessage("The request status was not changed. Please try again.");
     } else {
       setRequests((current) =>
         current.map((request) =>
@@ -264,4 +262,180 @@ export default function MyRequestsPage() {
               <article
                 key={request.id}
                 style={{
-                  background
+                  background: "#fff",
+                  padding: 22,
+                  borderRadius: 16,
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    gap: 12,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <p
+                      style={{
+                        margin: "0 0 6px",
+                        color: "#166534",
+                        fontWeight: 700,
+                      }}
+                    >
+                      I Need ·{" "}
+                      {categories[request.category_id ?? ""] ??
+                        "Uncategorized"}
+                    </p>
+
+                    <h2
+                      style={{
+                        margin: "0 0 8px",
+                      }}
+                    >
+                      {request.title}
+                    </h2>
+
+                    {request.description && (
+                      <p
+                        style={{
+                          color: "#4b5563",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {request.description}
+                      </p>
+                    )}
+
+                    <p
+                      style={{
+                        color: "#697067",
+                        marginBottom: 0,
+                      }}
+                    >
+                      {request.quantity ?? "—"}{" "}
+                      {request.unit ?? ""} ·{" "}
+                      {request.budget_min != null
+                        ? "Budget ₹" +
+                          request.budget_min.toLocaleString("en-IN")
+                        : "Budget not specified"}{" "}
+                      · {request.city || request.state || "Nagaland"}
+                    </p>
+                  </div>
+
+                  <span
+                    style={{
+                      alignSelf: "flex-start",
+                      padding: "7px 11px",
+                      borderRadius: 999,
+                      background:
+                        request.status === "active"
+                          ? "#dcfce7"
+                          : request.status === "paused"
+                            ? "#fef3c7"
+                            : "#e5e7eb",
+                      color: "#374151",
+                      fontSize: 13,
+                      fontWeight: 700,
+                    }}
+                  >
+                    {request.status}
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    flexWrap: "wrap",
+                    marginTop: 18,
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      router.push("/edit-listing/" + request.id)
+                    }
+                    disabled={busyId === request.id}
+                  >
+                    Edit Request
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      router.push("/listing/" + request.id)
+                    }
+                    disabled={busyId === request.id}
+                  >
+                    View Request
+                  </button>
+
+                  {request.status === "active" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        changeStatus(request.id, "paused")
+                      }
+                      disabled={busyId === request.id}
+                    >
+                      Pause
+                    </button>
+                  )}
+
+                  {request.status === "paused" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        changeStatus(request.id, "active")
+                      }
+                      disabled={busyId === request.id}
+                    >
+                      Resume
+                    </button>
+                  )}
+
+                  {request.status !== "closed" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        changeStatus(request.id, "closed")
+                      }
+                      disabled={busyId === request.id}
+                    >
+                      Close
+                    </button>
+                  )}
+
+                  {request.status === "closed" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        changeStatus(request.id, "active")
+                      }
+                      disabled={busyId === request.id}
+                    >
+                      Reopen
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => deleteRequest(request.id)}
+                    disabled={busyId === request.id}
+                    style={{
+                      color: "#b42318",
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
