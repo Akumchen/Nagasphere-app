@@ -50,6 +50,29 @@ export default function DashboardPage() {
     );
   }
 
+  const cards = [
+    {
+      title: "My Listings",
+      description: "Manage the products and services you offer.",
+      path: "/my-listings",
+    },
+    {
+      title: "My Requests",
+      description: "Manage the products and services you are looking for.",
+      path: "/my-requests",
+    },
+    {
+      title: "Messages",
+      description: "Connect with buyers and sellers.",
+      path: null,
+    },
+    {
+      title: "Profile",
+      description: "Complete and manage your NagaSphere profile.",
+      path: "/profile",
+    },
+  ];
+
   return (
     <main
       style={{
@@ -86,6 +109,7 @@ export default function DashboardPage() {
           />
 
           <button
+            type="button"
             onClick={handleLogout}
             style={{
               border: "1px solid #d7dcd5",
@@ -104,7 +128,12 @@ export default function DashboardPage() {
             Welcome to NagaSphere
           </h1>
 
-          <p style={{ color: "#697067" }}>
+          <p
+            style={{
+              color: "#697067",
+              margin: 0,
+            }}
+          >
             {email}
           </p>
         </section>
@@ -118,65 +147,46 @@ export default function DashboardPage() {
             marginTop: "28px",
           }}
         >
-          <div
-  onClick={() => router.push("/my-listings")}
-  style={{
-    background: "white",
-    padding: "24px",
-    borderRadius: "18px",
-    boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-    cursor: "pointer",
-  }}
->
-            <h2>My Listings</h2>
-            <p style={{ color: "#697067" }}>
-              Manage the products and services you offer.
-            </p>
-          </div>
+          {cards.map((card) => (
+            <div
+              key={card.title}
+              onClick={() => {
+                if (card.path) {
+                  router.push(card.path);
+                }
+              }}
+              role={card.path ? "button" : undefined}
+              tabIndex={card.path ? 0 : undefined}
+              onKeyDown={(event) => {
+                if (
+                  card.path &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  router.push(card.path);
+                }
+              }}
+              style={{
+                background: "white",
+                padding: "24px",
+                borderRadius: "18px",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
+                cursor: card.path ? "pointer" : "default",
+                transition: "transform 0.15s ease",
+              }}
+            >
+              <h2 style={{ marginTop: 0 }}>{card.title}</h2>
 
-          <div
-            style={{
-              background: "white",
-              padding: "24px",
-              borderRadius: "18px",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-            }}
-          >
-            <h2>My Requests</h2>
-            <p style={{ color: "#697067" }}>
-              Find products and services you need.
-            </p>
-          </div>
-
-          <div
-            style={{
-              background: "white",
-              padding: "24px",
-              borderRadius: "18px",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-            }}
-          >
-            <h2>Messages</h2>
-            <p style={{ color: "#697067" }}>
-              Connect with buyers and sellers.
-            </p>
-          </div>
-
-          <div
-            onClick={() => router.push("/profile")}
-            style={{
-              background: "white",
-              padding: "24px",
-              borderRadius: "18px",
-              boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-              cursor: "pointer",
-            }}
-          >
-            <h2>Profile</h2>
-            <p style={{ color: "#697067" }}>
-              Complete and manage your NagaSphere profile.
-            </p>
-          </div>
+              <p
+                style={{
+                  color: "#697067",
+                  lineHeight: 1.5,
+                  marginBottom: 0,
+                }}
+              >
+                {card.description}
+              </p>
+            </div>
+          ))}
         </section>
       </div>
     </main>
