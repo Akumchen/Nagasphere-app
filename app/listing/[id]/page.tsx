@@ -32,30 +32,53 @@ type Seller = {
 
 const supabase = createClient();
 
-function formatPrice(
-  budgetMin: number | string | null,
-  budgetMax: number | string | null,
-  unit: string | null
+function isRequest(type: string) {
+  const value = type.toLowerCase();
+
+  return (
+    value.includes("need") ||
+    value.includes("request")
+  );
+}
+
+function formatAmount(
+  minValue: number | string | null,
+  maxValue: number | string | null
 ) {
-  if (budgetMin == null && budgetMax == null) {
-    return "Price on request";
+  if (minValue == null && maxValue == null) {
+    return "Not specified";
   }
 
-  const min = budgetMin == null ? null : Number(budgetMin);
-  const max = budgetMax == null ? null : Number(budgetMax);
+  const min =
+    minValue == null ? null : Number(minValue);
 
-  if (min == null || Number.isNaN(min)) {
-    return "Price on request";
+  const max =
+    maxValue == null ? null : Number(maxValue);
+
+  if (min != null && Number.isNaN(min)) {
+    return "Not specified";
   }
 
-  const price =
-    max != null && !Number.isNaN(max) && max !== min
-      ? `₹${min.toLocaleString("en-IN")} - ₹${max.toLocaleString(
-          "en-IN"
-        )}`
-      : `₹${min.toLocaleString("en-IN")}`;
+  if (
+    max != null &&
+    !Number.isNaN(max) &&
+    min != null &&
+    max !== min
+  ) {
+    return `₹${min.toLocaleString(
+      "en-IN"
+    )} - ₹${max.toLocaleString("en-IN")}`;
+  }
 
-  return unit ? `${price} / ${unit}` : price;
+  if (min != null) {
+    return `₹${min.toLocaleString("en-IN")}`;
+  }
+
+  if (max != null && !Number.isNaN(max)) {
+    return `₹${max.toLocaleString("en-IN")}`;
+  }
+
+  return "Not specified";
 }
 
 export default function ListingDetailPage() {
@@ -63,11 +86,20 @@ export default function ListingDetailPage() {
   const router = useRouter();
   const id = params?.id;
 
-  const [listing, setListing] = useState<Listing | null>(null);
-  const [category, setCategory] = useState<Category | null>(null);
-  const [seller, setSeller] = useState<Seller | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [listing, setListing] =
+    useState<Listing | null>(null);
+
+  const [category, setCategory] =
+    useState<Category | null>(null);
+
+  const [seller, setSeller] =
+    useState<Seller | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -76,7 +108,10 @@ export default function ListingDetailPage() {
       setLoading(true);
       setError("");
 
-      const { data, error: listingError } = await supabase
+      const {
+        data,
+        error: listingError,
+      } = await supabase
         .from("posts")
         .select(
           "id,owner_id,type,title,description,quantity,unit,budget_min,budget_max,city,state,category_id"
@@ -87,7 +122,9 @@ export default function ListingDetailPage() {
 
       if (listingError) {
         console.error(listingError);
-        setError("Unable to load this listing right now.");
+        setError(
+          "Unable to load this listing right now."
+        );
         setLoading(false);
         return;
       }
@@ -101,30 +138,53 @@ export default function ListingDetailPage() {
       }
 
       const loadedListing = data as Listing;
+
       setListing(loadedListing);
 
       if (loadedListing.category_id) {
-        const { data: categoryData, error: categoryError } =
-          await supabase
-            .from("categories")
-            .select("id,name")
-            .eq("id", loadedListing.category_id)
-            .maybeSingle();
+        const {
+          data: categoryData,
+          error: categoryError,
+        } = await supabase
+          .from("categories")
+          .select("id,name")
+          .eq(
+            "id",
+            loadedListing.category_id
+          )
+          .maybeSingle();
 
-        if (!categoryError && categoryData) {
-          setCategory(categoryData as Category);
+        if (
+          !categoryError &&
+          categoryData
+        ) {
+          setCategory(
+            categoryData as Category
+          );
         }
       }
 
-      const { data: sellerData, error: sellerError } =
-        await supabase
-          .from("public_seller_profiles")
-          .select("id,full_name,avatar_url")
-          .eq("id", loadedListing.owner_id)
-          .maybeSingle();
+      const {
+        data: sellerData,
+        error: sellerError,
+      } = await supabase
+        .from("public_seller_profiles")
+        .select(
+          "id,full_name,avatar_url"
+        )
+        .eq(
+          "id",
+          loadedListing.owner_id
+        )
+        .maybeSingle();
 
-      if (!sellerError && sellerData) {
-        setSeller(sellerData as Seller);
+      if (
+        !sellerError &&
+        sellerData
+      ) {
+        setSeller(
+          sellerData as Seller
+        );
       }
 
       setLoading(false);
@@ -156,275 +216,356 @@ export default function ListingDetailPage() {
           margin: "0 auto",
         }}
       >
-        <button onClick={() => router.push("/")}>
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+        >
           ← Back to marketplace
         </button>
 
-        <h1 style={{ marginTop: "32px" }}>
+        <h1
+          style={{
+            marginTop: "32px",
+          }}
+        >
           Listing unavailable
         </h1>
 
-        <p style={{ color: "#697067" }}>
-          {error || "This listing is no longer available."}
+        <p
+          style={{
+            color: "#697067",
+          }}
+        >
+          {error ||
+            "This listing is no longer available."}
         </p>
       </main>
     );
   }
 
+  const request = isRequest(
+    listing.type
+  );
+
   const location =
     listing.city && listing.state
       ? `${listing.city}, ${listing.state}`
-      : listing.city || listing.state || "Nagaland";
+      : listing.city ||
+        listing.state ||
+        "Nagaland";
 
-  const listingType =
-    listing.type.toLowerCase().includes("need") ||
-    listing.type.toLowerCase().includes("request")
-      ? "Looking for"
-      : "Offering";
+  const listingType = request
+    ? "Looking for"
+    : "Offering";
 
   const sellerName =
-    seller?.full_name?.trim() || "NagaSphere Seller";
+    seller?.full_name?.trim() ||
+    "NagaSphere Seller";
+
+  const amountLabel = request
+    ? "Budget"
+    : "Price";
+
+  const amount = formatAmount(
+    listing.budget_min,
+    listing.budget_max
+  );
 
   return (
     <main
       style={{
+        minHeight: "100vh",
+        background: "#f6f7f2",
         padding: "24px",
-        maxWidth: "900px",
-        margin: "0 auto",
       }}
     >
-      <header
+      <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "16px",
-          marginBottom: "28px",
+          maxWidth: "900px",
+          margin: "0 auto",
         }}
       >
-        <button onClick={() => router.back()}>
-          ← Back
-        </button>
-
-        <button onClick={() => router.push("/")}>
-          Marketplace
-        </button>
-      </header>
-
-      <section
-        style={{
-          background: "#fff",
-          border: "1px solid #e1ddd2",
-          borderRadius: "18px",
-          padding: "24px",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.04)",
-        }}
-      >
-        <div
+        <header
           style={{
-            height: "180px",
-            borderRadius: "14px",
-            background: "#dfe5d5",
-            display: "grid",
-            placeItems: "center",
-            fontSize: "64px",
-            fontWeight: 800,
-            color: "#59674f",
-            marginBottom: "24px",
+            display: "flex",
+            justifyContent:
+              "space-between",
+            alignItems: "center",
+            gap: "16px",
+            marginBottom: "28px",
           }}
         >
-          {listing.title.charAt(0).toUpperCase()}
-        </div>
+          <button
+            type="button"
+            onClick={() => router.back()}
+          >
+            ← Back
+          </button>
 
-        <p
+          <button
+            type="button"
+            onClick={() =>
+              router.push("/")
+            }
+          >
+            Marketplace
+          </button>
+        </header>
+
+        <section
           style={{
-            margin: "0 0 8px",
-            color: "#697067",
-            fontSize: "13px",
-            textTransform: "uppercase",
-            letterSpacing: "0.08em",
+            background: "#fff",
+            border:
+              "1px solid #e1ddd2",
+            borderRadius: "18px",
+            padding: "24px",
+            boxShadow:
+              "0 8px 30px rgba(0,0,0,0.04)",
           }}
         >
-          {listingType}
-        </p>
-
-        <h1 style={{ margin: "0 0 12px" }}>
-          {listing.title}
-        </h1>
-
-        <p
-          style={{
-            margin: "0 0 18px",
-            color: "#596057",
-          }}
-        >
-          📍 {location}
-        </p>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(150px, 1fr))",
-            gap: "12px",
-            marginBottom: "24px",
-          }}
-        >
-          <div>
-            <small style={{ color: "#697067" }}>
-              Price
-            </small>
-
-            <strong
-              style={{
-                display: "block",
-                marginTop: "4px",
-              }}
-            >
-              {formatPrice(
-                listing.budget_min,
-                listing.budget_max,
-                listing.unit
-              )}
-            </strong>
+          <div
+            style={{
+              height: "180px",
+              borderRadius: "14px",
+              background: "#dfe5d5",
+              display: "grid",
+              placeItems: "center",
+              fontSize: "64px",
+              fontWeight: 800,
+              color: "#59674f",
+              marginBottom: "24px",
+            }}
+          >
+            {listing.title
+              .charAt(0)
+              .toUpperCase()}
           </div>
-
-          <div>
-            <small style={{ color: "#697067" }}>
-              Quantity
-            </small>
-
-            <strong
-              style={{
-                display: "block",
-                marginTop: "4px",
-              }}
-            >
-              {listing.quantity != null
-                ? `${listing.quantity}${
-                    listing.unit ? ` ${listing.unit}` : ""
-                  }`
-                : "Not specified"}
-            </strong>
-          </div>
-
-          <div>
-            <small style={{ color: "#697067" }}>
-              Category
-            </small>
-
-            <strong
-              style={{
-                display: "block",
-                marginTop: "4px",
-              }}
-            >
-              {category?.name || "Other"}
-            </strong>
-          </div>
-        </div>
-
-        <div
-          style={{
-            borderTop: "1px solid #e8e5dd",
-            paddingTop: "22px",
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>
-            Description
-          </h2>
 
           <p
             style={{
-              whiteSpace: "pre-wrap",
-              lineHeight: 1.7,
-              color: "#40463f",
+              margin: "0 0 8px",
+              color: "#697067",
+              fontSize: "13px",
+              textTransform:
+                "uppercase",
+              letterSpacing:
+                "0.08em",
+              fontWeight: 700,
             }}
           >
-            {listing.description ||
-              "No description provided."}
+            {listingType}
           </p>
-        </div>
 
-        <div
-          style={{
-            marginTop: "28px",
-            padding: "20px",
-            borderRadius: "14px",
-            background: "#f4f5ef",
-            border: "1px solid #e2e5da",
-          }}
-        >
-          <h2 style={{ marginTop: 0 }}>
-            Seller Information
-          </h2>
+          <h1
+            style={{
+              margin: "0 0 12px",
+            }}
+          >
+            {listing.title}
+          </h1>
+
+          <p
+            style={{
+              margin: "0 0 18px",
+              color: "#596057",
+            }}
+          >
+            📍 {location}
+          </p>
 
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "14px",
-              marginBottom: "16px",
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(150px, 1fr))",
+              gap: "12px",
+              marginBottom: "24px",
             }}
           >
-            <div
-              style={{
-                width: "52px",
-                height: "52px",
-                borderRadius: "50%",
-                background: "#dfe5d5",
-                display: "grid",
-                placeItems: "center",
-                fontWeight: 700,
-                fontSize: "20px",
-                color: "#59674f",
-              }}
-            >
-              {sellerName.charAt(0).toUpperCase()}
-            </div>
-
             <div>
+              <small
+                style={{
+                  color: "#697067",
+                }}
+              >
+                {amountLabel}
+              </small>
+
               <strong
                 style={{
                   display: "block",
-                  fontSize: "17px",
+                  marginTop: "4px",
                 }}
               >
-                {sellerName}
+                {amount}
               </strong>
+            </div>
 
-              <span
+            <div>
+              <small
                 style={{
                   color: "#697067",
-                  fontSize: "14px",
                 }}
               >
-                NagaSphere Seller
-              </span>
+                Quantity
+              </small>
+
+              <strong
+                style={{
+                  display: "block",
+                  marginTop: "4px",
+                }}
+              >
+                {listing.quantity !=
+                null
+                  ? `${listing.quantity}${
+                      listing.unit
+                        ? ` ${listing.unit}`
+                        : ""
+                    }`
+                  : "Not specified"}
+              </strong>
+            </div>
+
+            <div>
+              <small
+                style={{
+                  color: "#697067",
+                }}
+              >
+                Category
+              </small>
+
+              <strong
+                style={{
+                  display: "block",
+                  marginTop: "4px",
+                }}
+              >
+                {category?.name ||
+                  "Other"}
+              </strong>
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              alert(
-                "Messaging will be connected in the NagaSphere messaging section."
-              );
-            }}
+          <div
             style={{
-              width: "100%",
-              padding: "13px 16px",
-              border: "none",
-              borderRadius: "10px",
-              background: "#59674f",
-              color: "#fff",
-              fontWeight: 700,
-              cursor: "pointer",
+              borderTop:
+                "1px solid #e8e5dd",
+              paddingTop: "22px",
             }}
           >
-            Contact Seller
-          </button>
-        </div>
-      </section>
+            <h2
+              style={{
+                marginTop: 0,
+              }}
+            >
+              Description
+            </h2>
+
+            <p
+              style={{
+                whiteSpace:
+                  "pre-wrap",
+                lineHeight: 1.7,
+                color: "#40463f",
+              }}
+            >
+              {listing.description ||
+                "No description provided."}
+            </p>
+          </div>
+
+          <div
+            style={{
+              marginTop: "28px",
+              padding: "20px",
+              borderRadius: "14px",
+              background: "#f4f5ef",
+              border:
+                "1px solid #e2e5da",
+            }}
+          >
+            <h2
+              style={{
+                marginTop: 0,
+              }}
+            >
+              Seller Information
+            </h2>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "14px",
+                marginBottom: "16px",
+              }}
+            >
+              <div
+                style={{
+                  width: "52px",
+                  height: "52px",
+                  borderRadius: "50%",
+                  background: "#dfe5d5",
+                  display: "grid",
+                  placeItems: "center",
+                  fontWeight: 700,
+                  fontSize: "20px",
+                  color: "#59674f",
+                }}
+              >
+                {sellerName
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
+
+              <div>
+                <strong
+                  style={{
+                    display: "block",
+                    fontSize: "17px",
+                  }}
+                >
+                  {sellerName}
+                </strong>
+
+                <span
+                  style={{
+                    color: "#697067",
+                    fontSize: "14px",
+                  }}
+                >
+                  NagaSphere Seller
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                alert(
+                  "Messaging will be connected in the NagaSphere messaging section."
+                );
+              }}
+              style={{
+                width: "100%",
+                padding:
+                  "13px 16px",
+                border: "none",
+                borderRadius: "10px",
+                background:
+                  "#59674f",
+                color: "#fff",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Contact Seller
+            </button>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
