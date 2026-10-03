@@ -173,15 +173,57 @@ export default function MyRequestsPage() {
           margin: "0 auto",
         }}
       >
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard")}
+        <header
           style={{
-            marginBottom: 18,
+            background: "#fff",
+            borderRadius: 20,
+            padding: "18px 22px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+            marginBottom: 24,
           }}
         >
-          ← Back to Dashboard
-        </button>
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            aria-label="Go to NagaSphere home"
+            style={{
+              border: 0,
+              background: "transparent",
+              padding: 0,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src="/nagasphere-logo.png"
+              alt="NagaSphere"
+              style={{
+                width: 150,
+                height: "auto",
+                display: "block",
+              }}
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/dashboard")}
+            style={{
+              border: "1px solid #d7dcd5",
+              background: "#fff",
+              padding: "10px 16px",
+              borderRadius: 10,
+              cursor: "pointer",
+            }}
+          >
+            Dashboard
+          </button>
+        </header>
 
         <header style={{ marginBottom: 24 }}>
           <h1 style={{ marginBottom: 8 }}>My Requests</h1>
