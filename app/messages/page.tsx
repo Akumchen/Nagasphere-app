@@ -22,6 +22,7 @@ function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const conversationId = searchParams.get("conversation");
+
   const supabase = useMemo(() => createClient(), []);
 
   const [userId, setUserId] = useState<string | null>(null);
@@ -36,22 +37,23 @@ function MessagesContent() {
   useEffect(() => {
     let mounted = true;
 
-    async function load() {
+    async function loadConversation() {
       setLoading(true);
       setError("");
 
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-      if (!session?.user) {
+      if (authError || !user) {
         router.push("/auth");
         return;
       }
 
       if (!mounted) return;
 
-      setUserId(session.user.id);
+      setUserId(user.id);
 
       if (!conversationId) {
         setError("No conversation was selected.");
@@ -59,27 +61,32 @@ function MessagesContent() {
         return;
       }
 
+      // Verify that the current user belongs to this conversation.
       const { data: membership, error: memberError } = await supabase
         .from("conversation_members")
         .select("user_id")
         .eq("conversation_id", conversationId);
 
       if (memberError) {
-        setError("Unable to open this conversation.");
+        console.error("Membership error:", memberError);
+        setError(
+          `Unable to open this conversation: ${memberError.message}`
+        );
         setLoading(false);
         return;
       }
 
-      const memberIds = (membership || []).map((m) => m.user_id);
+      const memberIds = (membership || []).map((member) => member.user_id);
 
-      if (!memberIds.includes(session.user.id)) {
+      if (!memberIds.includes(user.id)) {
         setError("You do not have access to this conversation.");
         setLoading(false);
         return;
       }
 
-      const otherId = memberIds.find((id) => id !== session.user.id);
+      const otherId = memberIds.find((id) => id !== user.id);
 
+      // Load conversation.
       const { data: conversationRow, error: conversationError } =
         await supabase
           .from("conversations")
@@ -88,39 +95,51 @@ function MessagesContent() {
           .single();
 
       if (conversationError || !conversationRow) {
+        console.error("Conversation error:", conversationError);
         setError("Conversation not found.");
         setLoading(false);
         return;
       }
 
+      // Load listing title.
       let postTitle = "NagaSphere conversation";
 
       if (conversationRow.post_id) {
-        const { data: post } = await supabase
+        const { data: post, error: postError } = await supabase
           .from("posts")
           .select("title")
           .eq("id", conversationRow.post_id)
           .maybeSingle();
+
+        if (postError) {
+          console.error("Post error:", postError);
+        }
 
         if (post?.title) {
           postTitle = post.title;
         }
       }
 
+      // Load other user's name.
       let otherName = "NagaSphere user";
 
       if (otherId) {
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from("profiles")
           .select("full_name")
           .eq("id", otherId)
           .maybeSingle();
+
+        if (profileError) {
+          console.error("Profile error:", profileError);
+        }
 
         if (profile?.full_name) {
           otherName = profile.full_name;
         }
       }
 
+      // Load existing messages.
       const { data: messageRows, error: messagesError } = await supabase
         .from("messages")
         .select("id,conversation_id,sender_id,body,created_at")
@@ -128,7 +147,10 @@ function MessagesContent() {
         .order("created_at", { ascending: true });
 
       if (messagesError) {
-        setError("Unable to load messages.");
+        console.error("Messages loading error:", messagesError);
+        setError(
+          `Unable to load messages: ${messagesError.message}`
+        );
         setLoading(false);
         return;
       }
@@ -145,7 +167,7 @@ function MessagesContent() {
       setLoading(false);
     }
 
-    load();
+    loadConversation();
 
     return () => {
       mounted = false;
@@ -155,36 +177,107 @@ function MessagesContent() {
   async function sendMessage() {
     const text = body.trim();
 
-    if (!text || !conversationId || !userId || sending) {
+    if (!text) {
+      return;
+    }
+
+    if (!conversationId) {
+      setError("No conversation was selected.");
+      return;
+    }
+
+    if (sending) {
       return;
     }
 
     setSending(true);
     setError("");
 
-    const { data, error: insertError } = await supabase
-      .from("messages")
-      .insert({
-        conversation_id: conversationId,
-        sender_id: userId,
-        body: text,
-      })
-      .select("id,conversation_id,sender_id,body,created_at")
-      .single();
+    try {
+      // Get the current authenticated user immediately before sending.
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-    if (insertError) {
-      setError("Unable to send your message right now.");
+      if (authError || !user) {
+        console.error("Send authentication error:", authError);
+        setError("Your login session has expired. Please log in again.");
+        setSending(false);
+        return;
+      }
+
+      setUserId(user.id);
+
+      // Verify membership again before inserting.
+      const { data: memberCheck, error: memberError } = await supabase
+        .from("conversation_members")
+        .select("user_id")
+        .eq("conversation_id", conversationId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (memberError) {
+        console.error("Send membership error:", memberError);
+        setError(
+          `Unable to verify the conversation: ${memberError.message}`
+        );
+        setSending(false);
+        return;
+      }
+
+      if (!memberCheck) {
+        setError("You are not a member of this conversation.");
+        setSending(false);
+        return;
+      }
+
+      // Insert the message.
+      const { data: newMessage, error: insertError } = await supabase
+        .from("messages")
+        .insert({
+          conversation_id: conversationId,
+          sender_id: user.id,
+          body: text,
+        })
+        .select("id,conversation_id,sender_id,body,created_at")
+        .single();
+
+      if (insertError) {
+        console.error("Message insert error:", insertError);
+
+        setError(
+          `Message could not be sent: ${insertError.message}`
+        );
+
+        setSending(false);
+        return;
+      }
+
+      if (!newMessage) {
+        setError("The message was not returned after sending.");
+        setSending(false);
+        return;
+      }
+
+      // Add the successfully saved message to the screen.
+      setMessages((current) => [...current, newMessage as Message]);
+
+      // Clear the input.
+      setBody("");
+
       setSending(false);
-      return;
+    } catch (err) {
+      console.error("Unexpected send error:", err);
+
+      setError(
+        err instanceof Error
+          ? `Message could not be sent: ${err.message}`
+          : "An unexpected error occurred while sending the message."
+      );
+
+      setSending(false);
     }
-
-    setMessages((current) => [
-      ...current,
-      data as Message,
-    ]);
-
-    setBody("");
-    setSending(false);
   }
 
   if (loading) {
@@ -286,7 +379,12 @@ function MessagesContent() {
 
           <input
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={(e) => {
+              setBody(e.target.value);
+              if (error) {
+                setError("");
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -294,8 +392,9 @@ function MessagesContent() {
               }
             }}
             maxLength={5000}
+            disabled={sending}
             placeholder="Write a message..."
-            className="min-w-0 flex-1 rounded-xl border px-4 py-3 text-sm outline-none focus:border-black"
+            className="min-w-0 flex-1 rounded-xl border px-4 py-3 text-sm outline-none focus:border-black disabled:bg-gray-100"
           />
 
           <button
