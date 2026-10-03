@@ -392,8 +392,8 @@ export default function MyListingsPage() {
                     type="button"
                     onClick={() =>
                       router.push(
-                        `/listing/${listing.id}/edit`
-                      )
+  `/edit-listing/${listing.id}`
+)
                     }
                     style={{
                       border: "1px solid #d7dcd5",
