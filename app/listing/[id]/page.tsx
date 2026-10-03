@@ -32,166 +32,68 @@ type Seller = {
 
 const supabase = createClient();
 
-function isRequest(type: string) {
-  const value = type.toLowerCase();
-
-  return (
-    value.includes("need") ||
-    value.includes("request")
-  );
-}
-
-function formatAmount(
-  minValue: number | string | null,
-  maxValue: number | string | null
-) {
-  if (minValue == null && maxValue == null) {
-    return "Not specified";
-  }
-
-  const min =
-    minValue == null ? null : Number(minValue);
-
-  const max =
-    maxValue == null ? null : Number(maxValue);
-
-  if (min != null && Number.isNaN(min)) {
-    return "Not specified";
-  }
-
-  if (
-    max != null &&
-    !Number.isNaN(max) &&
-    min != null &&
-    max !== min
-  ) {
-    return `₹${min.toLocaleString(
-      "en-IN"
-    )} - ₹${max.toLocaleString("en-IN")}`;
-  }
-
-  if (min != null) {
-    return `₹${min.toLocaleString("en-IN")}`;
-  }
-
-  if (max != null && !Number.isNaN(max)) {
-    return `₹${max.toLocaleString("en-IN")}`;
-  }
-
-  return "Not specified";
-}
-
-export default function ListingDetailPage() {
-  const params = useParams<{ id: string }>();
+export default function ListingPage() {
+  const params = useParams();
   const router = useRouter();
-  const id = params?.id;
 
-  const [listing, setListing] =
-    useState<Listing | null>(null);
+  const id = params?.id as string;
 
-  const [category, setCategory] =
-    useState<Category | null>(null);
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [category, setCategory] = useState<Category | null>(null);
+  const [seller, setSeller] = useState<Seller | null>(null);
 
-  const [seller, setSeller] =
-    useState<Seller | null>(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [contacting, setContacting] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [contactError, setContactError] =
-    useState("");
+  const [loading, setLoading] = useState(true);
+  const [contacting, setContacting] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!id) return;
-
     async function loadListing() {
-      setLoading(true);
-      setError("");
+      if (!id) return;
 
-      const {
-        data,
-        error: listingError,
-      } = await supabase
+      setLoading(true);
+      setMessage("");
+
+      const { data: listingData, error: listingError } = await supabase
         .from("posts")
         .select(
-          "id,owner_id,type,title,description,quantity,unit,budget_min,budget_max,city,state,category_id"
+          "id, owner_id, type, title, description, quantity, unit, budget_min, budget_max, city, state, category_id"
         )
         .eq("id", id)
         .eq("status", "active")
         .maybeSingle();
 
       if (listingError) {
-        console.error(listingError);
-        setError(
-          "Unable to load this listing right now."
-        );
+        console.error("Listing load error:", listingError);
+        setMessage("Unable to load this listing.");
         setLoading(false);
         return;
       }
 
-      if (!data) {
-        setError(
-          "This listing could not be found or is no longer active."
-        );
+      if (!listingData) {
+        setMessage("This listing is no longer available.");
         setLoading(false);
         return;
       }
 
-      const loadedListing = data as Listing;
+      setListing(listingData);
 
-      setListing(loadedListing);
-
-      if (loadedListing.category_id) {
-        const {
-          data: categoryData,
-          error: categoryError,
-        } = await supabase
+      if (listingData.category_id) {
+        const { data: categoryData } = await supabase
           .from("categories")
-          .select("id,name")
-          .eq(
-            "id",
-            loadedListing.category_id
-          )
+          .select("id, name")
+          .eq("id", listingData.category_id)
           .maybeSingle();
 
-        if (
-          !categoryError &&
-          categoryData
-        ) {
-          setCategory(
-            categoryData as Category
-          );
-        }
+        setCategory(categoryData);
       }
 
-      const {
-        data: sellerData,
-        error: sellerError,
-      } = await supabase
+      const { data: sellerData } = await supabase
         .from("public_seller_profiles")
-        .select(
-          "id,full_name,avatar_url"
-        )
-        .eq(
-          "id",
-          loadedListing.owner_id
-        )
+        .select("id, full_name, avatar_url")
+        .eq("id", listingData.owner_id)
         .maybeSingle();
 
-      if (
-        !sellerError &&
-        sellerData
-      ) {
-        setSeller(
-          sellerData as Seller
-        );
-      }
+      setSeller(sellerData);
 
       setLoading(false);
     }
@@ -200,75 +102,79 @@ export default function ListingDetailPage() {
   }, [id]);
 
   async function contactSeller() {
-    if (!listing || contacting) {
-      return;
-    }
+    if (!listing || contacting) return;
 
+    setMessage("");
     setContacting(true);
-    setContactError("");
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      router.push("/auth");
-      return;
-    }
-
-    if (user.id === listing.owner_id) {
-      setContactError(
-        "You cannot contact yourself about your own listing."
-      );
-      setContacting(false);
-      return;
-    }
-
-    const {
-      data: conversationId,
-      error: conversationError,
-    } = await supabase.rpc(
-      "start_conversation",
-      {
-        p_post_id: listing.id,
+      if (authError) {
+        console.error("Auth error:", authError);
+        setMessage("Unable to verify your account. Please try again.");
+        return;
       }
-    );
 
-    if (conversationError) {
-      console.error(
-        conversationError
-      );
+      if (!user) {
+        router.push("/auth");
+        return;
+      }
 
-      setContactError(
-        conversationError.message ||
-          "Unable to start the conversation. Please try again."
-      );
+      if (user.id === listing.owner_id) {
+        setMessage("You cannot contact yourself about your own listing.");
+        return;
+      }
 
+      const { data: conversationId, error: conversationError } =
+        await supabase.rpc("start_conversation", {
+          p_post_id: listing.id,
+        });
+
+      if (conversationError) {
+        console.error("Start conversation error:", conversationError);
+
+        if (
+          conversationError.message?.toLowerCase().includes("blocked")
+        ) {
+          setMessage(
+            "This conversation cannot be started because one of the users has blocked the other."
+          );
+        } else {
+          setMessage(
+            "We couldn't start the conversation right now. Please try again."
+          );
+        }
+
+        return;
+      }
+
+      if (!conversationId) {
+        setMessage(
+          "We couldn't create the conversation. Please try again."
+        );
+        return;
+      }
+
+      router.push(`/messages?conversation=${conversationId}`);
+    } catch (error) {
+      console.error("Unexpected contact seller error:", error);
+      setMessage("Something went wrong. Please try again.");
+    } finally {
       setContacting(false);
-      return;
     }
-
-    if (!conversationId) {
-      setContactError(
-        "Unable to open the conversation. Please try again."
-      );
-
-      setContacting(false);
-      return;
-    }
-
-    router.push(
-      `/messages?conversation=${conversationId}`
-    );
   }
 
   if (loading) {
     return (
       <main
         style={{
-          padding: "32px",
           maxWidth: "900px",
           margin: "0 auto",
+          padding: "24px",
         }}
       >
         <p>Loading listing...</p>
@@ -276,379 +182,245 @@ export default function ListingDetailPage() {
     );
   }
 
-  if (error || !listing) {
+  if (!listing) {
     return (
       <main
         style={{
-          padding: "32px",
           maxWidth: "900px",
           margin: "0 auto",
+          padding: "24px",
         }}
       >
-        <button
-          type="button"
-          onClick={() => router.push("/")}
-        >
-          ← Back to marketplace
-        </button>
+        <h1>Listing unavailable</h1>
 
-        <h1
-          style={{
-            marginTop: "32px",
-          }}
-        >
-          Listing unavailable
-        </h1>
-
-        <p
-          style={{
-            color: "#697067",
-          }}
-        >
-          {error ||
-            "This listing is no longer available."}
-        </p>
+        {message && (
+          <p
+            style={{
+              marginTop: "12px",
+              color: "#b42318",
+            }}
+          >
+            {message}
+          </p>
+        )}
       </main>
     );
   }
 
-  const request = isRequest(
-    listing.type
-  );
-
-  const location =
-    listing.city && listing.state
-      ? `${listing.city}, ${listing.state}`
-      : listing.city ||
-        listing.state ||
-        "Nagaland";
-
-  const listingType = request
-    ? "Looking for"
-    : "Offering";
-
-  const sellerName =
-    seller?.full_name?.trim() ||
-    "NagaSphere Seller";
-
-  const amountLabel = request
-    ? "Budget"
-    : "Price";
-
-  const amount = formatAmount(
-    listing.budget_min,
-    listing.budget_max
-  );
-
   return (
     <main
       style={{
-        minHeight: "100vh",
-        background: "#f6f7f2",
+        maxWidth: "900px",
+        margin: "0 auto",
         padding: "24px",
       }}
     >
-      <div
+      <button
+        type="button"
+        onClick={() => router.back()}
         style={{
-          maxWidth: "900px",
-          margin: "0 auto",
+          marginBottom: "20px",
+          padding: "8px 12px",
+          border: "1px solid #ddd",
+          borderRadius: "8px",
+          background: "#fff",
+          cursor: "pointer",
         }}
       >
-        <header
+        ← Back
+      </button>
+
+      <div
+        style={{
+          border: "1px solid #e5e7eb",
+          borderRadius: "14px",
+          padding: "24px",
+          background: "#fff",
+        }}
+      >
+        <div
           style={{
             display: "flex",
-            justifyContent:
-              "space-between",
-            alignItems: "center",
+            justifyContent: "space-between",
             gap: "16px",
-            marginBottom: "28px",
+            flexWrap: "wrap",
           }}
         >
-          <button
-            type="button"
-            onClick={() => router.back()}
-          >
-            ← Back
-          </button>
+          <div>
+            <p
+              style={{
+                margin: 0,
+                color: "#59674f",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                fontSize: "13px",
+              }}
+            >
+              {listing.type}
+            </p>
 
-          <button
-            type="button"
-            onClick={() =>
-              router.push("/")
-            }
-          >
-            Marketplace
-          </button>
-        </header>
+            <h1
+              style={{
+                marginTop: "8px",
+                marginBottom: "12px",
+              }}
+            >
+              {listing.title}
+            </h1>
+
+            {category && (
+              <p
+                style={{
+                  margin: 0,
+                  color: "#666",
+                }}
+              >
+                Category: {category.name}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {listing.description && (
+          <section style={{ marginTop: "24px" }}>
+            <h2>Description</h2>
+            <p
+              style={{
+                whiteSpace: "pre-wrap",
+                lineHeight: 1.6,
+              }}
+            >
+              {listing.description}
+            </p>
+          </section>
+        )}
 
         <section
           style={{
-            background: "#fff",
-            border:
-              "1px solid #e1ddd2",
-            borderRadius: "18px",
-            padding: "24px",
-            boxShadow:
-              "0 8px 30px rgba(0,0,0,0.04)",
+            marginTop: "24px",
+            display: "grid",
+            gap: "10px",
           }}
         >
-          <div
-            style={{
-              height: "180px",
-              borderRadius: "14px",
-              background: "#dfe5d5",
-              display: "grid",
-              placeItems: "center",
-              fontSize: "64px",
-              fontWeight: 800,
-              color: "#59674f",
-              marginBottom: "24px",
-            }}
-          >
-            {listing.title
-              .charAt(0)
-              .toUpperCase()}
-          </div>
-
-          <p
-            style={{
-              margin: "0 0 8px",
-              color: "#697067",
-              fontSize: "13px",
-              textTransform:
-                "uppercase",
-              letterSpacing:
-                "0.08em",
-              fontWeight: 700,
-            }}
-          >
-            {listingType}
-          </p>
-
-          <h1
-            style={{
-              margin: "0 0 12px",
-            }}
-          >
-            {listing.title}
-          </h1>
-
-          <p
-            style={{
-              margin: "0 0 18px",
-              color: "#596057",
-            }}
-          >
-            📍 {location}
-          </p>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: "12px",
-              marginBottom: "24px",
-            }}
-          >
-            <div>
-              <small
-                style={{
-                  color: "#697067",
-                }}
-              >
-                {amountLabel}
-              </small>
-
-              <strong
-                style={{
-                  display: "block",
-                  marginTop: "4px",
-                }}
-              >
-                {amount}
-              </strong>
-            </div>
-
-            <div>
-              <small
-                style={{
-                  color: "#697067",
-                }}
-              >
-                Quantity
-              </small>
-
-              <strong
-                style={{
-                  display: "block",
-                  marginTop: "4px",
-                }}
-              >
-                {listing.quantity !=
-                null
-                  ? `${listing.quantity}${
-                      listing.unit
-                        ? ` ${listing.unit}`
-                        : ""
-                    }`
-                  : "Not specified"}
-              </strong>
-            </div>
-
-            <div>
-              <small
-                style={{
-                  color: "#697067",
-                }}
-              >
-                Category
-              </small>
-
-              <strong
-                style={{
-                  display: "block",
-                  marginTop: "4px",
-                }}
-              >
-                {category?.name ||
-                  "Other"}
-              </strong>
-            </div>
-          </div>
-
-          <div
-            style={{
-              borderTop:
-                "1px solid #e8e5dd",
-              paddingTop: "22px",
-            }}
-          >
-            <h2
-              style={{
-                marginTop: 0,
-              }}
-            >
-              Description
-            </h2>
-
-            <p
-              style={{
-                whiteSpace:
-                  "pre-wrap",
-                lineHeight: 1.7,
-                color: "#40463f",
-              }}
-            >
-              {listing.description ||
-                "No description provided."}
+          {listing.quantity !== null && (
+            <p>
+              <strong>Quantity:</strong> {listing.quantity}{" "}
+              {listing.unit ?? ""}
             </p>
-          </div>
+          )}
+
+          {(listing.budget_min !== null ||
+            listing.budget_max !== null) && (
+            <p>
+              <strong>Budget:</strong>{" "}
+              {listing.budget_min !== null
+                ? `₹${listing.budget_min}`
+                : ""}
+              {listing.budget_min !== null &&
+              listing.budget_max !== null
+                ? " – "
+                : ""}
+              {listing.budget_max !== null
+                ? `₹${listing.budget_max}`
+                : ""}
+            </p>
+          )}
+
+          {(listing.city || listing.state) && (
+            <p>
+              <strong>Location:</strong>{" "}
+              {[listing.city, listing.state]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
+          )}
+        </section>
+
+        <section
+          style={{
+            marginTop: "30px",
+            paddingTop: "20px",
+            borderTop: "1px solid #eee",
+          }}
+        >
+          <h2>Seller</h2>
 
           <div
             style={{
-              marginTop: "28px",
-              padding: "20px",
-              borderRadius: "14px",
-              background: "#f4f5ef",
-              border:
-                "1px solid #e2e5da",
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              marginTop: "12px",
             }}
           >
-            <h2
-              style={{
-                marginTop: 0,
-              }}
-            >
-              Seller Information
-            </h2>
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                marginBottom: "16px",
-              }}
-            >
+            {seller?.avatar_url ? (
+              <img
+                src={seller.avatar_url}
+                alt={seller.full_name ?? "Seller"}
+                width={48}
+                height={48}
+                style={{
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
               <div
                 style={{
-                  width: "52px",
-                  height: "52px",
+                  width: "48px",
+                  height: "48px",
                   borderRadius: "50%",
-                  background: "#dfe5d5",
-                  display: "grid",
-                  placeItems: "center",
+                  background: "#e8ece5",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   fontWeight: 700,
-                  fontSize: "20px",
                   color: "#59674f",
                 }}
               >
-                {sellerName
-                  .charAt(0)
-                  .toUpperCase()}
+                {(seller?.full_name?.charAt(0) ?? "S").toUpperCase()}
               </div>
-
-              <div>
-                <strong
-                  style={{
-                    display: "block",
-                    fontSize: "17px",
-                  }}
-                >
-                  {sellerName}
-                </strong>
-
-                <span
-                  style={{
-                    color: "#697067",
-                    fontSize: "14px",
-                  }}
-                >
-                  NagaSphere Seller
-                </span>
-              </div>
-            </div>
-
-            {contactError && (
-              <p
-                style={{
-                  color: "#b42318",
-                  marginBottom: "12px",
-                }}
-              >
-                {contactError}
-              </p>
             )}
 
-            <button
-              type="button"
-              onClick={contactSeller}
-              disabled={contacting}
-              style={{
-                width: "100%",
-                padding:
-                  "13px 16px",
-                border: "none",
-                borderRadius: "10px",
-                background:
-                  contacting
-                    ? "#8b9584"
-                    : "#59674f",
-                color: "#fff",
-                fontWeight: 700,
-                cursor:
-                  contacting
-                    ? "wait"
-                    : "pointer",
-              }}
-            >
-              {contacting
-                ? "Opening conversation..."
-                : "Contact Seller"}
-            </button>
+            <div>
+              <strong>
+                {seller?.full_name || "NagaSphere Seller"}
+              </strong>
+            </div>
           </div>
         </section>
+
+        <div style={{ marginTop: "28px" }}>
+          <button
+            type="button"
+            onClick={contactSeller}
+            disabled={contacting}
+            style={{
+              width: "100%",
+              padding: "13px 16px",
+              border: "none",
+              borderRadius: "10px",
+              background: contacting ? "#899482" : "#59674f",
+              color: "#fff",
+              fontWeight: 700,
+              cursor: contacting ? "not-allowed" : "pointer",
+            }}
+          >
+            {contacting ? "Opening conversation..." : "Contact Seller"}
+          </button>
+
+          {message && (
+            <p
+              style={{
+                marginTop: "12px",
+                color: "#b42318",
+                lineHeight: 1.5,
+              }}
+            >
+              {message}
+            </p>
+          )}
+        </div>
       </div>
     </main>
   );
