@@ -17,6 +17,7 @@ type Listing = {
   city: string | null;
   state: string | null;
   category_id: string | null;
+  status: string;
 };
 
 type Category = {
@@ -53,14 +54,20 @@ export default function ListingPage() {
       setLoading(true);
       setMessage("");
 
-      const { data: listingData, error: listingError } = await supabase
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const listingQuery = supabase
         .from("posts")
         .select(
-          "id, owner_id, type, title, description, quantity, unit, budget_min, budget_max, city, state, category_id"
+          "id, owner_id, type, title, description, quantity, unit, budget_min, budget_max, city, state, category_id, status"
         )
-        .eq("id", id)
-        .eq("status", "active")
-        .maybeSingle();
+        .eq("id", id);
+
+      const { data: listingData, error: listingError } = user
+        ? await listingQuery.maybeSingle()
+        : await listingQuery.eq("status", "active").maybeSingle();
 
       if (listingError) {
         console.error("Listing load error:", listingError);
@@ -108,7 +115,7 @@ export default function ListingPage() {
     setContacting(true);
 
     try {
-            const {
+      const {
         data: { session },
         error: authError,
       } = await supabase.auth.getSession();
@@ -139,9 +146,7 @@ export default function ListingPage() {
       if (conversationError) {
         console.error("Start conversation error:", conversationError);
 
-        if (
-          conversationError.message?.toLowerCase().includes("blocked")
-        ) {
+        if (conversationError.message?.toLowerCase().includes("blocked")) {
           setMessage(
             "This conversation cannot be started because one of the users has blocked the other."
           );
@@ -280,12 +285,25 @@ export default function ListingPage() {
                 Category: {category.name}
               </p>
             )}
+
+            {listing.status !== "active" && (
+              <p
+                style={{
+                  marginTop: "10px",
+                  color: "#b54708",
+                  fontWeight: 700,
+                }}
+              >
+                Status: {listing.status}
+              </p>
+            )}
           </div>
         </div>
 
         {listing.description && (
           <section style={{ marginTop: "24px" }}>
             <h2>Description</h2>
+
             <p
               style={{
                 whiteSpace: "pre-wrap",
@@ -318,10 +336,12 @@ export default function ListingPage() {
               {listing.budget_min !== null
                 ? `₹${listing.budget_min}`
                 : ""}
+
               {listing.budget_min !== null &&
               listing.budget_max !== null
                 ? " – "
                 : ""}
+
               {listing.budget_max !== null
                 ? `₹${listing.budget_max}`
                 : ""}
@@ -396,19 +416,31 @@ export default function ListingPage() {
           <button
             type="button"
             onClick={contactSeller}
-            disabled={contacting}
+            disabled={
+              contacting || listing.status !== "active"
+            }
             style={{
               width: "100%",
               padding: "13px 16px",
               border: "none",
               borderRadius: "10px",
-              background: contacting ? "#899482" : "#59674f",
+              background:
+                contacting || listing.status !== "active"
+                  ? "#899482"
+                  : "#59674f",
               color: "#fff",
               fontWeight: 700,
-              cursor: contacting ? "not-allowed" : "pointer",
+              cursor:
+                contacting || listing.status !== "active"
+                  ? "not-allowed"
+                  : "pointer",
             }}
           >
-            {contacting ? "Opening conversation..." : "Contact Seller"}
+            {listing.status !== "active"
+              ? "Listing Not Active"
+              : contacting
+                ? "Opening conversation..."
+                : "Contact Seller"}
           </button>
 
           {message && (
