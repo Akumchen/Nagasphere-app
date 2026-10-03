@@ -98,7 +98,13 @@ export default function ListingDetailPage() {
   const [loading, setLoading] =
     useState(true);
 
+  const [contacting, setContacting] =
+    useState(false);
+
   const [error, setError] =
+    useState("");
+
+  const [contactError, setContactError] =
     useState("");
 
   useEffect(() => {
@@ -192,6 +198,69 @@ export default function ListingDetailPage() {
 
     loadListing();
   }, [id]);
+
+  async function contactSeller() {
+    if (!listing || contacting) {
+      return;
+    }
+
+    setContacting(true);
+    setContactError("");
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/auth");
+      return;
+    }
+
+    if (user.id === listing.owner_id) {
+      setContactError(
+        "You cannot contact yourself about your own listing."
+      );
+      setContacting(false);
+      return;
+    }
+
+    const {
+      data: conversationId,
+      error: conversationError,
+    } = await supabase.rpc(
+      "start_conversation",
+      {
+        p_post_id: listing.id,
+      }
+    );
+
+    if (conversationError) {
+      console.error(
+        conversationError
+      );
+
+      setContactError(
+        conversationError.message ||
+          "Unable to start the conversation. Please try again."
+      );
+
+      setContacting(false);
+      return;
+    }
+
+    if (!conversationId) {
+      setContactError(
+        "Unable to open the conversation. Please try again."
+      );
+
+      setContacting(false);
+      return;
+    }
+
+    router.push(
+      `/messages?conversation=${conversationId}`
+    );
+  }
 
   if (loading) {
     return (
@@ -541,13 +610,21 @@ export default function ListingDetailPage() {
               </div>
             </div>
 
+            {contactError && (
+              <p
+                style={{
+                  color: "#b42318",
+                  marginBottom: "12px",
+                }}
+              >
+                {contactError}
+              </p>
+            )}
+
             <button
               type="button"
-              onClick={() => {
-                alert(
-                  "Messaging will be connected in the NagaSphere messaging section."
-                );
-              }}
+              onClick={contactSeller}
+              disabled={contacting}
               style={{
                 width: "100%",
                 padding:
@@ -555,13 +632,20 @@ export default function ListingDetailPage() {
                 border: "none",
                 borderRadius: "10px",
                 background:
-                  "#59674f",
+                  contacting
+                    ? "#8b9584"
+                    : "#59674f",
                 color: "#fff",
                 fontWeight: 700,
-                cursor: "pointer",
+                cursor:
+                  contacting
+                    ? "wait"
+                    : "pointer",
               }}
             >
-              Contact Seller
+              {contacting
+                ? "Opening conversation..."
+                : "Contact Seller"}
             </button>
           </div>
         </section>
