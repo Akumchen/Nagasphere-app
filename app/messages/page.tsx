@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
+
 type Message = {
   id: string;
   conversation_id: string;
@@ -17,7 +18,7 @@ type ConversationInfo = {
   otherName: string;
 };
 
-export default function MessagesPage() {
+function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const conversationId = searchParams.get("conversation");
@@ -49,6 +50,7 @@ export default function MessagesPage() {
       }
 
       if (!mounted) return;
+
       setUserId(session.user.id);
 
       if (!conversationId) {
@@ -121,9 +123,7 @@ export default function MessagesPage() {
 
       const { data: messageRows, error: messagesError } = await supabase
         .from("messages")
-        .select(
-          "id,conversation_id,sender_id,body,created_at"
-        )
+        .select("id,conversation_id,sender_id,body,created_at")
         .eq("conversation_id", conversationId)
         .order("created_at", { ascending: true });
 
@@ -169,9 +169,7 @@ export default function MessagesPage() {
         sender_id: userId,
         body: text,
       })
-      .select(
-        "id,conversation_id,sender_id,body,created_at"
-      )
+      .select("id,conversation_id,sender_id,body,created_at")
       .single();
 
     if (insertError) {
@@ -259,7 +257,6 @@ export default function MessagesPage() {
                           : "border bg-white text-gray-900"
                       }`}
                     >
-
                       <p className="whitespace-pre-wrap break-words">
                         {message.body}
                       </p>
@@ -275,7 +272,6 @@ export default function MessagesPage() {
                           message.created_at
                         ).toLocaleString()}
                       </p>
-
                     </div>
                   </div>
                 );
@@ -315,5 +311,23 @@ export default function MessagesPage() {
 
       </div>
     </main>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-white p-6">
+          <div className="mx-auto max-w-3xl">
+            <p className="text-gray-600">
+              Opening conversation...
+            </p>
+          </div>
+        </main>
+      }
+    >
+      <MessagesContent />
+    </Suspense>
   );
 }
