@@ -39,8 +39,7 @@ function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const conversationId =
-    searchParams.get("conversation");
+  const conversationId = searchParams.get("conversation");
 
   const supabase = useMemo(
     () => createClient(),
@@ -569,15 +568,28 @@ function MessagesContent() {
       <main className="min-h-screen bg-gray-50 p-4 sm:p-6">
         <div className="mx-auto max-w-5xl">
 
-          <button
-            type="button"
-            onClick={() =>
-              router.push("/dashboard")
-            }
-            className="mb-5 text-sm font-medium text-gray-600 hover:text-black"
-          >
-            ← Dashboard
-          </button>
+          <header className="mb-6 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              aria-label="Go to NagaSphere home"
+              className="flex items-center"
+            >
+              <img
+                src="/nagasphere-logo.png"
+                alt="NagaSphere"
+                className="block h-auto w-[150px]"
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push("/dashboard")}
+              className="text-sm font-medium text-gray-600 hover:text-black"
+            >
+              Dashboard
+            </button>
+          </header>
 
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">
@@ -668,15 +680,28 @@ function MessagesContent() {
     <main className="min-h-screen bg-white p-4 sm:p-6">
       <div className="mx-auto max-w-3xl">
 
-        <button
-          type="button"
-          onClick={() =>
-            router.push("/messages")
-          }
-          className="mb-5 text-sm font-medium text-gray-600 hover:text-black"
-        >
-          ← All Messages
-        </button>
+        <header className="mb-5 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            aria-label="Go to NagaSphere home"
+            className="flex items-center"
+          >
+            <img
+              src="/nagasphere-logo.png"
+              alt="NagaSphere"
+              className="block h-auto w-[150px]"
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push("/messages")}
+            className="text-sm font-medium text-gray-600 hover:text-black"
+          >
+            ← All Messages
+          </button>
+        </header>
 
         <div className="mb-4 rounded-2xl border bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
