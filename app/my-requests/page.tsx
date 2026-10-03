@@ -280,18 +280,6 @@ export default function MyRequestsPage() {
             <p style={{ color: "#697067" }}>
               Create a request when you are looking for a product or service.
             </p>
-
-            <button
-              type="button"
-              onClick={() => router.push("/create-listing")}
-              style={{
-                marginTop: 10,
-                padding: "11px 16px",
-                borderRadius: 10,
-              }}
-            >
-              Create a Request
-            </button>
           </section>
         ) : (
           <div
