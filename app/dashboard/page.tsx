@@ -97,6 +97,7 @@ export default function DashboardPage() {
             justifyContent: "space-between",
             gap: "16px",
             boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+            flexWrap: "wrap",
           }}
         >
           <img
@@ -108,19 +109,42 @@ export default function DashboardPage() {
             }}
           />
 
-          <button
-            type="button"
-            onClick={handleLogout}
+          <div
             style={{
-              border: "1px solid #d7dcd5",
-              background: "white",
-              padding: "10px 16px",
-              borderRadius: "10px",
-              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",
             }}
           >
-            Sign out
-          </button>
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              style={{
+                border: "1px solid #d7dcd5",
+                background: "white",
+                padding: "10px 16px",
+                borderRadius: "10px",
+                cursor: "pointer",
+              }}
+            >
+              ← Home
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                border: "1px solid #d7dcd5",
+                background: "white",
+                padding: "10px 16px",
+                borderRadius: "10px",
+                cursor: "pointer",
+              }}
+            >
+              Sign out
+            </button>
+          </div>
         </header>
 
         <section style={{ marginTop: "28px" }}>
@@ -168,7 +192,6 @@ export default function DashboardPage() {
                 borderRadius: "18px",
                 boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
                 cursor: "pointer",
-                transition: "transform 0.15s ease",
               }}
             >
               <h2 style={{ marginTop: 0 }}>
