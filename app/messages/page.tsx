@@ -18,6 +18,8 @@ type Message = {
   sender_id: string;
   body: string;
   created_at: string;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 };
 
 type InboxConversation = {
@@ -68,7 +70,39 @@ function MessagesContent() {
 
   const [error, setError] = useState("");
 
-  async function loadInbox(currentUserId: string) {
+  const [deletingMessageId, setDeletingMessageId] =
+    useState<string | null>(null);
+
+  async function getMyDeletedMessageIds(
+    currentUserId: string
+  ) {
+    const {
+      data,
+      error,
+    } = await supabase
+      .from("message_deletions")
+      .select("message_id")
+      .eq("user_id", currentUserId);
+
+    if (error) {
+      console.error(
+        "Message deletion records error:",
+        error
+      );
+
+      return new Set<string>();
+    }
+
+    return new Set(
+      (data || []).map(
+        (item) => item.message_id
+      )
+    );
+  }
+
+  async function loadInbox(
+    currentUserId: string
+  ) {
     const {
       data: memberships,
       error: membershipError,
@@ -124,17 +158,24 @@ function MessagesContent() {
       return;
     }
 
+    const myDeletedIds =
+      await getMyDeletedMessageIds(
+        currentUserId
+      );
+
     const results: InboxConversation[] = [];
 
     for (const row of conversationRows || []) {
-      let postTitle = "NagaSphere conversation";
+      let postTitle =
+        "NagaSphere conversation";
 
       if (row.post_id) {
-        const { data: post } = await supabase
-          .from("posts")
-          .select("title")
-          .eq("id", row.post_id)
-          .maybeSingle();
+        const { data: post } =
+          await supabase
+            .from("posts")
+            .select("title")
+            .eq("id", row.post_id)
+            .maybeSingle();
 
         if (post?.title) {
           postTitle = post.title;
@@ -164,7 +205,8 @@ function MessagesContent() {
           (id) => id !== currentUserId
         );
 
-      let otherName = "NagaSphere user";
+      let otherName =
+        "NagaSphere user";
 
       if (otherId) {
         const { data: profile } =
@@ -175,23 +217,23 @@ function MessagesContent() {
             .maybeSingle();
 
         if (profile?.full_name) {
-          otherName = profile.full_name;
+          otherName =
+            profile.full_name;
         }
       }
 
       const {
-        data: latestMessages,
+        data: conversationMessages,
         error: latestError,
       } = await supabase
         .from("messages")
         .select(
-          "id,conversation_id,sender_id,body,created_at"
+          "id,conversation_id,sender_id,body,created_at,deleted_at,deleted_by"
         )
         .eq("conversation_id", row.id)
         .order("created_at", {
           ascending: false,
-        })
-        .limit(1);
+        });
 
       if (latestError) {
         console.error(
@@ -201,7 +243,12 @@ function MessagesContent() {
       }
 
       const latest =
-        latestMessages?.[0];
+        (conversationMessages || []).find(
+          (message) =>
+            !myDeletedIds.has(
+              message.id
+            )
+        );
 
       results.push({
         id: row.id,
@@ -248,7 +295,10 @@ function MessagesContent() {
     } = await supabase
       .from("conversation_members")
       .select("user_id")
-      .eq("conversation_id", conversationId);
+      .eq(
+        "conversation_id",
+        conversationId
+      );
 
     if (memberError) {
       console.error(
@@ -265,7 +315,9 @@ function MessagesContent() {
 
     const memberIds = (
       membership || []
-    ).map((member) => member.user_id);
+    ).map(
+      (member) => member.user_id
+    );
 
     if (!memberIds.includes(currentUserId)) {
       setError(
@@ -297,7 +349,10 @@ function MessagesContent() {
         conversationError
       );
 
-      setError("Conversation not found.");
+      setError(
+        "Conversation not found."
+      );
+
       return;
     }
 
@@ -343,7 +398,7 @@ function MessagesContent() {
     } = await supabase
       .from("messages")
       .select(
-        "id,conversation_id,sender_id,body,created_at"
+        "id,conversation_id,sender_id,body,created_at,deleted_at,deleted_by"
       )
       .eq(
         "conversation_id",
@@ -366,6 +421,19 @@ function MessagesContent() {
       return;
     }
 
+    const myDeletedIds =
+      await getMyDeletedMessageIds(
+        currentUserId
+      );
+
+    const visibleMessages =
+      (messageRows || []).filter(
+        (message) =>
+          !myDeletedIds.has(
+            message.id
+          )
+      );
+
     setConversation({
       id: conversationId,
       postTitle,
@@ -373,7 +441,7 @@ function MessagesContent() {
     });
 
     setMessages(
-      messageRows || []
+      visibleMessages as Message[]
     );
   }
 
@@ -401,7 +469,9 @@ function MessagesContent() {
       await loadInbox(user.id);
 
       if (conversationId) {
-        await loadConversation(user.id);
+        await loadConversation(
+          user.id
+        );
       }
 
       if (mounted) {
@@ -464,7 +534,10 @@ function MessagesContent() {
           "conversation_id",
           conversationId
         )
-        .eq("user_id", user.id)
+        .eq(
+          "user_id",
+          user.id
+        )
         .maybeSingle();
 
       if (memberError) {
@@ -497,7 +570,7 @@ function MessagesContent() {
           body: text,
         })
         .select(
-          "id,conversation_id,sender_id,body,created_at"
+          "id,conversation_id,sender_id,body,created_at,deleted_at,deleted_by"
         )
         .single();
 
@@ -551,6 +624,153 @@ function MessagesContent() {
     }
   }
 
+  async function deleteForMe(
+    messageId: string
+  ) {
+    if (
+      !userId ||
+      deletingMessageId
+    ) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "Delete this message from your view?"
+      );
+
+    if (!confirmed) return;
+
+    setDeletingMessageId(
+      messageId
+    );
+    setError("");
+
+    try {
+      const {
+        error: deleteError,
+      } = await supabase
+        .from("message_deletions")
+        .insert({
+          message_id: messageId,
+          user_id: userId,
+        });
+
+      if (
+        deleteError &&
+        deleteError.code !==
+          "23505"
+      ) {
+        throw deleteError;
+      }
+
+      setMessages(
+        (current) =>
+          current.filter(
+            (message) =>
+              message.id !==
+              messageId
+          )
+      );
+
+      await loadInbox(userId);
+    } catch (err) {
+      console.error(
+        "Delete for me error:",
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? `Message could not be deleted: ${err.message}`
+          : "Message could not be deleted."
+      );
+    } finally {
+      setDeletingMessageId(null);
+    }
+  }
+
+  async function deleteForEveryone(
+    messageId: string
+  ) {
+    if (
+      !userId ||
+      deletingMessageId
+    ) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "Delete this message for everyone? The message will be replaced with “Message deleted”. This is only available for 15 minutes after sending."
+      );
+
+    if (!confirmed) return;
+
+    setDeletingMessageId(
+      messageId
+    );
+    setError("");
+
+    try {
+      const {
+        data,
+        error: deleteError,
+      } = await supabase.rpc(
+        "delete_message_for_everyone",
+        {
+          p_message_id:
+            messageId,
+        }
+      );
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      if (!data) {
+        setError(
+          "This message can no longer be deleted for everyone. The 15-minute window may have expired."
+        );
+
+        return;
+      }
+
+      setMessages(
+        (current) =>
+          current.map(
+            (message) =>
+              message.id ===
+              messageId
+                ? {
+                    ...message,
+                    body: "[Message deleted]",
+                    deleted_at:
+                      new Date().toISOString(),
+                    deleted_by:
+                      userId,
+                  }
+                : message
+          )
+      );
+
+      await loadInbox(userId);
+    } catch (err) {
+      console.error(
+        "Delete for everyone error:",
+        err
+      );
+
+      setError(
+        err instanceof Error
+          ? `Message could not be deleted for everyone: ${err.message}`
+          : "Message could not be deleted for everyone."
+      );
+    } finally {
+      setDeletingMessageId(null);
+    }
+  }
+
   if (loading) {
     return (
       <main className="min-h-screen bg-white p-6">
@@ -571,7 +791,9 @@ function MessagesContent() {
           <header className="mb-6 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
             <button
               type="button"
-              onClick={() => router.push("/")}
+              onClick={() =>
+                router.push("/")
+              }
               aria-label="Go to NagaSphere home"
               className="flex items-center"
             >
@@ -584,7 +806,11 @@ function MessagesContent() {
 
             <button
               type="button"
-              onClick={() => router.push("/dashboard")}
+              onClick={() =>
+                router.push(
+                  "/dashboard"
+                )
+              }
               className="text-sm font-medium text-gray-600 hover:text-black"
             >
               Dashboard
@@ -683,7 +909,9 @@ function MessagesContent() {
         <header className="mb-5 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
           <button
             type="button"
-            onClick={() => router.push("/")}
+            onClick={() =>
+              router.push("/")
+            }
             aria-label="Go to NagaSphere home"
             className="flex items-center"
           >
@@ -696,7 +924,11 @@ function MessagesContent() {
 
           <button
             type="button"
-            onClick={() => router.push("/messages")}
+            onClick={() =>
+              router.push(
+                "/messages"
+              )
+            }
             className="text-sm font-medium text-gray-600 hover:text-black"
           >
             ← All Messages
@@ -733,12 +965,17 @@ function MessagesContent() {
               No messages yet. Start the conversation below.
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {messages.map(
                 (message) => {
                   const mine =
                     message.sender_id ===
                     userId;
+
+                  const deletedForEveryone =
+                    Boolean(
+                      message.deleted_at
+                    );
 
                   return (
                     <div
@@ -749,28 +986,80 @@ function MessagesContent() {
                           : "justify-start"
                       }`}
                     >
-                      <div
-                        className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${
-                          mine
-                            ? "bg-black text-white"
-                            : "border bg-white text-gray-900"
-                        }`}
-                      >
-                        <p className="whitespace-pre-wrap break-words">
-                          {message.body}
-                        </p>
+                      <div className="max-w-[90%]">
 
-                        <p
-                          className={`mt-1 text-[11px] ${
-                            mine
-                              ? "text-gray-300"
-                              : "text-gray-500"
+                        <div
+                          className={`rounded-2xl px-4 py-3 text-sm ${
+                            deletedForEveryone
+                              ? "border border-gray-200 bg-gray-100 text-gray-500 italic"
+                              : mine
+                                ? "bg-black text-white"
+                                : "border bg-white text-gray-900"
                           }`}
                         >
-                          {new Date(
-                            message.created_at
-                          ).toLocaleString()}
-                        </p>
+                          <p className="whitespace-pre-wrap break-words">
+                            {message.body}
+                          </p>
+
+                          <p
+                            className={`mt-1 text-[11px] ${
+                              deletedForEveryone
+                                ? "text-gray-400"
+                                : mine
+                                  ? "text-gray-300"
+                                  : "text-gray-500"
+                            }`}
+                          >
+                            {new Date(
+                              message.created_at
+                            ).toLocaleString()}
+                          </p>
+                        </div>
+
+                        {!deletedForEveryone && (
+                          <div
+                            className={`mt-1 flex gap-2 ${
+                              mine
+                                ? "justify-end"
+                                : "justify-start"
+                            }`}
+                          >
+                            <button
+                              type="button"
+                              disabled={
+                                deletingMessageId ===
+                                message.id
+                              }
+                              onClick={() =>
+                                deleteForMe(
+                                  message.id
+                                )
+                              }
+                              className="text-[11px] text-gray-500 underline hover:text-black disabled:opacity-50"
+                            >
+                              Delete for me
+                            </button>
+
+                            {mine && (
+                              <button
+                                type="button"
+                                disabled={
+                                  deletingMessageId ===
+                                  message.id
+                                }
+                                onClick={() =>
+                                  deleteForEveryone(
+                                    message.id
+                                  )
+                                }
+                                className="text-[11px] text-gray-500 underline hover:text-black disabled:opacity-50"
+                              >
+                                Delete for everyone
+                              </button>
+                            )}
+                          </div>
+                        )}
+
                       </div>
                     </div>
                   );
