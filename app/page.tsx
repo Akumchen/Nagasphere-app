@@ -111,13 +111,12 @@ function mapCategory(categoryName?: string) {
 }
 
 export default function HomePage() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     null
   );
-
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
     null
   );
@@ -127,6 +126,22 @@ export default function HomePage() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
+
+  const [userId, setUserId] = useState<string | null>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    async function loadUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUserId(user?.id ?? null);
+      setCheckingAuth(false);
+    }
+
+    loadUser();
+  }, [supabase]);
 
   useEffect(() => {
     async function loadData() {
@@ -199,10 +214,7 @@ export default function HomePage() {
     return listings.filter((listing) => {
       const mappedCategory = mapCategory(listing.categoryName);
 
-      if (
-        selectedCategory &&
-        mappedCategory !== selectedCategory
-      ) {
+      if (selectedCategory && mappedCategory !== selectedCategory) {
         return false;
       }
 
@@ -213,10 +225,7 @@ export default function HomePage() {
         return false;
       }
 
-      if (
-        locationFilter &&
-        listing.location !== locationFilter
-      ) {
+      if (locationFilter && listing.location !== locationFilter) {
         return false;
       }
 
@@ -252,6 +261,12 @@ export default function HomePage() {
     setLocationFilter("");
     setSelectedCategory(null);
     setSelectedSubcategory(null);
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    setUserId(null);
+    router.refresh();
   }
 
   const filtersActive =
@@ -308,33 +323,67 @@ export default function HomePage() {
               alignItems: "center",
             }}
           >
-            <button
-              onClick={() => router.push("/auth")}
-              style={{
-                border: "1px solid #166534",
-                background: "#ffffff",
-                color: "#166534",
-                padding: "10px 16px",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              Login
-            </button>
+            {checkingAuth ? null : userId ? (
+              <>
+                <button
+                  onClick={() => router.push("/dashboard")}
+                  style={{
+                    border: "1px solid #166534",
+                    background: "#ffffff",
+                    color: "#166534",
+                    padding: "10px 16px",
+                    borderRadius: 8,
+                    cursor: "pointer",
+                  }}
+                >
+                  Dashboard
+                </button>
 
-            <button
-              onClick={() => router.push("/auth?mode=signup")}
-              style={{
-                border: "none",
-                background: "#166534",
-                color: "#ffffff",
-                padding: "10px 16px",
-                borderRadius: 8,
-                cursor: "pointer",
-              }}
-            >
-              Sign Up
-            </button>
+                <button
+                  onClick={handleSignOut}
+                  style={{
+                    border: "none",
+                    background: "#166534",
+                    color: "#ffffff",
+                    padding: "10px 16px",
+                    borderRadius: 8,
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => router.push("/auth")}
+                  style={{
+                    border: "1px solid #166534",
+                    background: "#ffffff",
+                    color: "#166534",
+                    padding: "10px 16px",
+                    borderRadius: 8,
+                    cursor: "pointer",
+                  }}
+                >
+                  Login
+                </button>
+
+                <button
+                  onClick={() => router.push("/auth?mode=signup")}
+                  style={{
+                    border: "none",
+                    background: "#166534",
+                    color: "#ffffff",
+                    padding: "10px 16px",
+                    borderRadius: 8,
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -465,8 +514,7 @@ export default function HomePage() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(150px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
             gap: 12,
           }}
         >
@@ -477,9 +525,7 @@ export default function HomePage() {
               <button
                 key={category}
                 onClick={() => {
-                  setSelectedCategory(
-                    active ? null : category
-                  );
+                  setSelectedCategory(active ? null : category);
                   setSelectedSubcategory(null);
                 }}
                 style={{
@@ -488,9 +534,7 @@ export default function HomePage() {
                   border: active
                     ? "2px solid #166534"
                     : "1px solid #d1d5db",
-                  background: active
-                    ? "#dcfce7"
-                    : "#ffffff",
+                  background: active ? "#dcfce7" : "#ffffff",
                   color: "#111827",
                   fontWeight: 700,
                   cursor: "pointer",
@@ -502,7 +546,6 @@ export default function HomePage() {
           })}
         </div>
 
-        {/* SUBCATEGORIES */}
         {selectedCategory && (
           <div
             style={{
@@ -513,9 +556,7 @@ export default function HomePage() {
               border: "1px solid #e5e7eb",
             }}
           >
-            <h3 style={{ marginTop: 0 }}>
-              {selectedCategory}
-            </h3>
+            <h3 style={{ marginTop: 0 }}>{selectedCategory}</h3>
 
             <div
               style={{
@@ -524,36 +565,31 @@ export default function HomePage() {
                 flexWrap: "wrap",
               }}
             >
-              {categories[selectedCategory].map(
-                (subcategory) => {
-                  const active =
-                    selectedSubcategory === subcategory;
+              {categories[selectedCategory].map((subcategory) => {
+                const active = selectedSubcategory === subcategory;
 
-                  return (
-                    <button
-                      key={subcategory}
-                      onClick={() =>
-                        setSelectedSubcategory(
-                          active ? null : subcategory
-                        )
-                      }
-                      style={{
-                        padding: "9px 14px",
-                        borderRadius: 20,
-                        border: active
-                          ? "2px solid #166534"
-                          : "1px solid #d1d5db",
-                        background: active
-                          ? "#dcfce7"
-                          : "#ffffff",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {subcategory}
-                    </button>
-                  );
-                }
-              )}
+                return (
+                  <button
+                    key={subcategory}
+                    onClick={() =>
+                      setSelectedSubcategory(
+                        active ? null : subcategory
+                      )
+                    }
+                    style={{
+                      padding: "9px 14px",
+                      borderRadius: 20,
+                      border: active
+                        ? "2px solid #166534"
+                        : "1px solid #d1d5db",
+                      background: active ? "#dcfce7" : "#ffffff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {subcategory}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -624,14 +660,9 @@ export default function HomePage() {
             {visibleListings.map((listing) => (
               <article
                 key={listing.id}
-                onClick={() =>
-                  router.push(`/listing/${listing.id}`)
-                }
+                onClick={() => router.push(`/listing/${listing.id}`)}
                 onKeyDown={(event) => {
-                  if (
-                    event.key === "Enter" ||
-                    event.key === " "
-                  ) {
+                  if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
                     router.push(`/listing/${listing.id}`);
                   }
@@ -644,9 +675,7 @@ export default function HomePage() {
                   borderRadius: 14,
                   padding: 20,
                   cursor: "pointer",
-                  boxShadow:
-                    "0 2px 8px rgba(0,0,0,0.04)",
-                  transition: "transform 0.15s ease",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 }}
               >
                 <div
@@ -657,8 +686,7 @@ export default function HomePage() {
                     marginBottom: 8,
                   }}
                 >
-                  {listing.categoryName ||
-                    "Local Listing"}
+                  {listing.categoryName || "Local Listing"}
                 </div>
 
                 <h3
@@ -682,23 +710,12 @@ export default function HomePage() {
                   </p>
                 )}
 
-                <p
-                  style={{
-                    margin: "8px 0",
-                    color: "#374151",
-                  }}
-                >
-                  Quantity:{" "}
-                  {listing.quantity ?? "—"}{" "}
+                <p style={{ margin: "8px 0", color: "#374151" }}>
+                  Quantity: {listing.quantity ?? "—"}{" "}
                   {listing.unit || ""}
                 </p>
 
-                <p
-                  style={{
-                    margin: "8px 0",
-                    color: "#374151",
-                  }}
-                >
+                <p style={{ margin: "8px 0", color: "#374151" }}>
                   Price: ₹
                   {listing.budget_min ??
                     listing.budget_max ??
@@ -753,45 +770,26 @@ export default function HomePage() {
               gap: 20,
             }}
           >
-            <div
-              style={{
-                padding: 24,
-                borderRadius: 12,
-                background: "#f8fafc",
-              }}
-            >
+            <div style={{ padding: 24, borderRadius: 12, background: "#f8fafc" }}>
               <h3>1. Discover</h3>
               <p>
-                Search and browse products, services and
-                businesses available across Nagaland.
+                Search and browse products, services and businesses available
+                across Nagaland.
               </p>
             </div>
 
-            <div
-              style={{
-                padding: 24,
-                borderRadius: 12,
-                background: "#f8fafc",
-              }}
-            >
+            <div style={{ padding: 24, borderRadius: 12, background: "#f8fafc" }}>
               <h3>2. Connect</h3>
               <p>
-                Find sellers and connect directly through
-                NagaSphere.
+                Find sellers and connect directly through NagaSphere.
               </p>
             </div>
 
-            <div
-              style={{
-                padding: 24,
-                borderRadius: 12,
-                background: "#f8fafc",
-              }}
-            >
+            <div style={{ padding: 24, borderRadius: 12, background: "#f8fafc" }}>
               <h3>3. Trade</h3>
               <p>
-                Discuss requirements and complete your
-                transaction with confidence.
+                Discuss requirements and complete your transaction with
+                confidence.
               </p>
             </div>
           </div>
@@ -806,23 +804,12 @@ export default function HomePage() {
           background: "#f0fdf4",
         }}
       >
-        <h2
-          style={{
-            fontSize: 32,
-            marginBottom: 14,
-          }}
-        >
+        <h2 style={{ fontSize: 32, marginBottom: 14 }}>
           Have something to sell?
         </h2>
 
-        <p
-          style={{
-            color: "#4b5563",
-            marginBottom: 25,
-          }}
-        >
-          Create your NagaSphere listing and reach
-          customers across Nagaland.
+        <p style={{ color: "#4b5563", marginBottom: 25 }}>
+          Create your NagaSphere listing and reach customers across Nagaland.
         </p>
 
         <button
@@ -860,12 +847,7 @@ export default function HomePage() {
           NagaSphere
         </strong>
 
-        <p
-          style={{
-            marginBottom: 0,
-            fontSize: 14,
-          }}
-        >
+        <p style={{ marginBottom: 0, fontSize: 14 }}>
           A local marketplace connecting Nagaland.
         </p>
       </footer>
