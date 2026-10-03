@@ -108,16 +108,18 @@ export default function ListingPage() {
     setContacting(true);
 
     try {
-      const {
-        data: { user },
+            const {
+        data: { session },
         error: authError,
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getSession();
 
       if (authError) {
-        console.error("Auth error:", authError);
+        console.error("Auth session error:", authError);
         setMessage("Unable to verify your account. Please try again.");
         return;
       }
+
+      const user = session?.user;
 
       if (!user) {
         router.push("/auth");
