@@ -398,4 +398,35 @@ export default function EditListingPage() {
                 </button>
               )}
 
-              {status !== "
+              {status !== "paused" && (
+                <button
+                  type="button"
+                  onClick={() => updateStatus("paused")}
+                  disabled={saving}
+                >
+                  Pause
+                </button>
+              )}
+
+              {status !== "closed" && (
+                <button
+                  type="button"
+                  onClick={() => updateStatus("closed")}
+                  disabled={saving}
+                >
+                  Close
+                </button>
+              )}
+            </div>
+          </div>
+
+          {message && (
+            <p style={{ marginTop: 18, color: "#b42318" }}>
+              {message}
+            </p>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
