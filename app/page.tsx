@@ -160,12 +160,10 @@ function MobileHome() {
   return (
     <div className="mobile-home">
       <header className="m-header">
-        <a href="/" aria-label="NagaSphere home">
-          <img
-            src="/NagaSphere_Local_Marketplace_in_Nagaland.png"
-            alt="NagaSphere"
-          />
-        </a>
+        <a href="/" aria-label="NagaSphere home" className="m-logo">
+  <strong>NagaSphere</strong>
+  <span>Local Needs • Global Reach</span>
+</a>
 
         <button type="button" aria-label="Open menu">
           ☰
