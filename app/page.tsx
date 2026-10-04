@@ -171,12 +171,7 @@ function MobileHome() {
       </header>
 
       <section className="m-hero">
-        <div className="m-hero-art">
-          <img
-            src="/NagaSphere_Local_Marketplace_in_Nagaland.png"
-            alt="Nagaland"
-          />
-        </div>
+        <div className="m-hero-art" aria-hidden="true" />
 
         <div className="m-hero-copy">
           <p>WELCOME TO</p>
