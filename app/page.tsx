@@ -1,31 +1,31 @@
-import Image from "next/image";
+"use client";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import "./nagasphere-home.css";
 
-export default function HomePage() {
-  return (
-    <main
-      style={{
-        margin: 0,
-        padding: 0,
-        width: "100%",
-        overflowX: "hidden",
-        lineHeight: 0,
-      }}
-    >
-      <Image
-        src="/NagaSphere_Local_Marketplace_in_Nagaland.png"
-        alt="NagaSphere — Local Marketplace in Nagaland"
-        width={1199}
-        height={1312}
-        priority
-        sizes="100vw"
-        style={{
-          display: "block",
-          width: "100%",
-          height: "auto",
-          maxWidth: "1199px",
-          margin: "0 auto",
-        }}
-      />
-    </main>
-  );
-}
+type Listing={image:string;category:string;title:string;price:string;location:string;seller:string;rating:string;reviews:string};
+const categories=[
+  ["/fresh-produce.png","Fresh Produce","Fresh Produce"],["/food-beverages.png","Food & Beverages","Food & Beverages"],["/handicrafts.png","Handicrafts","Handicrafts"],["/fashion-apparel.png","Fashion & Apparel","Fashion & Apparel"],["/home-living.png","Home & Living","Home & Living"],["/electronics.png","Electronics","Electronics"],["tools","Services","Services"],["more","More","More"]
+] as const;
+const listings:Listing[]=[
+  {image:"/oranges.png",category:"Fresh Produce",title:"Naga Oranges (Local)",price:"₹120 / kg",location:"Dimapur",seller:"Evergreen Farms",rating:"4.8",reviews:"24"},
+  {image:"/honey.png",category:"Food & Beverages",title:"Pure Naga Honey",price:"₹450 / 250g",location:"Kohima",seller:"Hilltop Organics",rating:"4.9",reviews:"36"},
+  {image:"/basket.png",category:"Handicrafts",title:"Traditional Bamboo Basket",price:"₹1,200",location:"Mokokchung",seller:"Naga Crafts",rating:"4.7",reviews:"19"},
+  {image:"/shawl.png",category:"Fashion & Apparel",title:"Naga Shawl (Traditional)",price:"₹1,500",location:"Wokha",seller:"Ao Weaves",rating:"4.9",reviews:"28"},
+  {image:"/lamp.png",category:"Home & Living",title:"Bamboo Lamp",price:"₹800",location:"Tuensang",seller:"Creative Naga",rating:"4.6",reviews:"15"},
+  {image:"/vegetables.png",category:"Fresh Produce",title:"Organic Vegetables (Mixed)",price:"₹150 / kg",location:"Zunheboto",seller:"Green Valley Farm",rating:"4.8",reviews:"22"},
+];
+function Icon({name}:{name:string}){return name==="tools"?<span className="category-icon">⚒</span>:<span className="category-icon dots">•••</span>}
+function SearchForm({compact=false}:{compact?:boolean}){const router=useRouter();const[query,setQuery]=useState("");function search(e:FormEvent){e.preventDefault();const v=query.trim();if(v)router.push(`/listing?search=${encodeURIComponent(v)}`)}return <form className={`search-bar ${compact?"compact":""}`} onSubmit={search}><span className="search-icon">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search for products, services, businesses..." aria-label="Search"/><button type="submit">Search</button></form>}
+function MobileHome(){const[menuOpen,setMenuOpen]=useState(false);return <div className="mobile-home">
+  <header className="m-header"><a href="/" aria-label="NagaSphere home"><img src="/nagasphere-logo.png" alt="NagaSphere"/></a><button onClick={()=>setMenuOpen(v=>!v)} aria-label="Open menu">☰</button></header>
+  {menuOpen&&<nav className="m-menu"><a href="#featured-listings" onClick={()=>setMenuOpen(false)}>Marketplace</a><a href="#categories" onClick={()=>setMenuOpen(false)}>Categories</a><a href="/my-requests">My Requests</a><a href="/messages">Messages</a><a href="/profile">My Account</a></nav>}
+  <section className="m-hero"><div className="m-hero-art"><img src="/nagasphere-hero.jpg" alt="Nagaland mountains"/></div><div className="m-hero-copy"><p>WELCOME TO</p><h1>Naga<span>Sphere</span></h1><div className="tagline">Buy · Sell · Support Local</div><p className="copy">Your trusted online marketplace in Nagaland — connecting farmers, local businesses and consumers, for a stronger community and a brighter future.</p><SearchForm/><div className="hero-message">Local Products<br/>Local People<br/>Stronger Together</div></div></section>
+  <section id="categories" className="category-strip">{categories.map(([image,label])=><a key={label} href={`/listing?category=${encodeURIComponent(label)}`} className="category-item"><div className="category-image">{image.startsWith("/")?<img src={image} alt=""/>:<Icon name={image}/>}</div><span>{label}</span></a>)}</section>
+  <section className="benefits">{[["✓","Safe & Secure","Your trust matters. We keep your data and transactions safe."],["●","Support Local","Help local farmers, artisans and small businesses grow."],["⌁","Wide Variety","From fresh produce to daily needs, find it all in one place."],["●","Nagaland Focused","Built for our people, our culture, our future."],["♥","Community Driven","Real people. Real businesses. A stronger Nagaland."]].map(([icon,title,copy])=><div className="benefit" key={title}><span className="benefit-icon">{icon}</span><div><strong>{title}</strong><p>{copy}</p></div></div>)}</section>
+  <section id="featured-listings" className="featured"><div className="section-heading"><div><h2>Featured Listings</h2><p>Top picks from our local sellers</p></div><a href="/listing">View All →</a></div><div className="listing-grid">{listings.map(item=><a href={`/listing?search=${encodeURIComponent(item.title)}`} className="listing-card" key={item.title}><div className="listing-image"><img src={item.image} alt=""/><span className="listing-category">{item.category}</span><span className="heart">♡</span></div><div className="listing-body"><h3>{item.title}</h3><strong>{item.price}</strong><p className="location">⌖ {item.location}</p><div className="seller">● <span>{item.seller}</span></div><div className="rating">★ {item.rating} ({item.reviews})</div></div></a>)}</div></section>
+  <section className="support-cta"><img src="/support.png" alt="Local farming in Nagaland"/><div><h2>Support Local. Build a Stronger Nagaland.</h2><p>Every purchase makes a difference — for our farmers, our businesses and our community.</p></div><a href="#featured-listings">Start Exploring →</a></section>
+  <footer className="ns-footer"><div className="footer-brand"><img src="/nagasphere-logo.png" alt="NagaSphere"/><small>© 2026 NagaSphere. All rights reserved.</small></div><div><h4>Quick Links</h4><a href="/">Home</a><a href="#featured-listings">Marketplace</a><a href="#categories">Categories</a><a href="/my-requests">My Requests</a></div><div><h4>Support</h4><a href="#">Help Center</a><a href="#">Contact Us</a><a href="#">Terms & Conditions</a><a href="#">Privacy Policy</a></div><div><h4>Stay Connected</h4><p>Get the latest updates and offers.</p><form className="subscribe" onSubmit={e=>e.preventDefault()}><input placeholder="Your email address" type="email" required/><button>Subscribe</button></form><div className="socials">●　◎　▶　◉</div></div></footer>
+</div>}
+function DesktopHome(){return <div className="desktop-home"><div className="reference-frame"><img src="/NagaSphere_Local_Marketplace_in_Nagaland.png" alt="NagaSphere reference design"/><a className="hotspot home" href="/" aria-label="Home"/><a className="hotspot marketplace" href="#featured-listings" aria-label="Marketplace"/><a className="hotspot categories" href="#categories" aria-label="Categories"/><a className="hotspot requests" href="/my-requests" aria-label="My Requests"/><a className="hotspot messages" href="/messages" aria-label="Messages"/><a className="hotspot account" href="/profile" aria-label="My Account"/><div className="desktop-search"><SearchForm compact/></div><a className="hotspot viewall" href="/listing" aria-label="View all listings"/><a className="hotspot cta" href="#featured-listings" aria-label="Start exploring"/></div></div>}
+export default function HomePage(){return <main className="ns-page"><DesktopHome/><MobileHome/></main>}
