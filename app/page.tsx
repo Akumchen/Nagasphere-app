@@ -283,10 +283,14 @@ export default function HomePage() {
         }
 
         .approved-desktop {
-          display: block;
-          width: 100%;
-          line-height: 0;
-        }
+  display: block;
+  width: 100%;
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+  height: auto;
+  overflow: hidden;
+}
 
         .approved-desktop img {
           display: block;
