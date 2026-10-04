@@ -21,8 +21,8 @@ export default function HomePage() {
         style={{
           display: "block",
           width: "100%",
-          maxWidth: "1199px",
           height: "auto",
+          maxWidth: "1199px",
           margin: "0 auto",
         }}
       />
