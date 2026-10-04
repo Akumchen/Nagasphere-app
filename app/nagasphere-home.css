@@ -1,38 +1,102 @@
-:root {
-  --green: #2dbd62;
-  --deep: #063f35;
-  --text: #12302b;
-}
+/* =========================================================
+   NAGASPHERE HOMEPAGE
+   Original reference design + responsive functionality
+   ========================================================= */
 
 * {
   box-sizing: border-box;
 }
 
-.ns-page {
+html {
+  scroll-behavior: smooth;
+}
+
+body {
   margin: 0;
-  background: #fff;
-  color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
+  padding: 0;
+}
+
+.ns-page {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
   overflow-x: hidden;
 }
 
-.desktop-home {
-  display: block;
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.search-bar {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px 5px 14px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.mobile-home {
-  display: none;
+.search-icon {
+  flex: 0 0 auto;
+  font-size: 22px;
+  line-height: 1;
+  color: #174d43;
+}
+
+.search-bar input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #183b35;
+  font-size: 14px;
+}
+
+.search-bar input::placeholder {
+  color: #71817d;
+}
+
+.search-bar button {
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 9px;
+  background: #0a5a4c;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background: #07483d;
 }
 
 /* =========================================================
-   DESKTOP — ORIGINAL REFERENCE DESIGN
+   DESKTOP — ORIGINAL IMAGE
    ========================================================= */
+
+.desktop-home {
+  display: block;
+  width: 100%;
+}
 
 .reference-frame {
   position: relative;
   width: min(1199px, 100%);
   margin: 0 auto;
   line-height: 0;
+  overflow: hidden;
+  background: #ffffff;
 }
 
 .reference-frame > img {
@@ -41,619 +105,298 @@
   height: auto;
 }
 
+/* =========================================================
+   DESKTOP HOTSPOTS
+   ========================================================= */
+
 .hotspot {
   position: absolute;
   display: block;
-  z-index: 3;
+  z-index: 5;
 }
 
+/*
+   These areas sit over the corresponding controls
+   already present in the original reference artwork.
+*/
+
 .hotspot.home {
-  left: 29%;
-  top: 1.4%;
-  width: 4%;
+  left: 22%;
+  top: 1.2%;
+  width: 5%;
   height: 4%;
 }
 
 .hotspot.marketplace {
-  left: 34%;
-  top: 1.4%;
-  width: 8%;
+  left: 27%;
+  top: 1.2%;
+  width: 9%;
   height: 4%;
 }
 
 .hotspot.categories {
-  left: 43%;
-  top: 1.4%;
-  width: 7%;
+  left: 36%;
+  top: 1.2%;
+  width: 8%;
   height: 4%;
 }
 
 .hotspot.requests {
-  left: 50%;
-  top: 1.4%;
+  left: 44%;
+  top: 1.2%;
   width: 8%;
   height: 4%;
 }
 
 .hotspot.messages {
-  left: 58%;
-  top: 1.4%;
+  left: 52%;
+  top: 1.2%;
   width: 8%;
   height: 4%;
 }
 
 .hotspot.account {
   right: 3%;
-  top: 1.2%;
-  width: 10%;
+  top: 1.1%;
+  width: 12%;
   height: 5%;
 }
 
+/* =========================================================
+   DESKTOP SEARCH OVERLAY
+   ========================================================= */
+
+.desktop-search {
+  position: absolute;
+  left: 8%;
+  top: 23%;
+  width: 54%;
+  z-index: 8;
+}
+
+.desktop-search .search-bar {
+  width: 100%;
+}
+
+/* =========================================================
+   DESKTOP CTA HOTSPOTS
+   ========================================================= */
+
 .hotspot.viewall {
   right: 4%;
-  top: 53.5%;
-  width: 8%;
+  top: 53%;
+  width: 9%;
   height: 4%;
 }
 
 .hotspot.cta {
   right: 6%;
   top: 77%;
-  width: 14%;
+  width: 15%;
   height: 7%;
 }
 
-/* Desktop search overlay */
+/* =========================================================
+   MOBILE
+   Original reference artwork is preserved as one image.
+   ========================================================= */
 
-.desktop-search {
+.mobile-home {
+  display: none;
+}
+
+.mobile-reference-frame {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  line-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.mobile-reference-frame > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* =========================================================
+   MOBILE HEADER OVERLAY
+   ========================================================= */
+
+.mobile-header-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  min-height: 58px;
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 46, 42, 0.82),
+      rgba(0, 46, 42, 0)
+    );
+}
+
+.mobile-logo {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.mobile-logo strong {
+  font-size: 20px;
+  letter-spacing: -0.6px;
+}
+
+.mobile-logo span {
+  margin-top: 4px;
+  font-size: 8px;
+  letter-spacing: 0.15px;
+}
+
+.mobile-menu-button {
+  border: 0;
+  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 46, 42, 0.72);
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* =========================================================
+   MOBILE HOTSPOTS
+   ========================================================= */
+
+.mobile-hotspot {
+  position: absolute;
+  display: block;
+  z-index: 5;
+}
+
+/*
+   Functional areas positioned over the original artwork.
+*/
+
+.mobile-home-link {
+  left: 29%;
+  top: 1.4%;
+  width: 4%;
+  height: 4%;
+}
+
+.mobile-marketplace-link {
+  left: 34%;
+  top: 1.4%;
+  width: 8%;
+  height: 4%;
+}
+
+.mobile-categories-link {
+  left: 43%;
+  top: 1.4%;
+  width: 7%;
+  height: 4%;
+}
+
+.mobile-requests-link {
+  left: 50%;
+  top: 1.4%;
+  width: 8%;
+  height: 4%;
+}
+
+.mobile-messages-link {
+  left: 58%;
+  top: 1.4%;
+  width: 8%;
+  height: 4%;
+}
+
+.mobile-account-link {
+  right: 3%;
+  top: 1.2%;
+  width: 10%;
+  height: 5%;
+}
+
+/* =========================================================
+   MOBILE SEARCH
+   ========================================================= */
+
+.mobile-search-overlay {
   position: absolute;
   left: 7%;
   top: 23.5%;
   width: 55%;
   height: 4%;
-  z-index: 4;
+  z-index: 8;
 }
 
-.desktop-search .search-bar {
-  height: 100%;
-  min-height: 38px;
-}
-
-.desktop-search .search-bar input {
-  font-size: 14px;
-}
-
-.desktop-search .search-bar button {
-  height: calc(100% - 8px);
-}
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
-.search-bar {
-  height: 52px;
-  background: #fff;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  padding: 5px 8px 5px 18px;
-  max-width: 665px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-}
-
-.search-icon {
-  font-size: 24px;
-  color: #7b8a8f;
-}
-
-.search-bar input {
-  border: 0;
-  outline: 0;
-  flex: 1;
-  font-size: 14px;
-  padding: 0 12px;
-  min-width: 0;
-  background: transparent;
-}
-
-.search-bar button {
-  height: 42px;
-  border: 0;
-  border-radius: 24px;
-  background: #43be65;
-  color: #fff;
-  font-weight: 700;
-  padding: 0 29px;
-  cursor: pointer;
-}
-
-/* =========================================================
-   MOBILE HEADER
-   ========================================================= */
-
-.m-header {
-  height: 62px;
-  background: #063f35;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  position: relative;
-  z-index: 20;
-}
-
-.m-header a {
-  display: block;
-  text-decoration: none;
-}
-
-.m-header img {
-  width: 155px;
-  display: block;
-}
-
-.m-header button {
-  border: 0;
-  background: none;
-  color: #fff;
-  font-size: 27px;
-  cursor: pointer;
-}
-
-/* Optional mobile menu */
-
-.m-menu {
-  position: absolute;
-  z-index: 30;
-  top: 62px;
-  left: 12px;
-  right: 12px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-  padding: 8px;
-}
-
-.m-menu a {
-  display: block;
-  padding: 13px;
-  color: #12302b;
-  text-decoration: none;
-  border-bottom: 1px solid #edf0ec;
-  font-weight: 700;
-}
-
-.m-menu a:last-child {
-  border: 0;
-}
-
-/* =========================================================
-   MOBILE HERO
-   ========================================================= */
-
-.m-hero {
-  background: linear-gradient(135deg, #0b3e37, #154e49);
-  color: #fff;
-  padding-bottom: 22px;
-}
-
-.m-hero-art {
-  width: 100%;
-  height: 190px;
-  overflow: hidden;
-  position: relative;
-}
-
-.m-hero-art img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 38%;
-  display: block;
-}
-
-.m-hero-copy {
-  padding: 20px 18px 24px;
-}
-
-.m-hero-copy > p {
-  color: #59e26f;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  margin: 0 0 4px;
-}
-
-.m-hero-copy h1 {
-  font-size: 45px;
-  line-height: 0.98;
-  margin: 2px 0 8px;
-  letter-spacing: -2px;
-}
-
-.m-hero-copy h1 span {
-  color: #4adf60;
-}
-
-.tagline {
-  font-family: cursive;
-  font-style: italic;
-  font-size: 27px;
-  line-height: 1.05;
-  margin-bottom: 11px;
-}
-
-.m-hero-copy .copy {
-  color: #fff;
-  line-height: 1.4;
-  font-size: 13px;
-  margin: 0 0 16px;
-}
-
-.m-hero-copy .search-bar {
+.mobile-search-overlay .search-bar {
   width: 100%;
   max-width: none;
-  height: 48px;
-  min-height: 48px;
-  margin-top: 12px;
-}
-
-.m-hero-copy .search-bar input {
-  font-size: 12px;
-}
-
-.m-hero-copy .search-bar button {
-  height: 38px;
-  padding: 0 16px;
-  font-size: 11px;
-}
-
-.hero-message {
-  text-align: center;
-  font-family: cursive;
-  font-style: italic;
-  font-size: 24px;
-  line-height: 1.08;
-  transform: rotate(-4deg);
-  margin: 24px auto 0;
-}
-
-/* =========================================================
-   CATEGORIES
-   ========================================================= */
-
-.category-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  padding: 20px 8px 8px;
-  background: #fff;
-  border-bottom: 1px solid #e6e6e1;
-}
-
-.category-item {
-  text-align: center;
-  text-decoration: none;
-  color: #132c28;
-  font-weight: 600;
-  font-size: 10px;
-  padding: 0 3px;
-  border-right: 1px solid #e8e8e3;
-  margin-bottom: 18px;
-}
-
-.category-item:nth-child(4n) {
-  border: 0;
-}
-
-.category-image {
-  width: 54px;
-  height: 54px;
-  margin: 0 auto 8px;
-  border-radius: 13px;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  background: #edf7e7;
-  color: #08783e;
-}
-
-.category-image img {
-  width: 100%;
   height: 100%;
-  object-fit: cover;
+  min-height: 32px;
+  padding-left: 9px;
+  border-radius: 8px;
 }
 
-.category-icon {
-  font-size: 27px;
-}
-
-.dots {
-  font-size: 22px;
-  letter-spacing: 4px;
-}
-
-/* =========================================================
-   BENEFITS
-   ========================================================= */
-
-.benefits {
-  margin: 15px 12px;
-  background: #f0f8ec;
-  border-radius: 12px;
-  padding: 8px 14px;
-}
-
-.benefit {
-  display: flex;
-  gap: 12px;
-  padding: 13px 2px;
-  border-bottom: 1px solid #dfe9da;
-}
-
-.benefit:last-child {
-  border: 0;
-}
-
-.benefit-icon {
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
-  border-radius: 50%;
-  background: #d5f4d7;
-  color: #16a34a;
-  display: grid;
-  place-items: center;
-  font-size: 21px;
-  font-weight: 700;
-}
-
-.benefit strong {
-  font-size: 13px;
-}
-
-.benefit p {
-  font-size: 10.5px;
-  line-height: 1.5;
-  color: #6c7772;
-  margin: 5px 0 0;
-}
-
-/* =========================================================
-   FEATURED LISTINGS
-   ========================================================= */
-
-.featured {
-  padding: 4px 12px 22px;
-}
-
-.section-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  margin-bottom: 13px;
-}
-
-.section-heading h2 {
-  font-size: 23px;
-  margin: 0;
-}
-
-.section-heading p {
-  font-size: 11px;
-  margin: 4px 0 0;
-}
-
-.section-heading a {
-  color: #16863d;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.listing-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 9px;
-}
-
-.listing-card {
-  background: #fff;
-  border: 1px solid #e3e3de;
-  border-radius: 9px;
-  overflow: hidden;
-  text-decoration: none;
-  color: #18322e;
-  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.06);
-}
-
-.listing-image {
-  height: 115px;
-  position: relative;
-  overflow: hidden;
-  background: #eaf3e7;
-}
-
-.listing-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 48%;
-}
-
-.listing-category {
-  position: absolute;
-  left: 7px;
-  bottom: 0;
-  background: #15864b;
-  color: #fff;
-  font-size: 8px;
-  padding: 5px 7px;
-  border-radius: 4px 4px 0 0;
-}
-
-.heart {
-  position: absolute;
-  right: 7px;
-  top: 6px;
-  color: #fff;
-  font-size: 21px;
-  text-shadow: 0 1px 3px #000;
-}
-
-.listing-body {
-  padding: 9px;
-}
-
-.listing-body h3 {
-  font-size: 11px;
-  margin: 0 0 5px;
-  min-height: 29px;
-}
-
-.listing-body > strong {
-  color: #08783e;
-  font-size: 13px;
-}
-
-.location {
-  font-size: 9px;
-  color: #7a817e;
-  margin: 7px 0;
-}
-
-.seller {
-  font-size: 9px;
-  color: #7a817e;
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-
-.rating {
-  font-size: 9px;
-  color: #777;
-  margin-top: 5px;
-}
-
-/* =========================================================
-   SUPPORT LOCAL CTA
-   ========================================================= */
-
-.support-cta {
-  margin: 0 12px 18px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #edf7e7;
-  display: block;
-}
-
-.support-cta img {
-  display: block;
-  width: 100%;
-  height: 145px;
-  object-fit: cover;
-  object-position: center 58%;
-}
-
-.support-cta div {
-  padding: 15px;
-}
-
-.support-cta h2 {
+.mobile-search-overlay .search-icon {
   font-size: 17px;
-  margin: 0 0 4px;
 }
 
-.support-cta p {
-  font-size: 11px;
-  margin: 0;
+.mobile-search-overlay .search-bar input {
+  font-size: 8px;
+  padding: 0 6px;
 }
 
-.support-cta a {
-  display: block;
-  margin: 0 15px 15px;
-  text-align: center;
-  background: #096449;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 25px;
-  padding: 12px 25px;
-  font-size: 11px;
-  font-weight: 700;
+.mobile-search-overlay .search-bar button {
+  height: calc(100% - 5px);
+  padding: 0 10px;
+  font-size: 8px;
+  border-radius: 6px;
 }
 
 /* =========================================================
-   FOOTER
+   MOBILE CTA HOTSPOTS
    ========================================================= */
 
-.ns-footer {
-  background: #002e2a;
-  color: #fff;
-  padding: 28px 18px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+.mobile-viewall-link {
+  right: 4%;
+  top: 53.5%;
+  width: 8%;
+  height: 4%;
 }
 
-.footer-brand img {
-  width: 165px;
-}
-
-.footer-brand small {
-  display: block;
-  margin-top: 15px;
-  font-size: 9px;
-  color: #c7d4d0;
-}
-
-.ns-footer h4 {
-  font-size: 11px;
-  margin: 0 0 9px;
-}
-
-.ns-footer a,
-.ns-footer p {
-  display: block;
-  color: #d5e0dc;
-  text-decoration: none;
-  font-size: 10px;
-  line-height: 1.8;
-  margin: 0;
-}
-
-.subscribe {
-  display: flex;
-  background: #fff;
-  border-radius: 20px;
-  overflow: hidden;
-  margin-top: 8px;
-}
-
-.subscribe input {
-  min-width: 0;
-  flex: 1;
-  border: 0;
-  padding: 8px 12px;
-  font-size: 9px;
-  outline: 0;
-}
-
-.subscribe button {
-  border: 0;
-  background: #43be65;
-  color: #fff;
-  padding: 0 15px;
-  font-size: 9px;
-}
-
-.socials {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #d6e3df;
+.mobile-cta-link {
+  right: 6%;
+  top: 77%;
+  width: 14%;
+  height: 7%;
 }
 
 /* =========================================================
-   RESPONSIVE SWITCH
+   MOBILE ACCESS NAVIGATION
+   ========================================================= */
+
+.mobile-access-links {
+  display: none;
+}
+
+/* =========================================================
+   MOBILE BREAKPOINT
    ========================================================= */
 
 @media (max-width: 767px) {
@@ -665,30 +408,43 @@
     display: block;
     width: 100%;
     overflow: hidden;
-    background: #fff;
+    background: #ffffff;
   }
 
-  /*
-     Keep the scenic background clearly visible.
-     It is cropped proportionally rather than squeezed.
-  */
-  .m-hero-art {
-    height: 190px;
+  .mobile-reference-frame {
+    width: 100%;
   }
 
-  .m-hero-art img {
-    object-fit: cover;
-    object-position: center 38%;
-  }
-}
-
-@media (min-width: 768px) {
-  .desktop-home {
-    display: block;
+  .mobile-reference-frame > img {
+    width: 100%;
+    height: auto;
   }
 
-  .mobile-home {
-    display: none;
+  .mobile-access-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
+    background: #ffffff;
+  }
+
+  .mobile-access-links a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 1px solid #d8e2df;
+    border-radius: 10px;
+    background: #f7faf9;
+    color: #174d43;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .mobile-access-links a:active {
+    transform: scale(0.98);
   }
 }
 
@@ -697,47 +453,60 @@
    ========================================================= */
 
 @media (max-width: 380px) {
-  .m-header {
-    height: 58px;
-    padding: 0 12px;
+  .mobile-header-overlay {
+    min-height: 54px;
+    padding: 7px 10px;
   }
 
-  .m-header img {
-  width: 140px;
-  height: 38px;
-  object-fit: cover;
-  object-position: left top;
-  }
-
-  .m-header button {
-    font-size: 25px;
-  }
-
-  .m-hero-art {
-    height: 170px;
-  }
-
-  .m-hero-copy {
-    padding: 18px 14px 22px;
-  }
-
-  .m-hero-copy h1 {
-    font-size: 38px;
-  }
-
-  .tagline {
-    font-size: 21px;
-  }
-
-  .hero-message {
+  .mobile-logo strong {
     font-size: 17px;
   }
 
-  .listing-grid {
-    gap: 7px;
+  .mobile-logo span {
+    font-size: 7px;
+    margin-top: 3px;
   }
 
-  .listing-image {
-    height: 105px;
+  .mobile-menu-button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .mobile-search-overlay {
+    left: 7%;
+    top: 23.5%;
+    width: 57%;
+  }
+
+  .mobile-search-overlay .search-bar {
+    min-height: 28px;
+  }
+
+  .mobile-search-overlay .search-bar input {
+    font-size: 7px;
+  }
+
+  .mobile-search-overlay .search-bar button {
+    padding: 0 7px;
+    font-size: 7px;
+  }
+
+  .mobile-access-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   TABLET / DESKTOP
+   ========================================================= */
+
+@media (min-width: 768px) {
+  .desktop-home {
+    display: block;
+  }
+
+  .mobile-home {
+    display: none;
   }
 }
