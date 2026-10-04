@@ -1,512 +1,775 @@
-/* =========================================================
-   NAGASPHERE HOMEPAGE
-   Original reference design + responsive functionality
-   ========================================================= */
-
-* {
-  box-sizing: border-box;
+:root{
+  --green:#123f32;
+  --green2:#1c604c;
+  --cream:#f6f4ed;
+  --gold:#c89545;
+  --ink:#17231e;
+  --muted:#66716b;
+  --line:#e3e6df;
 }
 
-html {
-  scroll-behavior: smooth;
+*{
+  box-sizing:border-box;
 }
 
-body {
-  margin: 0;
-  padding: 0;
+html{
+  scroll-behavior:smooth;
 }
 
-.ns-page {
-  width: 100%;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  background: #ffffff;
-  overflow-x: hidden;
+body{
+  margin:0;
+  color:var(--ink);
+  background:#fff;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
-.search-bar {
-  width: 100%;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 6px 5px 14px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+.ns-page{
+  min-height:100vh;
+  background:#fff;
 }
 
-.search-icon {
-  flex: 0 0 auto;
-  font-size: 22px;
-  line-height: 1;
-  color: #174d43;
+.ns-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  box-shadow:0 2px 14px #0b24150d;
 }
 
-.search-bar input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #183b35;
-  font-size: 14px;
+.ns-header-inner{
+  max-width:1400px;
+  margin:auto;
+  min-height:76px;
+  padding:10px 28px;
+  display:flex;
+  align-items:center;
+  gap:22px;
 }
 
-.search-bar input::placeholder {
-  color: #71817d;
+.ns-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  color:var(--green);
+  min-width:max-content;
 }
 
-.search-bar button {
-  flex: 0 0 auto;
-  height: 38px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 9px;
-  background: #0a5a4c;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
+.ns-brand img{
+  width:44px;
+  height:44px;
+  object-fit:contain;
 }
 
-.search-bar button:hover {
-  background: #07483d;
+.ns-brand strong{
+  display:block;
+  font-size:21px;
+  letter-spacing:-.4px;
 }
 
-/* =========================================================
-   DESKTOP — ORIGINAL IMAGE
-   ========================================================= */
-
-.desktop-home {
-  display: block;
-  width: 100%;
+.ns-brand small{
+  display:block;
+  color:#738078;
+  font-size:10px;
+  margin-top:2px;
 }
 
-.reference-frame {
-  position: relative;
-  width: min(1199px, 100%);
-  margin: 0 auto;
-  line-height: 0;
-  overflow: hidden;
-  background: #ffffff;
+.ns-nav{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin-left:10px;
+  flex:1;
 }
 
-.reference-frame > img {
-  display: block;
-  width: 100%;
-  height: auto;
+.ns-nav a,
+.ns-account{
+  padding:10px 9px;
+  text-decoration:none;
+  color:#34423c;
+  font-size:14px;
+  white-space:nowrap;
 }
 
-/* =========================================================
-   DESKTOP HOTSPOTS
-   ========================================================= */
-
-.hotspot {
-  position: absolute;
-  display: block;
-  z-index: 5;
+.ns-nav a.active{
+  color:var(--green);
+  font-weight:700;
+  border-bottom:2px solid var(--gold);
 }
 
-/*
-   These areas sit over the corresponding controls
-   already present in the original reference artwork.
-*/
-
-.hotspot.home {
-  left: 22%;
-  top: 1.2%;
-  width: 5%;
-  height: 4%;
+.ns-nav b,
+.ns-mobile-menu b,
+.ns-icon-link b{
+  font-size:10px;
+  background:#b13c34;
+  color:#fff;
+  border-radius:10px;
+  padding:2px 6px;
+  margin-left:3px;
 }
 
-.hotspot.marketplace {
-  left: 27%;
-  top: 1.2%;
-  width: 9%;
-  height: 4%;
+.ns-header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
-.hotspot.categories {
-  left: 36%;
-  top: 1.2%;
-  width: 8%;
-  height: 4%;
+.ns-header-actions .ns-search{
+  width:210px;
 }
 
-.hotspot.requests {
-  left: 44%;
-  top: 1.2%;
-  width: 8%;
-  height: 4%;
+.ns-search{
+  height:44px;
+  border:1px solid #d9ded8;
+  border-radius:24px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  padding:0 5px 0 14px;
+  overflow:hidden;
+  box-shadow:0 2px 8px #123f3208;
 }
 
-.hotspot.messages {
-  left: 52%;
-  top: 1.2%;
-  width: 8%;
-  height: 4%;
+.ns-search span{
+  font-size:22px;
+  color:#6b7770;
 }
 
-.hotspot.account {
-  right: 3%;
-  top: 1.1%;
-  width: 12%;
-  height: 5%;
+.ns-search input{
+  border:0;
+  outline:0;
+  min-width:0;
+  flex:1;
+  font-size:14px;
+  padding:0 8px;
+  background:transparent;
 }
 
-/* =========================================================
-   DESKTOP SEARCH OVERLAY
-   ========================================================= */
-
-.desktop-search {
-  position: absolute;
-  left: 8%;
-  top: 23%;
-  width: 54%;
-  z-index: 8;
+.ns-search button{
+  border:0;
+  background:var(--green);
+  color:#fff;
+  border-radius:20px;
+  padding:9px 15px;
+  font-weight:700;
 }
 
-.desktop-search .search-bar {
-  width: 100%;
+.ns-icon-link{
+  position:relative;
+  text-decoration:none;
+  color:var(--green);
+  font-size:21px;
+  padding:8px;
 }
 
-/* =========================================================
-   DESKTOP CTA HOTSPOTS
-   ========================================================= */
-
-.hotspot.viewall {
-  right: 4%;
-  top: 53%;
-  width: 9%;
-  height: 4%;
+.ns-icon-link b{
+  position:absolute;
+  right:0;
+  top:0;
 }
 
-.hotspot.cta {
-  right: 6%;
-  top: 77%;
-  width: 15%;
-  height: 7%;
+.ns-account{
+  border:1px solid #d8ddd7;
+  border-radius:20px;
 }
 
-/* =========================================================
-   MOBILE
-   Original reference artwork is preserved as one image.
-   ========================================================= */
-
-.mobile-home {
-  display: none;
+.ns-menu-button,
+.ns-mobile-menu{
+  display:none;
 }
 
-.mobile-reference-frame {
-  position: relative;
-  width: 100%;
-  margin: 0;
-  line-height: 0;
-  overflow: hidden;
-  background: #ffffff;
-}
-
-.mobile-reference-frame > img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* =========================================================
-   MOBILE HEADER OVERLAY
-   ========================================================= */
-
-.mobile-header-overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  min-height: 58px;
-  padding: 9px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 10;
+.ns-hero{
+  min-height:560px;
   background:
-    linear-gradient(
-      to bottom,
-      rgba(0, 46, 42, 0.82),
-      rgba(0, 46, 42, 0)
-    );
+    linear-gradient(90deg,#102e25cc 0%,#102e251f 65%),
+    url("/nagasphere-hero.jpg") center/cover;
+  display:flex;
+  align-items:center;
 }
 
-.mobile-logo {
-  display: flex;
-  flex-direction: column;
-  text-decoration: none;
-  color: #ffffff;
-  line-height: 1;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+.ns-hero-content{
+  max-width:1400px;
+  width:100%;
+  margin:auto;
+  padding:78px 7%;
+  color:#fff;
 }
 
-.mobile-logo strong {
-  font-size: 20px;
-  letter-spacing: -0.6px;
+.eyebrow{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:2px;
+  margin:0 0 10px;
+  color:var(--gold);
 }
 
-.mobile-logo span {
-  margin-top: 4px;
-  font-size: 8px;
-  letter-spacing: 0.15px;
+.ns-hero h1{
+  font-size:clamp(48px,7vw,88px);
+  line-height:.95;
+  margin:0;
+  font-family:Georgia,serif;
 }
 
-.mobile-menu-button {
-  border: 0;
-  border-radius: 10px;
-  width: 40px;
-  height: 40px;
-  background: rgba(0, 46, 42, 0.72);
-  color: #ffffff;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
+.ns-hero h2{
+  font-size:clamp(24px,3vw,38px);
+  margin:18px 0 14px;
 }
 
-/* =========================================================
-   MOBILE HOTSPOTS
-   ========================================================= */
-
-.mobile-hotspot {
-  position: absolute;
-  display: block;
-  z-index: 5;
+.ns-hero-content>p:not(.eyebrow){
+  max-width:650px;
+  font-size:17px;
+  line-height:1.7;
+  color:#f2f5f2;
 }
 
-/*
-   Functional areas positioned over the original artwork.
-*/
-
-.mobile-home-link {
-  left: 29%;
-  top: 1.4%;
-  width: 4%;
-  height: 4%;
+.ns-hero .ns-search{
+  max-width:680px;
+  margin-top:28px;
+  height:58px;
 }
 
-.mobile-marketplace-link {
-  left: 34%;
-  top: 1.4%;
-  width: 8%;
-  height: 4%;
+.ns-hero-points{
+  display:flex;
+  gap:26px;
+  margin-top:18px;
+  font-weight:700;
+  font-size:13px;
 }
 
-.mobile-categories-link {
-  left: 43%;
-  top: 1.4%;
-  width: 7%;
-  height: 4%;
+.ns-section{
+  max-width:1400px;
+  margin:auto;
+  padding:76px 28px;
 }
 
-.mobile-requests-link {
-  left: 50%;
-  top: 1.4%;
-  width: 8%;
-  height: 4%;
+.ns-section-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin-bottom:28px;
 }
 
-.mobile-messages-link {
-  left: 58%;
-  top: 1.4%;
-  width: 8%;
-  height: 4%;
+.ns-section-heading h2{
+  font:700 36px Georgia,serif;
+  margin:0;
 }
 
-.mobile-account-link {
-  right: 3%;
-  top: 1.2%;
-  width: 10%;
-  height: 5%;
+.ns-section-heading a{
+  color:var(--green);
+  font-weight:700;
+  text-decoration:none;
 }
 
-/* =========================================================
-   MOBILE SEARCH
-   ========================================================= */
-
-.mobile-search-overlay {
-  position: absolute;
-  left: 7%;
-  top: 23.5%;
-  width: 55%;
-  height: 4%;
-  z-index: 8;
+.ns-category-grid{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:14px;
 }
 
-.mobile-search-overlay .search-bar {
-  width: 100%;
-  max-width: none;
-  height: 100%;
-  min-height: 32px;
-  padding-left: 9px;
-  border-radius: 8px;
+.ns-category-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  text-decoration:none;
+  color:var(--ink);
+  background:#fff;
+  transition:.2s;
+  box-shadow:0 5px 18px #102e2509;
 }
 
-.mobile-search-overlay .search-icon {
-  font-size: 17px;
+.ns-category-card:hover{
+  transform:translateY(-3px);
 }
 
-.mobile-search-overlay .search-bar input {
-  font-size: 8px;
-  padding: 0 6px;
+.ns-category-card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  display:block;
 }
 
-.mobile-search-overlay .search-bar button {
-  height: calc(100% - 5px);
-  padding: 0 10px;
-  font-size: 8px;
-  border-radius: 6px;
+.ns-category-card span{
+  display:block;
+  text-align:center;
+  font-weight:700;
+  font-size:13px;
+  padding:13px 7px;
 }
 
-/* =========================================================
-   MOBILE CTA HOTSPOTS
-   ========================================================= */
-
-.mobile-viewall-link {
-  right: 4%;
-  top: 53.5%;
-  width: 8%;
-  height: 4%;
+.ns-features{
+  background:var(--cream);
+  max-width:none;
+  padding-left:max(28px,calc((100% - 1344px)/2));
+  padding-right:max(28px,calc((100% - 1344px)/2));
 }
 
-.mobile-cta-link {
-  right: 6%;
-  top: 77%;
-  width: 14%;
-  height: 7%;
+.ns-feature-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:18px;
 }
 
-/* =========================================================
-   MOBILE ACCESS NAVIGATION
-   ========================================================= */
-
-.mobile-access-links {
-  display: none;
+.ns-feature-grid article{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:25px;
 }
 
-/* =========================================================
-   MOBILE BREAKPOINT
-   ========================================================= */
+.ns-feature-grid article>span{
+  font-size:28px;
+}
 
-@media (max-width: 767px) {
-  .desktop-home {
-    display: none;
+.ns-feature-grid h3{
+  margin:16px 0 8px;
+}
+
+.ns-feature-grid p{
+  color:var(--muted);
+  line-height:1.55;
+  margin:0;
+  font-size:14px;
+}
+
+.ns-listing-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+
+.ns-listing-card{
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  text-decoration:none;
+  color:var(--ink);
+  background:#fff;
+  box-shadow:0 7px 25px #102e250b;
+}
+
+.ns-listing-card>img{
+  width:100%;
+  aspect-ratio:1.45/1;
+  object-fit:cover;
+  display:block;
+}
+
+.ns-listing-body{
+  padding:18px;
+}
+
+.ns-price{
+  font-weight:800;
+  color:var(--green);
+}
+
+.ns-listing-body h3{
+  margin:8px 0;
+}
+
+.ns-listing-body p{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.ns-listing-body>div{
+  display:flex;
+  justify-content:space-between;
+  color:#6b746e;
+  font-size:12px;
+}
+
+.ns-listing-body strong{
+  color:#b2761f;
+}
+
+.ns-cta{
+  max-width:1344px;
+  margin:10px auto 76px;
+  border-radius:24px;
+  background:var(--green);
+  color:#fff;
+  padding:48px 54px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:30px;
+}
+
+.ns-cta h2{
+  font:700 36px Georgia,serif;
+  margin:0 0 10px;
+}
+
+.ns-cta p:not(.eyebrow){
+  color:#d8e7e0;
+  margin:0;
+}
+
+.ns-cta a{
+  background:#fff;
+  color:var(--green);
+  padding:14px 20px;
+  border-radius:25px;
+  text-decoration:none;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.ns-footer{
+  background:#0d2d24;
+  color:#dce9e2;
+  padding:58px 28px 24px;
+}
+
+.ns-footer-main{
+  max-width:1344px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr 1.4fr;
+  gap:45px;
+}
+
+.ns-footer-brand img{
+  width:46px;
+  height:46px;
+  object-fit:contain;
+}
+
+.ns-footer h3{
+  margin:8px 0 3px;
+  color:#fff;
+}
+
+.ns-footer-brand p{
+  margin:0 0 16px;
+  color:#a9c0b6;
+  font-size:13px;
+}
+
+.ns-footer-brand span{
+  font-size:12px;
+  color:#d7ae69;
+}
+
+.ns-footer h4{
+  margin:0 0 15px;
+  color:#fff;
+}
+
+.ns-footer a{
+  display:block;
+  color:#b9ccc4;
+  text-decoration:none;
+  margin:10px 0;
+  font-size:13px;
+}
+
+.ns-footer p{
+  font-size:13px;
+  line-height:1.6;
+  color:#b9ccc4;
+}
+
+.ns-newsletter{
+  display:flex;
+  border:1px solid #426055;
+  border-radius:22px;
+  overflow:hidden;
+}
+
+.ns-newsletter input{
+  flex:1;
+  min-width:0;
+  background:transparent;
+  border:0;
+  outline:0;
+  color:#fff;
+  padding:11px;
+}
+
+.ns-newsletter button{
+  border:0;
+  background:#d3a258;
+  color:#18372d;
+  padding:0 15px;
+  font-weight:800;
+}
+
+.ns-footer-bottom{
+  max-width:1344px;
+  margin:40px auto 0;
+  padding-top:18px;
+  border-top:1px solid #315248;
+  color:#91aaa0;
+  font-size:11px;
+}
+
+@media(max-width:1100px){
+
+  .ns-nav{
+    gap:0;
   }
 
-  .mobile-home {
-    display: block;
-    width: 100%;
-    overflow: hidden;
-    background: #ffffff;
+  .ns-nav a{
+    font-size:12px;
+    padding:9px 6px;
   }
 
-  .mobile-reference-frame {
-    width: 100%;
+  .ns-header-inner{
+    gap:10px;
+    padding:10px 18px;
   }
 
-  .mobile-reference-frame > img {
-    width: 100%;
-    height: auto;
+  .ns-header-actions .ns-search{
+    width:160px;
   }
 
-  .mobile-access-links {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    padding: 12px;
-    background: #ffffff;
+  .ns-category-grid{
+    grid-template-columns:repeat(4,1fr);
   }
 
-  .mobile-access-links a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 8px 10px;
-    border: 1px solid #d8e2df;
-    border-radius: 10px;
-    background: #f7faf9;
-    color: #174d43;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
+  .ns-feature-grid{
+    grid-template-columns:repeat(3,1fr);
   }
 
-  .mobile-access-links a:active {
-    transform: scale(0.98);
+  .ns-listing-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .ns-footer-main{
+    grid-template-columns:repeat(2,1fr);
   }
 }
 
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
+@media(max-width:820px){
 
-@media (max-width: 380px) {
-  .mobile-header-overlay {
-    min-height: 54px;
-    padding: 7px 10px;
+  .ns-header-inner{
+    min-height:68px;
+    padding:8px 16px;
   }
 
-  .mobile-logo strong {
-    font-size: 17px;
+  .ns-nav,
+  .ns-header-actions{
+    display:none;
   }
 
-  .mobile-logo span {
-    font-size: 7px;
-    margin-top: 3px;
+  .ns-brand img{
+    width:40px;
+    height:40px;
   }
 
-  .mobile-menu-button {
-    width: 36px;
-    height: 36px;
-    font-size: 20px;
+  .ns-brand strong{
+    font-size:19px;
   }
 
-  .mobile-search-overlay {
-    left: 7%;
-    top: 23.5%;
-    width: 57%;
+  .ns-menu-button{
+    display:block;
+    margin-left:auto;
+    border:1px solid #d9ded8;
+    background:#fff;
+    border-radius:10px;
+    font-size:24px;
+    width:44px;
+    height:42px;
+    color:var(--green);
   }
 
-  .mobile-search-overlay .search-bar {
-    min-height: 28px;
+  .ns-mobile-menu{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    position:absolute;
+    top:68px;
+    left:0;
+    right:0;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    box-shadow:0 10px 25px #102e2520;
+    padding:12px 16px;
+    z-index:60;
   }
 
-  .mobile-search-overlay .search-bar input {
-    font-size: 7px;
+  .ns-mobile-menu a{
+    padding:14px 10px;
+    text-decoration:none;
+    color:var(--green);
+    font-weight:700;
+    border-bottom:1px solid #eef0eb;
   }
 
-  .mobile-search-overlay .search-bar button {
-    padding: 0 7px;
-    font-size: 7px;
+  .ns-hero{
+    min-height:600px;
   }
 
-  .mobile-access-links {
-    grid-template-columns: 1fr;
+  .ns-hero-content{
+    padding:70px 22px;
+  }
+
+  .ns-hero .ns-search{
+    height:52px;
+  }
+
+  .ns-section{
+    padding:58px 18px;
+  }
+
+  .ns-category-grid{
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+  }
+
+  .ns-category-card span{
+    font-size:12px;
+  }
+
+  .ns-feature-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .ns-cta{
+    margin:10px 18px 58px;
+    padding:35px 25px;
+  }
+
+  .ns-footer{
+    padding-left:18px;
+    padding-right:18px;
   }
 }
 
-/* =========================================================
-   TABLET / DESKTOP
-   ========================================================= */
+@media(max-width:560px){
 
-@media (min-width: 768px) {
-  .desktop-home {
-    display: block;
+  .ns-brand small{
+    font-size:9px;
   }
 
-  .mobile-home {
-    display: none;
+  .ns-hero{
+    min-height:620px;
+    background-position:60% center;
+  }
+
+  .ns-hero-content{
+    padding:58px 18px;
+  }
+
+  .ns-hero h1{
+    font-size:54px;
+  }
+
+  .ns-hero h2{
+    font-size:27px;
+  }
+
+  .ns-hero-content>p:not(.eyebrow){
+    font-size:15px;
+    line-height:1.6;
+  }
+
+  .ns-search{
+    height:48px;
+  }
+
+  .ns-search input{
+    font-size:12px;
+  }
+
+  .ns-search button{
+    padding:9px 12px;
+    font-size:12px;
+  }
+
+  .ns-hero-points{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:7px;
+  }
+
+  .ns-section{
+    padding:48px 14px;
+  }
+
+  .ns-section-heading h2{
+    font-size:29px;
+  }
+
+  .ns-category-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .ns-category-card span{
+    font-size:13px;
+    padding:11px 4px;
+  }
+
+  .ns-feature-grid{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .ns-feature-grid article{
+    padding:20px;
+  }
+
+  .ns-listing-grid{
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+
+  .ns-listing-card>img{
+    aspect-ratio:1.5/1;
+  }
+
+  .ns-cta{
+    margin:4px 14px 48px;
+    padding:30px 22px;
+    display:block;
+  }
+
+  .ns-cta h2{
+    font-size:29px;
+  }
+
+  .ns-cta a{
+    display:inline-block;
+    margin-top:22px;
+  }
+
+  .ns-footer-main{
+    grid-template-columns:1fr;
+    gap:28px;
+  }
+
+  .ns-footer{
+    padding-top:44px;
+  }
+}
+
+@media(max-width:360px){
+
+  .ns-brand strong{
+    font-size:17px;
+  }
+
+  .ns-brand small{
+    font-size:8px;
+  }
+
+  .ns-menu-button{
+    width:40px;
+    height:40px;
+  }
+
+  .ns-hero h1{
+    font-size:47px;
+  }
+
+  .ns-category-grid{
+    gap:8px;
+  }
+
+  .ns-section-heading h2{
+    font-size:26px;
   }
 }
