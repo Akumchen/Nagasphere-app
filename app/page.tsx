@@ -1,5 +1,5 @@
 import Image from "next/image";
-
+ 
 export default function HomePage() {
   return (
     <main style={{ margin: 0, padding: 0, width: "100%", lineHeight: 0 }}>
