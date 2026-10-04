@@ -146,6 +146,7 @@ export default function HomePage() {
       {/* HERO */}
       <section className="hero">
 
+        {/* EXACT APPROVED IMAGE */}
         <div
           className="hero-visual"
           aria-hidden="true"
@@ -250,7 +251,6 @@ export default function HomePage() {
               <span className="account-avatar">
                 ●
               </span>
-
               My Account⌄
             </button>
 
@@ -331,40 +331,34 @@ export default function HomePage() {
       >
         <div className="category-row">
 
-          {displayedCategories.map(
-            (category) => (
-              <button
-                className="category-card"
-                key={category.id}
-                onClick={() =>
-                  router.push(
-                    `/dashboard?category=${encodeURIComponent(
+          {displayedCategories.map((category) => (
+            <button
+              className="category-card"
+              key={category.id}
+              onClick={() =>
+                router.push(
+                  `/dashboard?category=${encodeURIComponent(
+                    category.name
+                  )}`
+                )
+              }
+            >
+              <span className="category-image">
+                <img
+                  src={
+                    categoryImages[
                       category.name
-                    )}`
-                  )
-                }
-              >
+                    ] ?? "/support.png"
+                  }
+                  alt=""
+                />
+              </span>
 
-                <span className="category-image">
-
-                  <img
-                    src={
-                      categoryImages[
-                        category.name
-                      ] ?? "/support.png"
-                    }
-                    alt=""
-                  />
-
-                </span>
-
-                <span>
-                  {category.name}
-                </span>
-
-              </button>
-            )
-          )}
+              <span>
+                {category.name}
+              </span>
+            </button>
+          ))}
 
           <button
             className="category-card"
@@ -376,9 +370,7 @@ export default function HomePage() {
               •••
             </span>
 
-            <span>
-              More
-            </span>
+            <span>More</span>
           </button>
 
         </div>
@@ -413,32 +405,22 @@ export default function HomePage() {
             "Community Driven",
             "Real people. Real businesses. A stronger Nagaland.",
           ],
-        ].map(
-          ([icon, title, text]) => (
-            <div
-              className="benefit"
-              key={title}
-            >
+        ].map(([icon, title, text]) => (
+          <div
+            className="benefit"
+            key={title}
+          >
+            <span className="benefit-icon">
+              {icon}
+            </span>
 
-              <span className="benefit-icon">
-                {icon}
-              </span>
+            <div>
+              <strong>{title}</strong>
 
-              <div>
-
-                <strong>
-                  {title}
-                </strong>
-
-                <p>
-                  {text}
-                </p>
-
-              </div>
-
+              <p>{text}</p>
             </div>
-          )
-        )}
+          </div>
+        ))}
 
       </section>
 
@@ -448,7 +430,6 @@ export default function HomePage() {
         <div className="section-heading">
 
           <div>
-
             <h2>
               Featured Listings
             </h2>
@@ -456,7 +437,6 @@ export default function HomePage() {
             <p>
               Top picks from our local sellers.
             </p>
-
           </div>
 
           <button
@@ -479,102 +459,98 @@ export default function HomePage() {
 
           <div className="listing-grid">
 
-            {listings.map(
-              (listing, index) => (
+            {listings.map((listing, index) => (
 
-                <button
-                  className="listing-card"
-                  key={listing.id}
-                  onClick={() =>
-                    router.push(
-                      `/listing/${listing.id}`
-                    )
-                  }
-                >
+              <button
+                className="listing-card"
+                key={listing.id}
+                onClick={() =>
+                  router.push(
+                    `/listing/${listing.id}`
+                  )
+                }
+              >
 
-                  <div className="listing-image">
+                <div className="listing-image">
 
-                    <img
-                      src={
-                        listingImages[
-                          index %
-                            listingImages.length
-                        ]
-                      }
-                      alt=""
-                    />
+                  <img
+                    src={
+                      listingImages[
+                        index %
+                          listingImages.length
+                      ]
+                    }
+                    alt=""
+                  />
 
-                    <span className="listing-heart">
-                      ♡
+                  <span className="listing-heart">
+                    ♡
+                  </span>
+
+                  <span
+                    className={
+                      listing.type === "need"
+                        ? "need-badge"
+                        : "have-badge"
+                    }
+                  >
+                    {categoryName(
+                      listing.category_id
+                    )}
+                  </span>
+
+                </div>
+
+                <div className="listing-body">
+
+                  <h3>
+                    {listing.title}
+                  </h3>
+
+                  <strong className="listing-price">
+
+                    {listing.budget_min != null
+                      ? `₹${listing.budget_min.toLocaleString(
+                          "en-IN"
+                        )}`
+                      : "Price on request"}
+
+                    {listing.unit
+                      ? ` / ${listing.unit}`
+                      : ""}
+
+                  </strong>
+
+                  <p className="listing-location">
+                    ⌖{" "}
+                    {listing.city ||
+                      listing.state ||
+                      "Nagaland"}
+                  </p>
+
+                  <div className="seller-row">
+
+                    <span className="seller-avatar">
+                      ●
                     </span>
 
-                    <span
-                      className={
-                        listing.type === "need"
-                          ? "need-badge"
-                          : "have-badge"
-                      }
-                    >
-                      {categoryName(
-                        listing.category_id
-                      )}
+                    <span>
+                      {listing.type === "need"
+                        ? "Local Buyer"
+                        : "Local Seller"}
+                    </span>
+
+                    <span className="rating">
+                      ★ 4.8
                     </span>
 
                   </div>
 
-                  <div className="listing-body">
+                </div>
 
-                    <h3>
-                      {listing.title}
-                    </h3>
+              </button>
 
-                    <strong className="listing-price">
-
-                      {listing.budget_min !=
-                      null
-                        ? `₹${listing.budget_min.toLocaleString(
-                            "en-IN"
-                          )}`
-                        : "Price on request"}
-
-                      {listing.unit
-                        ? ` / ${listing.unit}`
-                        : ""}
-
-                    </strong>
-
-                    <p className="listing-location">
-                      ⌖{" "}
-                      {listing.city ||
-                        listing.state ||
-                        "Nagaland"}
-                    </p>
-
-                    <div className="seller-row">
-
-                      <span className="seller-avatar">
-                        ●
-                      </span>
-
-                      <span>
-                        {listing.type ===
-                        "need"
-                          ? "Local Buyer"
-                          : "Local Seller"}
-                      </span>
-
-                      <span className="rating">
-                        ★ 4.8
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </button>
-
-              )
-            )}
+            ))}
 
           </div>
 
@@ -613,12 +589,10 @@ export default function HomePage() {
       <section className="support-cta">
 
         <div className="cta-image">
-
           <img
             src="/vegetables.png"
             alt=""
           />
-
         </div>
 
         <div className="cta-copy">
@@ -662,14 +636,10 @@ export default function HomePage() {
 
         <div>
 
-          <h4>
-            Quick Links
-          </h4>
+          <h4>Quick Links</h4>
 
           <button
-            onClick={() =>
-              router.push("/")
-            }
+            onClick={() => router.push("/")}
           >
             Home
           </button>
@@ -706,9 +676,7 @@ export default function HomePage() {
 
         <div>
 
-          <h4>
-            Support
-          </h4>
+          <h4>Support</h4>
 
           <button
             onClick={() =>
@@ -735,9 +703,7 @@ export default function HomePage() {
           </button>
 
           {userId ? (
-            <button
-              onClick={handleSignOut}
-            >
+            <button onClick={handleSignOut}>
               Sign Out
             </button>
           ) : (
@@ -754,9 +720,7 @@ export default function HomePage() {
 
         <div className="footer-news">
 
-          <h4>
-            Stay Connected
-          </h4>
+          <h4>Stay Connected</h4>
 
           <p>
             Get the latest updates and offers.
@@ -788,7 +752,7 @@ export default function HomePage() {
 
       </footer>
 
-      {/* PAGE STYLES */}
+      {/* STYLES */}
       <style jsx>{`
 
         .home {
@@ -803,7 +767,9 @@ export default function HomePage() {
           font: inherit;
         }
 
-        /* HERO */
+        /* =========================
+           HERO
+        ========================= */
 
         .hero {
           min-height: 400px;
@@ -815,25 +781,35 @@ export default function HomePage() {
         .hero-visual {
           position: absolute;
           inset: 0;
+
+          /*
+            EXACT APPROVED IMAGE.
+            Do not replace this with the old
+            low-resolution hero JPG.
+          */
           background:
-            url("/nagasphere-hero.jpg")
-            center / cover no-repeat;
+            url("/NagaSphere_Local_Marketplace_in_Nagaland.png")
+            center top / cover no-repeat;
+
           transform: scale(1.01);
         }
 
         .hero-shade {
           position: absolute;
           inset: 0;
+
           background:
             linear-gradient(
               180deg,
-              rgba(4, 32, 28, .50) 0%,
-              rgba(7, 48, 35, .10) 42%,
-              rgba(5, 34, 28, .28) 100%
+              rgba(4,32,28,.50) 0%,
+              rgba(7,48,35,.10) 42%,
+              rgba(5,34,28,.28) 100%
             );
         }
 
-        /* HEADER */
+        /* =========================
+           HEADER
+        ========================= */
 
         .site-header {
           position: absolute;
@@ -841,20 +817,23 @@ export default function HomePage() {
           left: 0;
           right: 0;
           height: 72px;
+
           padding:
             0
-            clamp(18px, 6.5vw, 78px);
+            max(20px, 6.5vw);
+
           display: flex;
           align-items: center;
           gap: 25px;
+
           z-index: 10;
+
           background:
             linear-gradient(
               180deg,
-              rgba(7, 31, 28, .48),
-              rgba(7, 31, 28, 0)
+              rgba(7,31,28,.48),
+              rgba(7,31,28,0)
             );
-          border: 0;
         }
 
         .brand {
@@ -940,7 +919,6 @@ export default function HomePage() {
           display: grid;
           place-items: center;
           font-size: 13px;
-          text-shadow: none;
         }
 
         .menu-button {
@@ -948,15 +926,19 @@ export default function HomePage() {
           font-size: 25px;
         }
 
-        /* HERO CONTENT */
+        /* =========================
+           HERO CONTENT
+        ========================= */
 
         .hero-content {
           position: relative;
           z-index: 2;
+
           padding:
             92px
             7%
             35px;
+
           max-width: 730px;
         }
 
@@ -970,11 +952,14 @@ export default function HomePage() {
 
         .hero h1 {
           margin: 0;
+
           font-size:
             clamp(55px, 6.5vw, 82px);
+
           line-height: 1;
           font-weight: 800;
           letter-spacing: -3px;
+
           text-shadow:
             0 3px 14px rgba(0,0,0,.25);
         }
@@ -990,10 +975,12 @@ export default function HomePage() {
 
         .hero-tagline {
           margin: 9px 0 7px;
+
           font-family:
             "Brush Script MT",
             "Segoe Script",
             cursive;
+
           font-size: 31px;
           line-height: 1.05;
         }
@@ -1001,26 +988,34 @@ export default function HomePage() {
         .hero-copy {
           margin: 0 0 22px;
           max-width: 590px;
+
           font-size: 16px;
           line-height: 1.45;
+
           text-shadow:
             0 2px 8px rgba(0,0,0,.4);
         }
 
-        /* SEARCH */
+        /* =========================
+           SEARCH
+        ========================= */
 
         .hero-search {
           width: min(650px, 100%);
           height: 53px;
+
           border-radius: 30px;
           background: #fff;
+
           display: flex;
           align-items: center;
+
           padding:
             4px
             6px
             4px
             19px;
+
           box-shadow:
             0 7px 25px rgba(0,0,0,.22);
         }
@@ -1033,41 +1028,57 @@ export default function HomePage() {
         .hero-search input {
           min-width: 0;
           flex: 1;
+
           border: 0;
           outline: 0;
+
           padding: 0 12px;
+
           color: #33433b;
           font-size: 13px;
         }
 
         .hero-search button {
           border: 0;
+
           background: #3cbd63;
           color: #fff;
+
           border-radius: 25px;
+
           padding: 13px 27px;
+
           font-weight: 700;
           cursor: pointer;
         }
 
-        /* HERO MESSAGE */
+        /* =========================
+           HERO MESSAGE
+        ========================= */
 
         .hero-message {
           position: absolute;
           z-index: 3;
+
           right: 8%;
           bottom: 92px;
+
           display: flex;
           flex-direction: column;
           align-items: flex-end;
+
           color: #fff;
+
           font-family:
             "Brush Script MT",
             "Segoe Script",
             cursive;
+
           font-size: 30px;
           line-height: .95;
+
           transform: rotate(-7deg);
+
           text-shadow:
             0 3px 8px rgba(0,0,0,.3);
         }
@@ -1081,41 +1092,60 @@ export default function HomePage() {
         .hero-message strong:after {
           content: "";
           position: absolute;
+
           height: 3px;
+
           background: #47d86b;
+
           left: 15px;
           right: -5px;
           bottom: -9px;
+
           transform: rotate(-2deg);
         }
 
-        /* CATEGORIES */
+        /* =========================
+           CATEGORIES
+        ========================= */
 
         .category-strip {
           background: #fff;
+
           padding: 18px 4%;
-          border-bottom: 1px solid #edf0eb;
+
+          border-bottom:
+            1px solid #edf0eb;
         }
 
         .category-row {
           max-width: 1110px;
           margin: auto;
+
           display: grid;
+
           grid-template-columns:
             repeat(8, 1fr);
         }
 
         .category-card {
           border: 0;
-          border-right: 1px solid #edf0eb;
+
+          border-right:
+            1px solid #edf0eb;
+
           background: #fff;
+
           min-height: 105px;
+
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
+
           gap: 9px;
+
           color: #18352c;
+
           cursor: pointer;
         }
 
@@ -1131,11 +1161,15 @@ export default function HomePage() {
         .category-image {
           width: 68px;
           height: 68px;
+
           border-radius: 14px;
           overflow: hidden;
+
           display: grid;
           place-items: center;
+
           transition: .15s;
+
           background: #edf2ed;
         }
 
@@ -1154,28 +1188,41 @@ export default function HomePage() {
         .more-icon {
           background: #394846;
           color: #fff;
+
           font-size: 29px;
           letter-spacing: 2px;
         }
 
-        /* BENEFITS */
+        /* =========================
+           BENEFITS
+        ========================= */
 
         .benefits {
           max-width: 1110px;
-          margin: 20px auto 0;
+
+          margin:
+            20px auto 0;
+
           background: #f2f8ee;
+
           border-radius: 12px;
+
           display: grid;
+
           grid-template-columns:
             repeat(5, 1fr);
+
           padding: 20px 22px;
+
           gap: 0;
         }
 
         .benefit {
           display: flex;
           gap: 11px;
+
           padding: 0 17px;
+
           border-right:
             1px solid #e0e9dc;
         }
@@ -1192,12 +1239,17 @@ export default function HomePage() {
         .benefit-icon {
           width: 42px;
           height: 42px;
+
           flex: none;
+
           border-radius: 50%;
+
           background: #d9f3dc;
           color: #20a554;
+
           display: grid;
           place-items: center;
+
           font-size: 21px;
           font-weight: 800;
         }
@@ -1208,24 +1260,35 @@ export default function HomePage() {
 
         .benefit p {
           margin: 6px 0 0;
+
           color: #718079;
+
           font-size: 10px;
           line-height: 1.45;
         }
 
-        /* FEATURED */
+        /* =========================
+           FEATURED
+        ========================= */
 
         .featured-section {
           max-width: 1110px;
+
           margin: 0 auto;
-          padding: 25px 0 28px;
+
+          padding:
+            25px 0
+            28px;
         }
 
         .section-heading {
           display: flex;
           align-items: end;
           justify-content: space-between;
-          padding: 0 1px 12px;
+
+          padding:
+            0 1px
+            12px;
         }
 
         .section-heading h2 {
@@ -1235,41 +1298,57 @@ export default function HomePage() {
 
         .section-heading p {
           margin: 5px 0 0;
+
           color: #5e6d65;
+
           font-size: 12px;
         }
 
         .section-heading > button {
           border: 0;
           background: none;
+
           color: #148747;
+
           font-weight: 800;
           cursor: pointer;
         }
 
         .listing-grid {
           display: grid;
+
           grid-template-columns:
             repeat(6, 1fr);
+
           gap: 11px;
         }
 
         .listing-card {
-          border: 1px solid #e7ebe5;
+          border:
+            1px solid #e7ebe5;
+
           background: #fff;
+
           border-radius: 9px;
+
           overflow: hidden;
+
           padding: 0;
+
           text-align: left;
+
           cursor: pointer;
+
           box-shadow:
             0 3px 12px
             rgba(22,51,39,.06);
+
           transition: .16s;
         }
 
         .listing-card:hover {
           transform: translateY(-2px);
+
           box-shadow:
             0 8px 20px
             rgba(22,51,39,.1);
@@ -1277,23 +1356,31 @@ export default function HomePage() {
 
         .listing-image {
           height: 98px;
+
           background: #edf2ed;
+
           position: relative;
+
           overflow: hidden;
         }
 
         .listing-image img {
           width: 100%;
           height: 100%;
+
           object-fit: cover;
         }
 
         .listing-heart {
           position: absolute;
+
           right: 8px;
           top: 6px;
+
           color: #fff;
+
           font-size: 24px;
+
           text-shadow:
             0 1px 5px #000;
         }
@@ -1301,14 +1388,20 @@ export default function HomePage() {
         .have-badge,
         .need-badge {
           position: absolute;
+
           bottom: 0;
           left: 0;
+
           background: #20934b;
           color: #fff;
+
           padding: 5px 9px;
+
           font-size: 8px;
           font-weight: 700;
-          border-radius: 0 7px 0 0;
+
+          border-radius:
+            0 7px 0 0;
         }
 
         .need-badge {
@@ -1322,8 +1415,12 @@ export default function HomePage() {
         .listing-body h3 {
           font-size: 11px;
           line-height: 1.3;
-          margin: 0 0 5px;
+
+          margin:
+            0 0 5px;
+
           color: #1c342b;
+
           min-height: 29px;
         }
 
@@ -1334,16 +1431,23 @@ export default function HomePage() {
 
         .listing-location {
           font-size: 9px;
+
           color: #77827b;
+
           margin: 5px 0;
         }
 
         .seller-row {
           display: flex;
           align-items: center;
+
           gap: 5px;
-          border-top: 1px solid #edf0ec;
+
+          border-top:
+            1px solid #edf0ec;
+
           padding-top: 6px;
+
           font-size: 8px;
           color: #69756e;
         }
@@ -1351,9 +1455,12 @@ export default function HomePage() {
         .seller-avatar {
           width: 18px;
           height: 18px;
+
           border-radius: 50%;
+
           background: #c9d4ce;
           color: #74847b;
+
           display: grid;
           place-items: center;
         }
@@ -1366,8 +1473,11 @@ export default function HomePage() {
         .listing-loading,
         .empty-featured {
           padding: 50px;
+
           text-align: center;
+
           background: #f8faf7;
+
           border-radius: 12px;
         }
 
@@ -1377,24 +1487,38 @@ export default function HomePage() {
 
         .empty-featured button {
           border: 0;
+
           border-radius: 20px;
+
           background: #1d8050;
           color: #fff;
+
           padding: 11px 18px;
+
           cursor: pointer;
         }
 
-        /* CTA */
+        /* =========================
+           CTA
+        ========================= */
 
         .support-cta {
           max-width: 1110px;
-          margin: 0 auto 18px;
+
+          margin:
+            0 auto 18px;
+
           background: #f1f7ec;
+
           border-radius: 13px;
+
           display: grid;
+
           grid-template-columns:
             280px 1fr auto;
+
           align-items: center;
+
           overflow: hidden;
         }
 
@@ -1405,6 +1529,7 @@ export default function HomePage() {
         .cta-image img {
           width: 100%;
           height: 100%;
+
           object-fit: cover;
         }
 
@@ -1414,110 +1539,160 @@ export default function HomePage() {
 
         .cta-copy h2 {
           font-size: 16px;
-          margin: 0 0 7px;
+          margin:
+            0 0 7px;
         }
 
         .cta-copy p {
           font-size: 11px;
+
           margin: 0;
+
           line-height: 1.5;
+
           color: #52655b;
         }
 
         .support-cta > button {
           margin-right: 25px;
+
           border: 0;
+
           border-radius: 24px;
+
           background: #0b6046;
           color: #fff;
+
           padding: 13px 21px;
+
           font-weight: 800;
+
           white-space: nowrap;
+
           cursor: pointer;
         }
 
-        /* FOOTER */
+        /* =========================
+           FOOTER
+        ========================= */
 
         .footer {
           background: #073d35;
+
           color: #dceae5;
+
           padding:
             28px
             max(20px, 6.5vw)
             16px;
+
           display: grid;
+
           grid-template-columns:
             1.1fr .75fr .85fr 1.2fr;
+
           gap: 28px;
         }
 
         .footer-brand img {
           width: 180px;
-          filter: brightness(0) invert(1);
+
+          filter:
+            brightness(0)
+            invert(1);
+
           margin-bottom: 8px;
         }
 
         .footer-brand p,
         .footer-news p {
           font-size: 10px;
+
           color: #a8c1b8;
+
           margin: 0;
         }
 
         .footer h4 {
           font-size: 11px;
-          margin: 0 0 9px;
+
+          margin:
+            0 0 9px;
         }
 
         .footer
         > div:not(.footer-brand):not(.footer-news)
         button {
           display: block;
+
           border: 0;
+
           background: none;
+
           color: #c5d7d0;
+
           padding: 3px 0;
+
           font-size: 10px;
+
           cursor: pointer;
         }
 
         .footer-news form {
           display: flex;
+
           background: #fff;
+
           border-radius: 20px;
+
           overflow: hidden;
+
           margin-top: 8px;
         }
 
         .footer-news input {
           min-width: 0;
           flex: 1;
+
           border: 0;
           outline: 0;
+
           padding: 9px 11px;
+
           font-size: 10px;
         }
 
         .footer-news button {
           border: 0;
+
           background: #40b963;
+
           color: #fff;
+
           padding: 0 13px;
+
           font-size: 10px;
         }
 
         .copyright {
           grid-column: 1 / -1;
+
           border-top:
             1px solid
             rgba(255,255,255,.13);
+
           padding-top: 12px;
+
           margin: 0;
+
           color: #8fa9a0;
+
           font-size: 9px;
         }
 
-        /* TABLET */
+        /* =========================
+           TABLET
+        ========================= */
 
         @media (max-width: 1000px) {
 
@@ -1549,19 +1724,34 @@ export default function HomePage() {
           .support-cta {
             margin-inline: 15px;
           }
-
         }
 
-        /* MOBILE */
+        /* =========================
+           MOBILE
+        ========================= */
 
         @media (max-width: 700px) {
+
+          /*
+            Same desktop design,
+            proportionally adapted.
+          */
 
           .hero {
             min-height: 620px;
           }
 
+          .hero-visual {
+            background-position:
+              center top;
+
+            background-size:
+              cover;
+          }
+
           .site-header {
             height: 64px;
+
             padding-inline: 16px;
           }
 
@@ -1572,14 +1762,22 @@ export default function HomePage() {
 
           .desktop-nav {
             display: none;
+
             position: absolute;
+
             top: 64px;
             left: 0;
             right: 0;
-            background: rgba(5,34,29,.97);
+
+            background:
+              rgba(5,34,29,.97);
+
             padding: 10px 18px;
+
             flex-direction: column;
+
             align-items: stretch;
+
             gap: 0;
           }
 
@@ -1589,7 +1787,9 @@ export default function HomePage() {
 
           .desktop-nav button {
             height: auto;
+
             padding: 11px;
+
             text-align: left;
           }
 
@@ -1612,8 +1812,13 @@ export default function HomePage() {
               35px;
           }
 
+          .eyebrow {
+            font-size: 14px;
+          }
+
           .hero h1 {
             font-size: 52px;
+
             letter-spacing: -2px;
           }
 
@@ -1623,11 +1828,15 @@ export default function HomePage() {
 
           .hero-copy {
             font-size: 13px;
+
+            max-width: 520px;
           }
 
           .hero-message {
             right: 18px;
+
             bottom: 125px;
+
             font-size: 21px;
           }
 
@@ -1639,17 +1848,32 @@ export default function HomePage() {
             height: 49px;
           }
 
-          .hero-search button {
-            padding: 12px 17px;
+          .hero-search input {
+            font-size: 12px;
           }
 
+          .hero-search button {
+            padding:
+              12px 17px;
+          }
+
+          /*
+            Categories remain the same design.
+            They simply scroll horizontally.
+          */
+
           .category-strip {
-            padding: 12px 10px;
+            padding:
+              12px 10px;
+
             overflow-x: auto;
+
+            scrollbar-width: thin;
           }
 
           .category-row {
             min-width: 760px;
+
             grid-template-columns:
               repeat(8, 1fr);
           }
@@ -1663,17 +1887,33 @@ export default function HomePage() {
             height: 56px;
           }
 
+          .category-card > span:last-child {
+            font-size: 11px;
+          }
+
+          /*
+            Benefits stack only because
+            five columns cannot physically
+            fit on a phone.
+          */
+
           .benefits {
-            margin: 12px 12px 0;
+            margin:
+              12px 12px 0;
+
             grid-template-columns: 1fr;
+
             padding: 12px;
           }
 
           .benefit {
             border-right: 0;
+
             border-bottom:
               1px solid #e0e9dc;
-            padding: 10px 0;
+
+            padding:
+              10px 0;
           }
 
           .benefit:last-child {
@@ -1684,9 +1924,15 @@ export default function HomePage() {
             padding-top: 20px;
           }
 
+          /*
+            Same listing cards,
+            two columns on mobile.
+          */
+
           .listing-grid {
             grid-template-columns:
               repeat(2, 1fr);
+
             gap: 10px;
           }
 
@@ -1694,8 +1940,14 @@ export default function HomePage() {
             height: 130px;
           }
 
+          /*
+            CTA becomes vertical while
+            retaining the same visual design.
+          */
+
           .support-cta {
             grid-template-columns: 1fr;
+
             margin-inline: 12px;
           }
 
@@ -1714,9 +1966,14 @@ export default function HomePage() {
               18px;
           }
 
+          /*
+            Footer becomes mobile columns.
+          */
+
           .footer {
             grid-template-columns:
               1fr 1fr;
+
             padding-inline: 20px;
           }
 
@@ -1727,10 +1984,11 @@ export default function HomePage() {
           .copyright {
             grid-column: 1 / -1;
           }
-
         }
 
-        /* SMALL PHONES */
+        /* =========================
+           SMALL PHONES
+        ========================= */
 
         @media (max-width: 430px) {
 
@@ -1738,15 +1996,62 @@ export default function HomePage() {
             min-height: 650px;
           }
 
+          .site-header {
+            padding-inline: 13px;
+          }
+
+          .brand img {
+            width: 160px;
+          }
+
+          .hero-content {
+            padding:
+              102px
+              17px
+              35px;
+          }
+
           .hero h1 {
             font-size: 45px;
           }
 
+          .hero-tagline {
+            font-size: 22px;
+          }
+
+          .hero-copy {
+            font-size: 12px;
+          }
+
           .hero-message {
             bottom: 145px;
+
+            right: 15px;
+
+            font-size: 19px;
+          }
+
+          .hero-message strong {
+            font-size: 21px;
+          }
+
+          .hero-search {
+            height: 47px;
+
+            padding-left: 13px;
           }
 
           .hero-search input {
+            font-size: 10px;
+
+            padding:
+              0 7px;
+          }
+
+          .hero-search button {
+            padding:
+              11px 13px;
+
             font-size: 11px;
           }
 
@@ -1763,6 +2068,10 @@ export default function HomePage() {
             font-size: 10px;
           }
 
+          .listing-price {
+            font-size: 11px;
+          }
+
           .footer {
             grid-template-columns: 1fr;
           }
@@ -1771,6 +2080,9 @@ export default function HomePage() {
             grid-column: auto;
           }
 
+          .copyright {
+            grid-column: auto;
+          }
         }
 
       `}</style>
