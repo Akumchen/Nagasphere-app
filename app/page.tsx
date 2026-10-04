@@ -404,7 +404,6 @@ export default function HomePage() {
           </div>
         </footer>
 
-      </main>
             </main>
 
       <style jsx global>{`
