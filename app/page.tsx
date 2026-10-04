@@ -19,7 +19,10 @@ type Listing = {
   created_at: string;
 };
 
-type Category = { id: string; name: string };
+type Category = {
+  id: string;
+  name: string;
+};
 
 const categoryImages: Record<string, string> = {
   "Fresh Produce": "/fresh-produce.png",
@@ -92,7 +95,7 @@ export default function HomePage() {
     };
   }, [supabase]);
 
-  async function handleSearch(event: FormEvent) {
+  function handleSearch(event: FormEvent) {
     event.preventDefault();
 
     const query = search.trim();
@@ -123,11 +126,7 @@ export default function HomePage() {
     );
   }
 
-  function listingImage(index: number) {
-    return listingImages[index % listingImages.length];
-  }
-
-  const fallbackCategories = [
+  const fallbackCategories: Category[] = [
     { id: "fresh", name: "Fresh Produce" },
     { id: "food", name: "Food & Beverages" },
     { id: "craft", name: "Handicrafts" },
@@ -137,106 +136,175 @@ export default function HomePage() {
     { id: "services", name: "Services" },
   ];
 
-  const displayedCategories = categories.length
-    ? categories.slice(0, 8)
-    : fallbackCategories;
+  const displayedCategories = (
+    categories.length ? categories : fallbackCategories
+  ).slice(0, 7);
 
   return (
     <main className="home">
-      {/* HEADER */}
-      <header className="site-header">
-        <button
-          className="brand"
-          onClick={() => router.push("/")}
-          aria-label="NagaSphere home"
-        >
-          <img src="/nagasphere-logo.png" alt="NagaSphere" />
-        </button>
-
-        <nav className={`desktop-nav ${mobileMenu ? "open" : ""}`}>
-          <button onClick={() => router.push("/dashboard")}>
-            Marketplace
-          </button>
-
-          <button
-            onClick={() =>
-              document
-                .getElementById("categories")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Categories
-          </button>
-
-          <button onClick={() => router.push("/my-requests")}>
-            My Requests
-          </button>
-
-          <button onClick={() => router.push("/messages")}>
-            Messages
-          </button>
-
-          <button onClick={accountAction}>
-            {userId ? "Dashboard" : "More"}
-          </button>
-        </nav>
-
-        <div className="header-actions">
-          <button
-            className="account-button"
-            onClick={accountAction}
-          >
-            {userId ? "Dashboard" : "My Account"}
-          </button>
-
-          <button
-            className="menu-button"
-            onClick={() => setMobileMenu((value) => !value)}
-            aria-label="Open menu"
-          >
-            ☰
-          </button>
-        </div>
-      </header>
 
       {/* HERO */}
       <section className="hero">
+
         <div
           className="hero-visual"
           aria-hidden="true"
         />
 
-        <div className="hero-shade" />
+        <div
+          className="hero-shade"
+          aria-hidden="true"
+        />
 
+        {/* HEADER */}
+        <header className="site-header">
+
+          <button
+            className="brand"
+            onClick={() => router.push("/")}
+            aria-label="NagaSphere home"
+          >
+            <img
+              src="/nagasphere-logo.png"
+              alt="NagaSphere"
+            />
+          </button>
+
+          <nav
+            className={`desktop-nav ${
+              mobileMenu ? "open" : ""
+            }`}
+          >
+            <button
+              className="active"
+              onClick={() => router.push("/")}
+            >
+              Home
+            </button>
+
+            <button
+              onClick={() => router.push("/dashboard")}
+            >
+              Marketplace⌄
+            </button>
+
+            <button
+              onClick={() =>
+                document
+                  .getElementById("categories")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+            >
+              Categories
+            </button>
+
+            <button
+              onClick={() => router.push("/my-requests")}
+            >
+              My Requests
+            </button>
+
+            <button
+              onClick={() => router.push("/messages")}
+            >
+              Messages
+            </button>
+
+            <button onClick={accountAction}>
+              More⌄
+            </button>
+          </nav>
+
+          <div className="header-actions">
+
+            <button
+              className="header-icon"
+              onClick={() =>
+                document
+                  .getElementById("hero-search")
+                  ?.focus()
+              }
+              aria-label="Search"
+            >
+              ⌕
+            </button>
+
+            <button
+              className="header-icon"
+              onClick={() =>
+                router.push(
+                  userId ? "/messages" : "/auth"
+                )
+              }
+              aria-label="Messages"
+            >
+              ♧
+            </button>
+
+            <button
+              className="account-button"
+              onClick={accountAction}
+            >
+              <span className="account-avatar">
+                ●
+              </span>
+
+              My Account⌄
+            </button>
+
+            <button
+              className="menu-button"
+              onClick={() =>
+                setMobileMenu((value) => !value)
+              }
+              aria-label="Open menu"
+            >
+              ☰
+            </button>
+
+          </div>
+        </header>
+
+        {/* HERO CONTENT */}
         <div className="hero-content">
+
           <p className="eyebrow">
             WELCOME TO
           </p>
 
-          <h1>NagaSphere</h1>
+          <h1>
+            <span>Naga</span>
+            <em>Sphere</em>
+          </h1>
 
           <p className="hero-tagline">
             Buy • Sell • Support Local
           </p>
 
           <p className="hero-copy">
-            Your trusted online marketplace in Nagaland — connecting farmers,
-            local businesses and consumers, for a stronger community and a
-            brighter future.
+            Your trusted online marketplace in
+            Nagaland — connecting farmers, local
+            businesses and consumers, for a stronger
+            community and a brighter future.
           </p>
 
           <form
             className="hero-search"
             onSubmit={handleSearch}
           >
-            <span>⌕</span>
+            <span className="search-symbol">
+              ⌕
+            </span>
 
             <input
+              id="hero-search"
               value={search}
               onChange={(event) =>
                 setSearch(event.target.value)
               }
-              placeholder="Search products, services, businesses..."
+              placeholder="Search for products, services, businesses..."
               aria-label="Search NagaSphere"
             />
 
@@ -244,221 +312,283 @@ export default function HomePage() {
               Search
             </button>
           </form>
+
         </div>
 
+        {/* HERO MESSAGE */}
         <div className="hero-message">
-          <strong>Local Products</strong>
+          <span>Local Products</span>
           <span>Local People</span>
-          <b>Stronger Together</b>
+          <strong>Stronger Together</strong>
         </div>
+
       </section>
 
       {/* CATEGORIES */}
       <section
-        className="category-section"
+        className="category-strip"
         id="categories"
       >
-        <div className="section-heading">
-          <div>
-            <p className="section-kicker">
-              DISCOVER LOCAL
-            </p>
+        <div className="category-row">
 
-            <h2>
-              Shop by Category
-            </h2>
-          </div>
+          {displayedCategories.map(
+            (category) => (
+              <button
+                className="category-card"
+                key={category.id}
+                onClick={() =>
+                  router.push(
+                    `/dashboard?category=${encodeURIComponent(
+                      category.name
+                    )}`
+                  )
+                }
+              >
+
+                <span className="category-image">
+
+                  <img
+                    src={
+                      categoryImages[
+                        category.name
+                      ] ?? "/support.png"
+                    }
+                    alt=""
+                  />
+
+                </span>
+
+                <span>
+                  {category.name}
+                </span>
+
+              </button>
+            )
+          )}
 
           <button
-            onClick={() => router.push("/dashboard")}
+            className="category-card"
+            onClick={() =>
+              router.push("/dashboard")
+            }
           >
-            View All →
+            <span className="category-image more-icon">
+              •••
+            </span>
+
+            <span>
+              More
+            </span>
           </button>
-        </div>
 
-        <div className="category-grid">
-          {displayedCategories.map((category) => (
-            <button
-              className="category-card"
-              key={category.id}
-              onClick={() =>
-                router.push(
-                  `/dashboard?category=${encodeURIComponent(
-                    category.name
-                  )}`
-                )
-              }
-            >
-              <span className="category-icon">
-                <img
-                  src={
-                    categoryImages[category.name] ??
-                    "/support.png"
-                  }
-                  alt=""
-                />
-              </span>
-
-              <span>
-                {category.name}
-              </span>
-            </button>
-          ))}
         </div>
       </section>
 
       {/* BENEFITS */}
       <section className="benefits">
-        <div>
-          <span className="benefit-icon">
-            🌿
-          </span>
 
-          <div>
-            <strong>
-              Support Local Farmers
-            </strong>
+        {[
+          [
+            "✓",
+            "Safe & Secure",
+            "Your trust matters. We keep your data and transactions safe.",
+          ],
+          [
+            "♟",
+            "Support Local",
+            "Help local farmers, artisans and small businesses grow.",
+          ],
+          [
+            "◆",
+            "Wide Variety",
+            "From fresh produce to daily needs, find it all in one place.",
+          ],
+          [
+            "●",
+            "Nagaland Focused",
+            "Built for our people, our culture, our future.",
+          ],
+          [
+            "♥",
+            "Community Driven",
+            "Real people. Real businesses. A stronger Nagaland.",
+          ],
+        ].map(
+          ([icon, title, text]) => (
+            <div
+              className="benefit"
+              key={title}
+            >
 
-            <p>
-              Help local producers reach more buyers.
-            </p>
-          </div>
-        </div>
+              <span className="benefit-icon">
+                {icon}
+              </span>
 
-        <div>
-          <span className="benefit-icon">
-            🤝
-          </span>
+              <div>
 
-          <div>
-            <strong>
-              Connect with Local People
-            </strong>
+                <strong>
+                  {title}
+                </strong>
 
-            <p>
-              Buy and sell directly within the community.
-            </p>
-          </div>
-        </div>
+                <p>
+                  {text}
+                </p>
 
-        <div>
-          <span className="benefit-icon">
-            ✦
-          </span>
+              </div>
 
-          <div>
-            <strong>
-              Grow Together
-            </strong>
+            </div>
+          )
+        )}
 
-            <p>
-              Build stronger local businesses and communities.
-            </p>
-          </div>
-        </div>
       </section>
 
       {/* FEATURED LISTINGS */}
       <section className="featured-section">
+
         <div className="section-heading">
+
           <div>
-            <p className="section-kicker">
-              LOCAL MARKETPLACE
-            </p>
 
             <h2>
               Featured Listings
             </h2>
 
-            <p className="subheading">
+            <p>
               Top picks from our local sellers.
             </p>
+
           </div>
 
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() =>
+              router.push("/dashboard")
+            }
           >
             View All →
           </button>
+
         </div>
 
         {loadingListings ? (
+
           <div className="listing-loading">
             Loading local listings…
           </div>
+
         ) : listings.length ? (
+
           <div className="listing-grid">
-            {listings.map((listing, index) => (
-              <button
-                className="listing-card"
-                key={listing.id}
-                onClick={() =>
-                  router.push(
-                    `/listing/${listing.id}`
-                  )
-                }
-              >
-                <div className="listing-image">
-                  <img
-                    src={listingImage(index)}
-                    alt=""
-                  />
 
-                  <span
-                    className={
-                      listing.type === "need"
-                        ? "need-badge"
-                        : "have-badge"
-                    }
-                  >
-                    {listing.type === "need"
-                      ? "I Need"
-                      : "For Sale"}
-                  </span>
-                </div>
+            {listings.map(
+              (listing, index) => (
 
-                <div className="listing-body">
-                  <p className="listing-category">
-                    {categoryName(
-                      listing.category_id
-                    )}
-                  </p>
+                <button
+                  className="listing-card"
+                  key={listing.id}
+                  onClick={() =>
+                    router.push(
+                      `/listing/${listing.id}`
+                    )
+                  }
+                >
 
-                  <h3>
-                    {listing.title}
-                  </h3>
+                  <div className="listing-image">
 
-                  <strong className="listing-price">
-                    {listing.budget_min != null
-                      ? `₹${listing.budget_min.toLocaleString(
-                          "en-IN"
-                        )}`
-                      : "Price on request"}
+                    <img
+                      src={
+                        listingImages[
+                          index %
+                            listingImages.length
+                        ]
+                      }
+                      alt=""
+                    />
 
-                    {listing.unit
-                      ? ` / ${listing.unit}`
-                      : ""}
-                  </strong>
+                    <span className="listing-heart">
+                      ♡
+                    </span>
 
-                  <p className="listing-location">
-                    ⌖{" "}
-                    {listing.city ||
-                      listing.state ||
-                      "Nagaland"}
-                  </p>
-                </div>
-              </button>
-            ))}
+                    <span
+                      className={
+                        listing.type === "need"
+                          ? "need-badge"
+                          : "have-badge"
+                      }
+                    >
+                      {categoryName(
+                        listing.category_id
+                      )}
+                    </span>
+
+                  </div>
+
+                  <div className="listing-body">
+
+                    <h3>
+                      {listing.title}
+                    </h3>
+
+                    <strong className="listing-price">
+
+                      {listing.budget_min !=
+                      null
+                        ? `₹${listing.budget_min.toLocaleString(
+                            "en-IN"
+                          )}`
+                        : "Price on request"}
+
+                      {listing.unit
+                        ? ` / ${listing.unit}`
+                        : ""}
+
+                    </strong>
+
+                    <p className="listing-location">
+                      ⌖{" "}
+                      {listing.city ||
+                        listing.state ||
+                        "Nagaland"}
+                    </p>
+
+                    <div className="seller-row">
+
+                      <span className="seller-avatar">
+                        ●
+                      </span>
+
+                      <span>
+                        {listing.type ===
+                        "need"
+                          ? "Local Buyer"
+                          : "Local Seller"}
+                      </span>
+
+                      <span className="rating">
+                        ★ 4.8
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </button>
+
+              )
+            )}
+
           </div>
+
         ) : (
+
           <div className="empty-featured">
+
             <h3>
               Be among the first local sellers.
             </h3>
 
             <p>
-              Create a listing and showcase your products
-              or services across Nagaland.
+              Create a listing and showcase your
+              products or services across Nagaland.
             </p>
 
             <button
@@ -472,61 +602,96 @@ export default function HomePage() {
             >
               Create a Listing
             </button>
+
           </div>
+
         )}
+
       </section>
 
       {/* SUPPORT CTA */}
       <section className="support-cta">
-        <div>
-          <p className="section-kicker">
-            ONE LOCAL PURCHASE AT A TIME
-          </p>
+
+        <div className="cta-image">
+
+          <img
+            src="/vegetables.png"
+            alt=""
+          />
+
+        </div>
+
+        <div className="cta-copy">
 
           <h2>
             Support Local. Build a Stronger Nagaland.
           </h2>
 
           <p>
-            Every purchase makes a difference — for our
-            farmers, entrepreneurs, families and communities.
+            Every purchase makes a difference — for
+            our farmers, our businesses and our community.
           </p>
+
         </div>
 
         <button
           onClick={() =>
-            router.push(
-              userId
-                ? "/create-listing"
-                : "/auth"
-            )
+            router.push("/dashboard")
           }
         >
-          {userId
-            ? "Create a Listing"
-            : "Join NagaSphere"}{" "}
-          →
+          Start Exploring →
         </button>
+
       </section>
 
       {/* FOOTER */}
       <footer className="footer">
+
         <div className="footer-brand">
+
           <img
             src="/nagasphere-logo.png"
             alt="NagaSphere"
           />
 
           <p>
-            Connecting Nagaland through local commerce.
+            Local Needs · Global Reach
           </p>
+
         </div>
 
-        <div className="footer-links">
+        <div>
+
+          <h4>
+            Quick Links
+          </h4>
+
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() =>
+              router.push("/")
+            }
+          >
+            Home
+          </button>
+
+          <button
+            onClick={() =>
+              router.push("/dashboard")
+            }
           >
             Marketplace
+          </button>
+
+          <button
+            onClick={() =>
+              document
+                .getElementById("categories")
+                ?.scrollIntoView({
+                  behavior: "smooth",
+                })
+            }
+          >
+            Categories
           </button>
 
           <button
@@ -537,13 +702,13 @@ export default function HomePage() {
             My Requests
           </button>
 
-          <button
-            onClick={() =>
-              router.push("/messages")
-            }
-          >
-            Messages
-          </button>
+        </div>
+
+        <div>
+
+          <h4>
+            Support
+          </h4>
 
           <button
             onClick={() =>
@@ -561,8 +726,18 @@ export default function HomePage() {
             Privacy Policy
           </button>
 
+          <button
+            onClick={() =>
+              router.push("/messages")
+            }
+          >
+            Contact Us
+          </button>
+
           {userId ? (
-            <button onClick={handleSignOut}>
+            <button
+              onClick={handleSignOut}
+            >
               Sign Out
             </button>
           ) : (
@@ -574,20 +749,52 @@ export default function HomePage() {
               Sign In
             </button>
           )}
+
+        </div>
+
+        <div className="footer-news">
+
+          <h4>
+            Stay Connected
+          </h4>
+
+          <p>
+            Get the latest updates and offers.
+          </p>
+
+          <form
+            onSubmit={(e) =>
+              e.preventDefault()
+            }
+          >
+
+            <input
+              placeholder="Your email address"
+              aria-label="Email address"
+            />
+
+            <button type="submit">
+              Subscribe
+            </button>
+
+          </form>
+
         </div>
 
         <p className="copyright">
           © {new Date().getFullYear()} NagaSphere.
-          Built for Nagaland.
+          All rights reserved.
         </p>
+
       </footer>
 
-      {/* RESPONSIVE DESIGN */}
+      {/* PAGE STYLES */}
       <style jsx>{`
+
         .home {
           min-height: 100vh;
-          background: #fbfaf5;
-          color: #203127;
+          background: #fff;
+          color: #17352b;
           font-family: Arial, Helvetica, sans-serif;
           overflow-x: hidden;
         }
@@ -596,81 +803,11 @@ export default function HomePage() {
           font: inherit;
         }
 
-        /* HEADER */
-
-        .site-header {
-          height: 76px;
-          padding: 0 clamp(18px, 5vw, 64px);
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 22px;
-          background: #fffdf8;
-          position: relative;
-          z-index: 20;
-          border-bottom: 1px solid rgba(31, 55, 40, 0.08);
-        }
-
-        .brand {
-          border: 0;
-          background: none;
-          padding: 0;
-          cursor: pointer;
-        }
-
-        .brand img {
-          width: clamp(135px, 13vw, 180px);
-          display: block;
-        }
-
-        .desktop-nav {
-          display: flex;
-          align-items: center;
-          gap: clamp(14px, 2.2vw, 34px);
-          margin-left: auto;
-        }
-
-        .desktop-nav button,
-        .account-button,
-        .menu-button {
-          border: 0;
-          background: none;
-          color: #34463a;
-          cursor: pointer;
-          font-size: 14px;
-        }
-
-        .desktop-nav button:hover,
-        .footer button:hover {
-          color: #23663d;
-        }
-
-        .account-button {
-          padding: 11px 17px;
-          border: 1px solid #d9dfd5;
-          border-radius: 999px;
-          background: #fff;
-        }
-
-        .header-actions {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .menu-button {
-          display: none;
-          font-size: 25px;
-        }
-
         /* HERO */
 
         .hero {
-          min-height: 430px;
+          min-height: 400px;
           position: relative;
-          display: flex;
-          align-items: center;
-          padding: 62px clamp(22px, 7vw, 88px);
           color: #fff;
           overflow: hidden;
         }
@@ -678,9 +815,9 @@ export default function HomePage() {
         .hero-visual {
           position: absolute;
           inset: 0;
-          background-image: url("/NagaSphere_Local_Marketplace_in_Nagaland.png");
-          background-size: cover;
-          background-position: center top;
+          background:
+            url("/nagasphere-hero.jpg")
+            center / cover no-repeat;
           transform: scale(1.01);
         }
 
@@ -689,61 +826,208 @@ export default function HomePage() {
           inset: 0;
           background:
             linear-gradient(
-              90deg,
-              rgba(11, 38, 27, 0.76) 0%,
-              rgba(11, 38, 27, 0.5) 47%,
-              rgba(11, 38, 27, 0.18) 100%
+              180deg,
+              rgba(4, 32, 28, .50) 0%,
+              rgba(7, 48, 35, .10) 42%,
+              rgba(5, 34, 28, .28) 100%
             );
         }
+
+        /* HEADER */
+
+        .site-header {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 72px;
+          padding:
+            0
+            clamp(18px, 6.5vw, 78px);
+          display: flex;
+          align-items: center;
+          gap: 25px;
+          z-index: 10;
+          background:
+            linear-gradient(
+              180deg,
+              rgba(7, 31, 28, .48),
+              rgba(7, 31, 28, 0)
+            );
+          border: 0;
+        }
+
+        .brand {
+          border: 0;
+          background: none;
+          padding: 0;
+          cursor: pointer;
+          flex: none;
+        }
+
+        .brand img {
+          width: 225px;
+          max-width: 27vw;
+          height: auto;
+          display: block;
+        }
+
+        .desktop-nav {
+          display: flex;
+          align-items: center;
+          gap: clamp(15px, 2.2vw, 31px);
+          margin-left: auto;
+        }
+
+        .desktop-nav button,
+        .account-button,
+        .header-icon,
+        .menu-button {
+          border: 0;
+          background: none;
+          color: #fff;
+          cursor: pointer;
+          font-size: 13px;
+          text-shadow:
+            0 1px 8px rgba(0,0,0,.3);
+        }
+
+        .desktop-nav button {
+          height: 52px;
+          position: relative;
+          white-space: nowrap;
+        }
+
+        .desktop-nav button.active {
+          color: #65dc83;
+        }
+
+        .desktop-nav button.active:after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          bottom: 7px;
+          height: 2px;
+          background: #4ee477;
+        }
+
+        .header-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-left: 5px;
+        }
+
+        .header-icon {
+          font-size: 22px;
+          width: 30px;
+        }
+
+        .account-button {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          white-space: nowrap;
+        }
+
+        .account-avatar {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: #fff;
+          color: #9aa09e;
+          display: grid;
+          place-items: center;
+          font-size: 13px;
+          text-shadow: none;
+        }
+
+        .menu-button {
+          display: none;
+          font-size: 25px;
+        }
+
+        /* HERO CONTENT */
 
         .hero-content {
           position: relative;
           z-index: 2;
-          max-width: 700px;
+          padding:
+            92px
+            7%
+            35px;
+          max-width: 730px;
         }
 
         .eyebrow {
-          letter-spacing: 3px;
-          font-size: 13px;
-          margin: 0 0 10px;
+          margin: 0 0 1px;
+          color: #65d66f;
+          font-size: 17px;
           font-weight: 700;
+          letter-spacing: .5px;
         }
 
         .hero h1 {
-          font-family: Georgia, serif;
-          font-size: clamp(48px, 7vw, 86px);
-          line-height: 0.95;
-          margin: 0 0 10px;
-          font-weight: 500;
+          margin: 0;
+          font-size:
+            clamp(55px, 6.5vw, 82px);
+          line-height: 1;
+          font-weight: 800;
+          letter-spacing: -3px;
+          text-shadow:
+            0 3px 14px rgba(0,0,0,.25);
+        }
+
+        .hero h1 span {
+          color: #fff;
+        }
+
+        .hero h1 em {
+          font-style: normal;
+          color: #52d55d;
         }
 
         .hero-tagline {
-          font-size: clamp(19px, 2vw, 27px);
-          margin: 0 0 18px;
-          font-weight: 600;
+          margin: 9px 0 7px;
+          font-family:
+            "Brush Script MT",
+            "Segoe Script",
+            cursive;
+          font-size: 31px;
+          line-height: 1.05;
         }
 
         .hero-copy {
-          max-width: 620px;
-          line-height: 1.6;
+          margin: 0 0 22px;
+          max-width: 590px;
           font-size: 16px;
-          margin: 0 0 26px;
+          line-height: 1.45;
+          text-shadow:
+            0 2px 8px rgba(0,0,0,.4);
         }
 
+        /* SEARCH */
+
         .hero-search {
-          height: 56px;
-          max-width: 650px;
-          border-radius: 999px;
+          width: min(650px, 100%);
+          height: 53px;
+          border-radius: 30px;
           background: #fff;
           display: flex;
           align-items: center;
-          padding: 5px 7px 5px 20px;
-          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+          padding:
+            4px
+            6px
+            4px
+            19px;
+          box-shadow:
+            0 7px 25px rgba(0,0,0,.22);
         }
 
-        .hero-search span {
+        .search-symbol {
           font-size: 24px;
-          color: #637065;
+          color: #82908a;
         }
 
         .hero-search input {
@@ -751,196 +1035,249 @@ export default function HomePage() {
           flex: 1;
           border: 0;
           outline: 0;
-          background: none;
           padding: 0 12px;
-          font-size: 14px;
-          color: #203127;
+          color: #33433b;
+          font-size: 13px;
         }
 
         .hero-search button {
           border: 0;
-          border-radius: 999px;
-          padding: 13px 21px;
-          background: #244d35;
+          background: #3cbd63;
           color: #fff;
-          cursor: pointer;
-        }
-
-        .hero-message {
-          position: absolute;
-          z-index: 2;
-          right: clamp(25px, 8vw, 100px);
-          bottom: 70px;
-          display: flex;
-          flex-direction: column;
-          text-align: right;
-          gap: 5px;
-          font-family: Georgia, serif;
-          font-size: 21px;
-          text-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
-        }
-
-        .hero-message strong {
-          font-size: 27px;
-        }
-
-        /* SECTIONS */
-
-        .category-section,
-        .featured-section {
-          max-width: 1120px;
-          margin: 0 auto;
-          padding: 58px clamp(20px, 4vw, 40px);
-        }
-
-        .section-heading {
-          display: flex;
-          align-items: end;
-          justify-content: space-between;
-          gap: 20px;
-          margin-bottom: 26px;
-        }
-
-        .section-kicker {
-          margin: 0 0 7px;
-          font-size: 11px;
-          letter-spacing: 2.3px;
-          font-weight: 800;
-          color: #56805f;
-        }
-
-        .section-heading h2 {
-          font-family: Georgia, serif;
-          font-weight: 500;
-          font-size: clamp(30px, 4vw, 43px);
-          margin: 0;
-        }
-
-        .section-heading button {
-          border: 0;
-          background: none;
-          color: #2c6843;
+          border-radius: 25px;
+          padding: 13px 27px;
           font-weight: 700;
           cursor: pointer;
         }
 
+        /* HERO MESSAGE */
+
+        .hero-message {
+          position: absolute;
+          z-index: 3;
+          right: 8%;
+          bottom: 92px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          color: #fff;
+          font-family:
+            "Brush Script MT",
+            "Segoe Script",
+            cursive;
+          font-size: 30px;
+          line-height: .95;
+          transform: rotate(-7deg);
+          text-shadow:
+            0 3px 8px rgba(0,0,0,.3);
+        }
+
+        .hero-message strong {
+          font-weight: 600;
+          font-size: 31px;
+          position: relative;
+        }
+
+        .hero-message strong:after {
+          content: "";
+          position: absolute;
+          height: 3px;
+          background: #47d86b;
+          left: 15px;
+          right: -5px;
+          bottom: -9px;
+          transform: rotate(-2deg);
+        }
+
         /* CATEGORIES */
 
-        .category-grid {
+        .category-strip {
+          background: #fff;
+          padding: 18px 4%;
+          border-bottom: 1px solid #edf0eb;
+        }
+
+        .category-row {
+          max-width: 1110px;
+          margin: auto;
           display: grid;
-          grid-template-columns: repeat(7, minmax(0, 1fr));
-          gap: 12px;
+          grid-template-columns:
+            repeat(8, 1fr);
         }
 
         .category-card {
-          border: 1px solid #e5e8df;
+          border: 0;
+          border-right: 1px solid #edf0eb;
           background: #fff;
-          border-radius: 15px;
-          padding: 17px 10px;
+          min-height: 105px;
           display: flex;
-          align-items: center;
           flex-direction: column;
-          gap: 10px;
-          color: #35483b;
-          cursor: pointer;
-          min-height: 130px;
+          align-items: center;
           justify-content: center;
-          transition: 0.18s;
+          gap: 9px;
+          color: #18352c;
+          cursor: pointer;
         }
 
-        .category-card:hover {
+        .category-card:last-child {
+          border-right: 0;
+        }
+
+        .category-card:hover
+        .category-image {
           transform: translateY(-2px);
-          box-shadow: 0 9px 25px rgba(32, 49, 39, 0.08);
         }
 
-        .category-icon {
-          width: 58px;
-          height: 58px;
-          border-radius: 50%;
-          background: #f1f5ed;
+        .category-image {
+          width: 68px;
+          height: 68px;
+          border-radius: 14px;
+          overflow: hidden;
           display: grid;
           place-items: center;
-          overflow: hidden;
+          transition: .15s;
+          background: #edf2ed;
         }
 
-        .category-icon img {
-          width: 75%;
-          height: 75%;
-          object-fit: contain;
+        .category-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
         .category-card > span:last-child {
           font-size: 12px;
           font-weight: 700;
           text-align: center;
-          line-height: 1.25;
+        }
+
+        .more-icon {
+          background: #394846;
+          color: #fff;
+          font-size: 29px;
+          letter-spacing: 2px;
         }
 
         /* BENEFITS */
 
         .benefits {
-          background: #eef3ea;
+          max-width: 1110px;
+          margin: 20px auto 0;
+          background: #f2f8ee;
+          border-radius: 12px;
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 25px;
-          padding: 30px max(20px, 7vw);
+          grid-template-columns:
+            repeat(5, 1fr);
+          padding: 20px 22px;
+          gap: 0;
         }
 
-        .benefits > div {
+        .benefit {
           display: flex;
-          gap: 14px;
-          align-items: flex-start;
+          gap: 11px;
+          padding: 0 17px;
+          border-right:
+            1px solid #e0e9dc;
+        }
+
+        .benefit:first-child {
+          padding-left: 0;
+        }
+
+        .benefit:last-child {
+          border-right: 0;
+          padding-right: 0;
         }
 
         .benefit-icon {
-          font-size: 25px;
+          width: 42px;
+          height: 42px;
+          flex: none;
+          border-radius: 50%;
+          background: #d9f3dc;
+          color: #20a554;
+          display: grid;
+          place-items: center;
+          font-size: 21px;
+          font-weight: 800;
         }
 
-        .benefits strong {
-          font-size: 14px;
+        .benefit strong {
+          font-size: 13px;
         }
 
-        .benefits p {
+        .benefit p {
           margin: 6px 0 0;
-          color: #68746b;
-          font-size: 12px;
+          color: #718079;
+          font-size: 10px;
           line-height: 1.45;
         }
 
-        /* LISTINGS */
+        /* FEATURED */
 
-        .subheading {
-          margin: 7px 0 0;
-          color: #778077;
-          font-size: 13px;
+        .featured-section {
+          max-width: 1110px;
+          margin: 0 auto;
+          padding: 25px 0 28px;
+        }
+
+        .section-heading {
+          display: flex;
+          align-items: end;
+          justify-content: space-between;
+          padding: 0 1px 12px;
+        }
+
+        .section-heading h2 {
+          margin: 0;
+          font-size: 25px;
+        }
+
+        .section-heading p {
+          margin: 5px 0 0;
+          color: #5e6d65;
+          font-size: 12px;
+        }
+
+        .section-heading > button {
+          border: 0;
+          background: none;
+          color: #148747;
+          font-weight: 800;
+          cursor: pointer;
         }
 
         .listing-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
+          grid-template-columns:
+            repeat(6, 1fr);
+          gap: 11px;
         }
 
         .listing-card {
-          border: 1px solid #e5e7e1;
+          border: 1px solid #e7ebe5;
           background: #fff;
-          border-radius: 17px;
-          padding: 0;
+          border-radius: 9px;
           overflow: hidden;
+          padding: 0;
           text-align: left;
           cursor: pointer;
-          box-shadow: 0 5px 18px rgba(28, 49, 36, 0.04);
-          transition: 0.18s;
+          box-shadow:
+            0 3px 12px
+            rgba(22,51,39,.06);
+          transition: .16s;
         }
 
         .listing-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 30px rgba(28, 49, 36, 0.09);
+          transform: translateY(-2px);
+          box-shadow:
+            0 8px 20px
+            rgba(22,51,39,.1);
         }
 
         .listing-image {
-          height: 190px;
-          background: #edf1e9;
+          height: 98px;
+          background: #edf2ed;
           position: relative;
           overflow: hidden;
         }
@@ -951,227 +1288,299 @@ export default function HomePage() {
           object-fit: cover;
         }
 
+        .listing-heart {
+          position: absolute;
+          right: 8px;
+          top: 6px;
+          color: #fff;
+          font-size: 24px;
+          text-shadow:
+            0 1px 5px #000;
+        }
+
         .have-badge,
         .need-badge {
           position: absolute;
-          top: 12px;
-          left: 12px;
-          border-radius: 999px;
-          padding: 6px 10px;
-          background: #fff;
-          color: #2f6a43;
-          font-size: 11px;
-          font-weight: 800;
+          bottom: 0;
+          left: 0;
+          background: #20934b;
+          color: #fff;
+          padding: 5px 9px;
+          font-size: 8px;
+          font-weight: 700;
+          border-radius: 0 7px 0 0;
         }
 
         .need-badge {
-          color: #8a5a20;
+          background: #9a6a26;
         }
 
         .listing-body {
-          padding: 16px;
-        }
-
-        .listing-category {
-          font-size: 10px;
-          text-transform: uppercase;
-          letter-spacing: 1.3px;
-          color: #729078;
-          font-weight: 800;
-          margin: 0 0 6px;
+          padding: 8px;
         }
 
         .listing-body h3 {
-          font-family: Georgia, serif;
-          font-size: 20px;
-          font-weight: 500;
-          margin: 0 0 11px;
-          color: #26382c;
+          font-size: 11px;
+          line-height: 1.3;
+          margin: 0 0 5px;
+          color: #1c342b;
+          min-height: 29px;
         }
 
         .listing-price {
-          font-size: 16px;
-          color: #315f3e;
+          font-size: 12px;
+          color: #117c42;
         }
 
         .listing-location {
-          font-size: 12px;
-          color: #7b847c;
-          margin: 9px 0 0;
+          font-size: 9px;
+          color: #77827b;
+          margin: 5px 0;
+        }
+
+        .seller-row {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          border-top: 1px solid #edf0ec;
+          padding-top: 6px;
+          font-size: 8px;
+          color: #69756e;
+        }
+
+        .seller-avatar {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: #c9d4ce;
+          color: #74847b;
+          display: grid;
+          place-items: center;
+        }
+
+        .rating {
+          margin-left: auto;
+          color: #e9a700;
         }
 
         .listing-loading,
         .empty-featured {
-          padding: 55px 25px;
+          padding: 50px;
           text-align: center;
-          background: #fff;
-          border: 1px solid #e6e8e2;
-          border-radius: 18px;
-          color: #69736c;
+          background: #f8faf7;
+          border-radius: 12px;
         }
 
         .empty-featured h3 {
           font-family: Georgia, serif;
-          font-size: 24px;
-          margin: 0 0 8px;
-          color: #27382c;
-        }
-
-        .empty-featured p {
-          margin: 0 auto 18px;
-          max-width: 520px;
-          line-height: 1.5;
         }
 
         .empty-featured button {
           border: 0;
-          border-radius: 999px;
-          background: #234f35;
+          border-radius: 20px;
+          background: #1d8050;
           color: #fff;
-          padding: 12px 19px;
+          padding: 11px 18px;
           cursor: pointer;
         }
 
         /* CTA */
 
         .support-cta {
-          margin: 10px auto 0;
-          max-width: 1120px;
-          border-radius: 24px;
-          background: #234c34;
-          color: #fff;
-          padding: 45px clamp(25px, 5vw, 65px);
-          display: flex;
+          max-width: 1110px;
+          margin: 0 auto 18px;
+          background: #f1f7ec;
+          border-radius: 13px;
+          display: grid;
+          grid-template-columns:
+            280px 1fr auto;
           align-items: center;
-          justify-content: space-between;
-          gap: 30px;
+          overflow: hidden;
         }
 
-        .support-cta .section-kicker {
-          color: #bdd2bf;
+        .cta-image {
+          height: 92px;
         }
 
-        .support-cta h2 {
-          font-family: Georgia, serif;
-          font-weight: 500;
-          font-size: clamp(29px, 4vw, 44px);
-          margin: 0 0 9px;
+        .cta-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
-        .support-cta p:not(.section-kicker) {
-          max-width: 650px;
-          line-height: 1.55;
+        .cta-copy {
+          padding: 15px 25px;
+        }
+
+        .cta-copy h2 {
+          font-size: 16px;
+          margin: 0 0 7px;
+        }
+
+        .cta-copy p {
+          font-size: 11px;
           margin: 0;
-          color: #d8e4d9;
-          font-size: 14px;
+          line-height: 1.5;
+          color: #52655b;
         }
 
-        .support-cta button {
-          white-space: nowrap;
+        .support-cta > button {
+          margin-right: 25px;
           border: 0;
-          border-radius: 999px;
-          padding: 14px 21px;
-          background: #fff;
-          color: #234c34;
+          border-radius: 24px;
+          background: #0b6046;
+          color: #fff;
+          padding: 13px 21px;
           font-weight: 800;
+          white-space: nowrap;
           cursor: pointer;
         }
 
         /* FOOTER */
 
         .footer {
-          margin-top: 55px;
-          background: #18251c;
-          color: #dce5dd;
-          padding: 42px max(22px, 7vw) 25px;
+          background: #073d35;
+          color: #dceae5;
+          padding:
+            28px
+            max(20px, 6.5vw)
+            16px;
           display: grid;
-          grid-template-columns: 1.3fr 2fr;
-          gap: 30px;
+          grid-template-columns:
+            1.1fr .75fr .85fr 1.2fr;
+          gap: 28px;
         }
 
         .footer-brand img {
-          width: 160px;
+          width: 180px;
           filter: brightness(0) invert(1);
-          opacity: 0.95;
+          margin-bottom: 8px;
         }
 
-        .footer-brand p {
-          color: #9eaaa0;
-          font-size: 12px;
+        .footer-brand p,
+        .footer-news p {
+          font-size: 10px;
+          color: #a8c1b8;
+          margin: 0;
         }
 
-        .footer-links {
-          display: flex;
-          justify-content: flex-end;
-          align-content: flex-start;
-          flex-wrap: wrap;
-          gap: 12px 24px;
+        .footer h4 {
+          font-size: 11px;
+          margin: 0 0 9px;
         }
 
-        .footer button {
+        .footer
+        > div:not(.footer-brand):not(.footer-news)
+        button {
+          display: block;
           border: 0;
           background: none;
-          color: #c5d0c7;
+          color: #c5d7d0;
+          padding: 3px 0;
+          font-size: 10px;
           cursor: pointer;
-          font-size: 12px;
+        }
+
+        .footer-news form {
+          display: flex;
+          background: #fff;
+          border-radius: 20px;
+          overflow: hidden;
+          margin-top: 8px;
+        }
+
+        .footer-news input {
+          min-width: 0;
+          flex: 1;
+          border: 0;
+          outline: 0;
+          padding: 9px 11px;
+          font-size: 10px;
+        }
+
+        .footer-news button {
+          border: 0;
+          background: #40b963;
+          color: #fff;
+          padding: 0 13px;
+          font-size: 10px;
         }
 
         .copyright {
           grid-column: 1 / -1;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          padding-top: 20px;
-          color: #7f8c82;
-          font-size: 11px;
+          border-top:
+            1px solid
+            rgba(255,255,255,.13);
+          padding-top: 12px;
           margin: 0;
+          color: #8fa9a0;
+          font-size: 9px;
         }
 
         /* TABLET */
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
+
           .desktop-nav {
             gap: 13px;
           }
 
           .desktop-nav button {
-            font-size: 12px;
+            font-size: 11px;
           }
 
-          .category-grid {
-            grid-template-columns: repeat(4, 1fr);
-          }
-
-          .listing-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .hero-message {
-            right: 35px;
+          .header-icon {
+            display: none;
           }
 
           .benefits {
-            padding-inline: 30px;
+            margin-inline: 15px;
           }
+
+          .featured-section {
+            padding-inline: 15px;
+          }
+
+          .listing-grid {
+            grid-template-columns:
+              repeat(3, 1fr);
+          }
+
+          .support-cta {
+            margin-inline: 15px;
+          }
+
         }
 
         /* MOBILE */
 
         @media (max-width: 700px) {
+
+          .hero {
+            min-height: 620px;
+          }
+
           .site-header {
-            height: 68px;
+            height: 64px;
+            padding-inline: 16px;
+          }
+
+          .brand img {
+            width: 175px;
+            max-width: 55vw;
           }
 
           .desktop-nav {
             display: none;
             position: absolute;
-            top: 68px;
+            top: 64px;
             left: 0;
             right: 0;
-            padding: 15px 20px;
-            background: #fffdf8;
-            border-bottom: 1px solid #e5e8e1;
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.07);
+            background: rgba(5,34,29,.97);
+            padding: 10px 18px;
             flex-direction: column;
             align-items: stretch;
+            gap: 0;
           }
 
           .desktop-nav.open {
@@ -1179,8 +1588,13 @@ export default function HomePage() {
           }
 
           .desktop-nav button {
+            height: auto;
+            padding: 11px;
             text-align: left;
-            padding: 10px;
+          }
+
+          .desktop-nav button.active:after {
+            display: none;
           }
 
           .account-button {
@@ -1191,153 +1605,176 @@ export default function HomePage() {
             display: block;
           }
 
-          .hero {
-            min-height: 560px;
-            padding: 55px 22px 100px;
-            align-items: flex-end;
-          }
-
-          .hero-visual {
-            background-position: 56% top;
-          }
-
-          .hero-shade {
-            background:
-              linear-gradient(
-                180deg,
-                rgba(11, 38, 27, 0.35),
-                rgba(11, 38, 27, 0.82) 65%,
-                rgba(11, 38, 27, 0.92)
-              );
-          }
-
           .hero-content {
-            width: 100%;
+            padding:
+              105px
+              20px
+              35px;
           }
 
           .hero h1 {
-            font-size: 54px;
+            font-size: 52px;
+            letter-spacing: -2px;
+          }
+
+          .hero-tagline {
+            font-size: 25px;
           }
 
           .hero-copy {
-            font-size: 14px;
-            line-height: 1.5;
-          }
-
-          .hero-search {
-            height: 50px;
-            padding-left: 15px;
-          }
-
-          .hero-search input {
             font-size: 13px;
           }
 
-          .hero-search button {
-            padding: 11px 15px;
-          }
-
           .hero-message {
-            right: 22px;
-            top: 42px;
-            bottom: auto;
-            font-size: 14px;
+            right: 18px;
+            bottom: 125px;
+            font-size: 21px;
           }
 
           .hero-message strong {
-            font-size: 18px;
+            font-size: 23px;
           }
 
-          .category-section,
-          .featured-section {
-            padding-top: 42px;
-            padding-bottom: 42px;
+          .hero-search {
+            height: 49px;
           }
 
-          .section-heading {
-            align-items: flex-start;
+          .hero-search button {
+            padding: 12px 17px;
           }
 
-          .category-grid {
-            grid-template-columns: repeat(2, 1fr);
+          .category-strip {
+            padding: 12px 10px;
+            overflow-x: auto;
+          }
+
+          .category-row {
+            min-width: 760px;
+            grid-template-columns:
+              repeat(8, 1fr);
           }
 
           .category-card {
-            min-height: 110px;
+            min-height: 95px;
+          }
+
+          .category-image {
+            width: 56px;
+            height: 56px;
           }
 
           .benefits {
+            margin: 12px 12px 0;
             grid-template-columns: 1fr;
-            padding: 26px 22px;
-            gap: 20px;
+            padding: 12px;
+          }
+
+          .benefit {
+            border-right: 0;
+            border-bottom:
+              1px solid #e0e9dc;
+            padding: 10px 0;
+          }
+
+          .benefit:last-child {
+            border-bottom: 0;
+          }
+
+          .featured-section {
+            padding-top: 20px;
           }
 
           .listing-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns:
+              repeat(2, 1fr);
+            gap: 10px;
           }
 
           .listing-image {
-            height: 210px;
+            height: 130px;
           }
 
           .support-cta {
-            margin-inline: 15px;
-            flex-direction: column;
-            align-items: flex-start;
-            border-radius: 20px;
-            padding: 34px 25px;
+            grid-template-columns: 1fr;
+            margin-inline: 12px;
           }
 
-          .support-cta button {
-            width: 100%;
+          .cta-image {
+            height: 120px;
+          }
+
+          .cta-copy {
+            padding: 18px;
+          }
+
+          .support-cta > button {
+            margin:
+              0
+              18px
+              18px;
           }
 
           .footer {
-            grid-template-columns: 1fr;
-            padding-top: 35px;
+            grid-template-columns:
+              1fr 1fr;
+            padding-inline: 20px;
           }
 
-          .footer-links {
-            justify-content: flex-start;
+          .footer-news {
+            grid-column: 1 / -1;
           }
 
           .copyright {
-            grid-column: 1;
+            grid-column: 1 / -1;
           }
+
         }
 
         /* SMALL PHONES */
 
-        @media (max-width: 420px) {
+        @media (max-width: 430px) {
+
           .hero {
-            min-height: 590px;
+            min-height: 650px;
           }
 
           .hero h1 {
-            font-size: 47px;
+            font-size: 45px;
           }
 
-          .hero-search button {
-            font-size: 12px;
+          .hero-message {
+            bottom: 145px;
           }
 
           .hero-search input {
-            padding: 0 5px;
+            font-size: 11px;
           }
 
-          .category-grid {
-            gap: 9px;
+          .listing-grid {
+            grid-template-columns:
+              1fr 1fr;
           }
 
-          .category-card {
-            padding: 13px 7px;
+          .listing-image {
+            height: 118px;
           }
 
           .listing-body h3 {
-            font-size: 18px;
+            font-size: 10px;
           }
+
+          .footer {
+            grid-template-columns: 1fr;
+          }
+
+          .footer-news {
+            grid-column: auto;
+          }
+
         }
+
       `}</style>
+
     </main>
   );
 }
