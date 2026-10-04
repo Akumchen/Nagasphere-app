@@ -109,27 +109,36 @@ function DesktopHome() {
           alt="NagaSphere — Local Marketplace in Nagaland"
         />
 
-        <a className="hotspot home" href="/" aria-label="Home" />
+        <a
+          className="hotspot home"
+          href="/"
+          aria-label="Home"
+        />
+
         <a
           className="hotspot marketplace"
           href="/listing"
           aria-label="Marketplace"
         />
+
         <a
           className="hotspot categories"
           href="#categories"
           aria-label="Categories"
         />
+
         <a
           className="hotspot requests"
           href="/my-requests"
           aria-label="My Requests"
         />
+
         <a
           className="hotspot messages"
           href="/messages"
           aria-label="Messages"
         />
+
         <a
           className="hotspot account"
           href="/profile"
@@ -159,209 +168,100 @@ function DesktopHome() {
 function MobileHome() {
   return (
     <div className="mobile-home">
-      <header className="m-header">
-        <a href="/" aria-label="NagaSphere home" className="m-logo">
-  <strong>NagaSphere</strong>
-  <span>Local Needs • Global Reach</span>
-</a>
-
-        <button type="button" aria-label="Open menu">
-          ☰
-        </button>
-      </header>
-
-      <section className="m-hero">
-        <div className="m-hero-art" aria-hidden="true" />
-
-        <div className="m-hero-copy">
-          <p>WELCOME TO</p>
-
-          <h1>
-            Naga<span>Sphere</span>
-          </h1>
-
-          <div className="tagline">
-            Buy • Sell • Support Local
-          </div>
-
-          <p className="copy">
-            Discover local products, connect with trusted sellers,
-            support businesses and build a stronger Nagaland.
-          </p>
-
-          <SearchForm />
-
-          <div className="hero-message">
-            Local Products • Local People • Stronger Together
-          </div>
-        </div>
-      </section>
-
-      <section
-        className="category-strip"
-        id="categories"
-        aria-label="Categories"
-      >
-        {categories.map(([icon, name]) => (
-          <a
-            key={name}
-            href="/listing"
-            className="category-item"
-          >
-            <span className="category-image">
-              <span className="category-icon">{icon}</span>
-            </span>
-
-            <span>{name}</span>
-          </a>
-        ))}
-      </section>
-
-      <section className="benefits">
-        <div className="benefit">
-          <span className="benefit-icon">✓</span>
-          <div>
-            <strong>Safe & Secure</strong>
-            <p>Buy and sell with confidence.</p>
-          </div>
-        </div>
-
-        <div className="benefit">
-          <span className="benefit-icon">♥</span>
-          <div>
-            <strong>Support Local</strong>
-            <p>Help Nagaland businesses grow.</p>
-          </div>
-        </div>
-
-        <div className="benefit">
-          <span className="benefit-icon">◆</span>
-          <div>
-            <strong>Wide Variety</strong>
-            <p>Find products and services for your needs.</p>
-          </div>
-        </div>
-
-        <div className="benefit">
-          <span className="benefit-icon">N</span>
-          <div>
-            <strong>Nagaland Focused</strong>
-            <p>Built around our local community.</p>
-          </div>
-        </div>
-
-        <div className="benefit">
-          <span className="benefit-icon">∞</span>
-          <div>
-            <strong>Community Driven</strong>
-            <p>Connect people, businesses and opportunities.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="featured">
-        <div className="section-heading">
-          <div>
-            <h2>Featured Listings</h2>
-            <p>Discover products from across Nagaland</p>
-          </div>
-
-          <a href="/listing">View all</a>
-        </div>
-
-        <div className="listing-grid">
-          {listings.map((item) => (
-            <a
-              className="listing-card"
-              href="/listing"
-              key={item.title}
-            >
-              <div className="listing-image">
-                <img
-                  src="/NagaSphere_Local_Marketplace_in_Nagaland.png"
-                  alt=""
-                />
-
-                <span className="listing-category">
-                  Local
-                </span>
-
-                <span className="heart">♡</span>
-              </div>
-
-              <div className="listing-body">
-                <h3>{item.title}</h3>
-
-                <strong>{item.price}</strong>
-
-                <div className="location">
-                  📍 {item.location}
-                </div>
-
-                <div className="seller">
-                  👤 {item.seller}
-                </div>
-
-                <div className="rating">
-                  ★ {item.rating}
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </section>
-
-      <section className="support-cta">
+      <div className="mobile-reference-frame">
         <img
           src="/NagaSphere_Local_Marketplace_in_Nagaland.png"
-          alt="Nagaland"
+          alt="NagaSphere — Local Marketplace in Nagaland"
         />
 
-        <div>
-          <h2>Support Local. Build a Stronger Nagaland.</h2>
+        <div className="mobile-header-overlay">
+          <a
+            href="/"
+            className="mobile-logo"
+            aria-label="NagaSphere home"
+          >
+            <strong>NagaSphere</strong>
+            <span>Local Needs • Global Reach</span>
+          </a>
 
-          <p>
-            Every purchase supports local people,
-            businesses and communities.
-          </p>
+          <button
+            type="button"
+            aria-label="Open menu"
+            className="mobile-menu-button"
+            onClick={() => {
+              document
+                .getElementById("mobile-categories")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            ☰
+          </button>
         </div>
 
-        <a href="/listing">Start Exploring</a>
-      </section>
+        <a
+          className="mobile-hotspot mobile-home-link"
+          href="/"
+          aria-label="Home"
+        />
 
-      <footer className="ns-footer">
-        <div className="footer-brand">
-          <strong>NagaSphere</strong>
+        <a
+          className="mobile-hotspot mobile-marketplace-link"
+          href="/listing"
+          aria-label="Marketplace"
+        />
 
-          <small>
-            Local Needs • Global Reach
-          </small>
+        <a
+          className="mobile-hotspot mobile-categories-link"
+          href="#mobile-categories"
+          aria-label="Categories"
+        />
+
+        <a
+          className="mobile-hotspot mobile-requests-link"
+          href="/my-requests"
+          aria-label="My Requests"
+        />
+
+        <a
+          className="mobile-hotspot mobile-messages-link"
+          href="/messages"
+          aria-label="Messages"
+        />
+
+        <a
+          className="mobile-hotspot mobile-account-link"
+          href="/profile"
+          aria-label="My Account"
+        />
+
+        <div className="mobile-search-overlay">
+          <SearchForm />
         </div>
 
-        <div>
-          <h4>Quick Links</h4>
-          <a href="/">Home</a>
-          <a href="/listing">Marketplace</a>
-          <a href="#categories">Categories</a>
-          <a href="/my-requests">My Requests</a>
-        </div>
+        <a
+          className="mobile-hotspot mobile-viewall-link"
+          href="/listing"
+          aria-label="View all listings"
+        />
 
-        <div>
-          <h4>Support</h4>
-          <a href="/messages">Messages</a>
-          <a href="/profile">My Account</a>
-        </div>
+        <a
+          className="mobile-hotspot mobile-cta-link"
+          href="/listing"
+          aria-label="Start exploring"
+        />
+      </div>
 
-        <div>
-          <h4>Stay Connected</h4>
-          <p>Discover what Nagaland has to offer.</p>
-          <div className="socials">f  ◎  𝕏</div>
-        </div>
-
-        <div>
-          <strong>Proudly Nagaland</strong>
-        </div>
-      </footer>
+      <nav
+        id="mobile-categories"
+        className="mobile-access-links"
+        aria-label="Mobile navigation"
+      >
+        <a href="/listing">Marketplace</a>
+        <a href="/listing">Categories</a>
+        <a href="/my-requests">My Requests</a>
+        <a href="/messages">Messages</a>
+        <a href="/profile">My Account</a>
+      </nav>
     </div>
   );
 }
