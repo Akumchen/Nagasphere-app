@@ -298,15 +298,13 @@ export default function HomePage() {
           display: none;
         }
 
-        @media (max-width: 700px) {
-          .approved-desktop {
-            display: none;
-          }
+        .approved-desktop {
+  display: block;
+}
 
-          .mobile-home {
-            display: block;
-            overflow: hidden;
-          }
+.mobile-home {
+  display: none;
+}
 
           .hero {
             height: 430px;
