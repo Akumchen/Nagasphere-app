@@ -267,7 +267,7 @@ export default function HomePage() {
 
         body {
           margin: 0;
-          background: #fff;
+          background: #082623;
           color: #123d2d;
           font-family: Inter, Arial, Helvetica, sans-serif;
         }
