@@ -91,7 +91,7 @@ export default function CreateListingPage() {
     }
 
     router.push("/marketplace");
-
+  }
   if (loading) {
     return <main style={{ padding: 30 }}>Loading...</main>;
   }
