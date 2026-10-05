@@ -368,7 +368,8 @@ export default function HomePage() {
           }
 
           .account {
-            font-size: 9px;
+  margin-left: auto;
+  font-size: 9px;
             padding: 8px 10px;
             border: 1px solid rgba(255, 255, 255, 0.55);
             border-radius: 5px;
