@@ -772,14 +772,9 @@ function MessagesContent() {
     }
   }
 
-  /*
-   * NagaSphere homepage-style background.
-   * The same visual asset used by the homepage is used here
-   * with a dark green overlay so the white message panel remains readable.
-   */
   const pageBackground = {
     backgroundImage:
-      "linear-gradient(90deg, rgba(3,35,31,0.97) 0%, rgba(3,35,31,0.92) 42%, rgba(3,35,31,0.70) 100%), url('/NagaSphere_Local_Marketplace_in_Nagaland.png')",
+      "linear-gradient(90deg, rgba(3,35,31,0.97) 0%, rgba(3,35,31,0.88) 38%, rgba(3,35,31,0.58) 72%, rgba(3,35,31,0.35) 100%), url('/NagaSphere_Local_Marketplace_in_Nagaland.png')",
   };
 
   if (loading) {
@@ -788,7 +783,7 @@ function MessagesContent() {
         className="min-h-screen bg-[#082623] bg-cover bg-center bg-fixed"
         style={pageBackground}
       >
-        <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-5">
+        <div className="mx-auto flex min-h-screen w-full max-w-[1120px] items-center justify-center px-5">
           <p className="text-sm text-white/80">
             Loading messages...
           </p>
@@ -797,21 +792,15 @@ function MessagesContent() {
     );
   }
 
-  /*
-   * MESSAGE INBOX
-   */
   if (!conversationId) {
     return (
       <main
         className="min-h-screen bg-[#082623] bg-cover bg-center bg-fixed"
         style={pageBackground}
       >
-        <div className="mx-auto min-h-screen w-full max-w-6xl px-5 py-6 sm:px-8 sm:py-8 lg:px-10">
+        <div className="mx-auto min-h-screen w-full max-w-[1120px] px-5 py-6 sm:px-8 sm:py-8">
 
-          {/* TOP HEADER */}
           <header className="flex items-start justify-between">
-
-            {/* LOGO — TOP LEFT */}
             <button
               type="button"
               onClick={() =>
@@ -823,11 +812,10 @@ function MessagesContent() {
               <img
                 src="/nagasphere-logo.png"
                 alt="NagaSphere"
-                className="block h-auto w-auto max-w-[210px] object-contain sm:max-w-[260px]"
+                className="block h-auto w-auto max-w-[270px] object-contain sm:max-w-[300px]"
               />
             </button>
 
-            {/* DASHBOARD — TOP RIGHT */}
             <button
               type="button"
               onClick={() =>
@@ -835,63 +823,83 @@ function MessagesContent() {
                   "/dashboard"
                 )
               }
-              className="mt-1 shrink-0 rounded-xl border border-white/40 bg-black/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
+              className="mt-1 shrink-0 rounded-xl border border-white/40 bg-[#082623]/40 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-[#082623]/70"
             >
               Dashboard
             </button>
-
           </header>
 
-          {/* MESSAGE HEADER — BELOW LOGO */}
           <section className="mt-8 sm:mt-10">
 
-            <div className="mb-6">
+            <div className="mb-7">
 
-              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Messages
-              </h1>
+              <div className="flex items-center gap-3">
 
-              <p className="mt-2 max-w-xl text-sm text-white/75 sm:text-base">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/70 text-white">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  >
+                    <path
+                      d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2v-4.2A7.5 7.5 0 1 1 20 11.5Z"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+
+                <h1 className="text-4xl font-bold tracking-tight text-white">
+                  Messages
+                </h1>
+
+              </div>
+
+              <p className="mt-3 ml-14 text-base text-white/80">
                 Your conversations with NagaSphere buyers and sellers.
               </p>
 
             </div>
 
             {error && (
-              <div className="mb-5 w-full max-w-3xl rounded-xl border border-red-200/30 bg-red-950/40 p-4 text-sm text-red-100 backdrop-blur-sm">
+              <div className="mb-5 w-[746px] max-w-full rounded-xl border border-red-200/30 bg-red-950/40 p-4 text-sm text-red-100 backdrop-blur-sm">
                 {error}
               </div>
             )}
 
             {inbox.length === 0 ? (
-              <div className="w-full max-w-3xl rounded-2xl border border-white/20 bg-white/95 p-8 text-center shadow-2xl backdrop-blur-sm sm:p-10">
+              <div className="w-[746px] max-w-full min-h-[500px] rounded-2xl border border-white/30 bg-white/95 p-8 shadow-2xl backdrop-blur-sm sm:p-10">
 
-                <h2 className="text-lg font-semibold text-gray-900">
-                  No conversations yet
-                </h2>
+                <div className="flex min-h-[420px] items-center justify-center text-center">
 
-                <p className="mt-2 text-sm text-gray-600">
-                  When someone contacts you about a listing, the conversation will appear here.
-                </p>
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      No conversations yet
+                    </h2>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    router.push("/")
-                  }
-                  className="mt-5 rounded-xl bg-[#082623] px-5 py-3 text-sm font-semibold text-white transition hover:bg-black"
-                >
-                  Browse NagaSphere
-                </button>
+                    <p className="mt-2 text-sm text-gray-600">
+                      When someone contacts you about a listing, the conversation will appear here.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        router.push("/")
+                      }
+                      className="mt-5 rounded-xl bg-[#082623] px-5 py-3 text-sm font-semibold text-white transition hover:bg-black"
+                    >
+                      Browse NagaSphere
+                    </button>
+                  </div>
+
+                </div>
 
               </div>
             ) : (
 
-              /*
-               * LEFT-SIDE MESSAGE PANEL
-               * It intentionally does not stretch across the whole screen.
-               */
-              <div className="w-full max-w-3xl overflow-hidden rounded-2xl border border-white/30 bg-white/95 shadow-2xl backdrop-blur-sm">
+              <div className="w-[746px] max-w-full min-h-[720px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
 
                 {inbox.map(
                   (
@@ -907,23 +915,22 @@ function MessagesContent() {
                           `/messages?conversation=${item.id}`
                         )
                       }
-                      className={`w-full px-5 py-5 text-left transition hover:bg-white sm:px-7 ${
+                      className={`w-full px-7 py-7 text-left transition hover:bg-gray-50 ${
                         index > 0
                           ? "border-t border-gray-200"
                           : ""
                       }`}
                     >
 
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-center gap-5">
 
-                        {/* USER ICON */}
                         <div
-                          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0b3b31] text-[#c7ef91] shadow-sm"
+                          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#0b3b31] text-[#c7ef91]"
                           aria-hidden="true"
                         >
                           <svg
                             viewBox="0 0 24 24"
-                            className="h-6 w-6"
+                            className="h-7 w-7"
                             fill="currentColor"
                           >
                             <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
@@ -932,22 +939,22 @@ function MessagesContent() {
 
                         <div className="min-w-0 flex-1">
 
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start justify-between gap-5">
 
                             <div className="min-w-0">
 
-                              <h2 className="font-semibold text-gray-900">
+                              <h2 className="text-lg font-bold text-gray-900">
                                 {item.otherName}
                               </h2>
 
-                              <p className="mt-1 text-sm font-semibold text-gray-800">
+                              <p className="mt-1 text-base font-semibold text-gray-800">
                                 {item.postTitle}
                               </p>
 
                             </div>
 
                             {item.latestMessageTime && (
-                              <span className="shrink-0 text-xs text-gray-400">
+                              <span className="shrink-0 text-sm text-gray-400">
                                 {new Date(
                                   item.latestMessageTime
                                 ).toLocaleDateString()}
@@ -957,7 +964,7 @@ function MessagesContent() {
                           </div>
 
                           <p
-                            className={`mt-2 truncate text-sm ${
+                            className={`mt-2 truncate text-base ${
                               item.latestMessage ===
                               "[Message deleted]"
                                 ? "italic text-gray-400"
@@ -987,20 +994,15 @@ function MessagesContent() {
     );
   }
 
-  /*
-   * INDIVIDUAL CONVERSATION
-   */
   return (
     <main
       className="min-h-screen bg-[#082623] bg-cover bg-center bg-fixed"
       style={pageBackground}
     >
-      <div className="mx-auto min-h-screen w-full max-w-6xl px-5 py-6 sm:px-8 sm:py-8 lg:px-10">
+      <div className="mx-auto min-h-screen w-full max-w-[1120px] px-5 py-6 sm:px-8 sm:py-8">
 
-        {/* TOP HEADER */}
         <header className="flex items-start justify-between">
 
-          {/* LOGO */}
           <button
             type="button"
             onClick={() =>
@@ -1012,11 +1014,10 @@ function MessagesContent() {
             <img
               src="/nagasphere-logo.png"
               alt="NagaSphere"
-              className="block h-auto w-auto max-w-[210px] object-contain sm:max-w-[260px]"
+              className="block h-auto w-auto max-w-[270px] object-contain sm:max-w-[300px]"
             />
           </button>
 
-          {/* DASHBOARD */}
           <button
             type="button"
             onClick={() =>
@@ -1024,14 +1025,13 @@ function MessagesContent() {
                 "/dashboard"
               )
             }
-            className="mt-1 shrink-0 rounded-xl border border-white/40 bg-black/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/10"
+            className="mt-1 shrink-0 rounded-xl border border-white/40 bg-[#082623]/40 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-[#082623]/70"
           >
             Dashboard
           </button>
 
         </header>
 
-        {/* MESSAGE HEADER */}
         <section className="mt-8 sm:mt-10">
 
           <button
@@ -1041,56 +1041,76 @@ function MessagesContent() {
                 "/messages"
               )
             }
-            className="mb-3 text-sm font-medium text-white/70 transition hover:text-white"
+            className="mb-4 text-sm font-medium text-white/70 transition hover:text-white"
           >
             ← All Messages
           </button>
 
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Messages
-          </h1>
+          <div className="mb-7 flex items-center gap-3">
 
-          <p className="mt-2 text-sm text-white/75 sm:text-base">
-            Your conversation with{" "}
-            {conversation?.otherName ||
-              "NagaSphere user"}
-            .
-          </p>
+            <div className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white/70 text-white">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              >
+                <path
+                  d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4 2v-4.2A7.5 7.5 0 1 1 20 11.5Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
 
-          {/* CONVERSATION INFO */}
-          <div className="mt-6 w-full max-w-3xl rounded-2xl border border-white/30 bg-white/95 p-5 shadow-2xl backdrop-blur-sm sm:p-6">
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight text-white">
+                Messages
+              </h1>
 
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-              Conversation
-            </p>
-
-            <h2 className="mt-1 text-xl font-bold text-gray-900">
-              {conversation?.otherName ||
-                "NagaSphere user"}
-            </h2>
-
-            <p className="mt-1 text-sm text-gray-600">
-              About:{" "}
-              {conversation?.postTitle ||
-                "Listing"}
-            </p>
+              <p className="mt-1 text-base text-white/80">
+                Your conversation with{" "}
+                {conversation?.otherName ||
+                  "NagaSphere user"}
+                .
+              </p>
+            </div>
 
           </div>
 
           {error && (
-            <div className="mt-4 w-full max-w-3xl rounded-xl border border-red-200/30 bg-red-950/40 p-4 text-sm text-red-100 backdrop-blur-sm">
+            <div className="mb-4 w-[746px] max-w-full rounded-xl border border-red-200/30 bg-red-950/40 p-4 text-sm text-red-100">
               {error}
             </div>
           )}
 
-          {/* CHAT PANEL */}
-          <div className="mt-4 w-full max-w-3xl rounded-2xl border border-white/30 bg-white/95 p-5 shadow-2xl backdrop-blur-sm sm:p-6">
+          <div className="w-[746px] max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
 
-            <div className="min-h-[420px]">
+            <div className="border-b border-gray-200 px-7 py-6">
+
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Conversation
+              </p>
+
+              <h2 className="mt-1 text-xl font-bold text-gray-900">
+                {conversation?.otherName ||
+                  "NagaSphere user"}
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-600">
+                About:{" "}
+                {conversation?.postTitle ||
+                  "Listing"}
+              </p>
+
+            </div>
+
+            <div className="min-h-[500px] p-6">
 
               {messages.length === 0 ? (
 
-                <div className="flex min-h-[380px] items-center justify-center text-center text-sm text-gray-500">
+                <div className="flex min-h-[440px] items-center justify-center text-center text-sm text-gray-500">
                   No messages yet. Start the conversation below.
                 </div>
 
@@ -1213,8 +1233,7 @@ function MessagesContent() {
 
           </div>
 
-          {/* MESSAGE COMPOSER */}
-          <div className="mt-4 w-full max-w-3xl">
+          <div className="mt-4 w-[746px] max-w-full">
 
             <div className="flex w-full items-center gap-2 rounded-2xl border border-white/30 bg-white/95 p-2 shadow-2xl backdrop-blur-sm">
 
@@ -1254,7 +1273,7 @@ function MessagesContent() {
                   sending ||
                   !body.trim()
                 }
-                className="shrink-0 rounded-xl bg-[#082623] px-4 py-3 text-sm font-semibold text-white transition hover:bg-black disabled:opacity-50 sm:px-5"
+                className="shrink-0 rounded-xl bg-[#082623] px-4 py-3 text-sm font-semibold text-white transition hover:bg-black sm:px-5"
               >
                 {sending
                   ? "Sending..."
@@ -1283,7 +1302,7 @@ export default function MessagesPage() {
               "linear-gradient(rgba(3,35,31,0.82),rgba(3,35,31,0.9)),url('/NagaSphere_Local_Marketplace_in_Nagaland.png')",
           }}
         >
-          <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-5">
+          <div className="mx-auto flex min-h-screen w-full max-w-[1120px] items-center justify-center px-5">
             <p className="text-sm text-white/80">
               Loading messages...
             </p>
