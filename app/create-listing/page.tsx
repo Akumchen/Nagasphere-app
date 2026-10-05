@@ -90,8 +90,7 @@ export default function CreateListingPage() {
       return;
     }
 
-    router.push("/dashboard");
-  }
+    router.push("/marketplace");
 
   if (loading) {
     return <main style={{ padding: 30 }}>Loading...</main>;
