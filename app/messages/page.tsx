@@ -511,14 +511,6 @@ function MessagesContent() {
     }
   }
 
-  /*
-   * BACKGROUND ONLY
-   *
-   * The approved scenic background is now loaded from:
-   * /public/messages-scenic-bg.jpg
-   *
-   * Nothing else in the existing message layout is changed here.
-   */
   const pageStyle = {
     backgroundImage: "url('/messages-scenic-bg.jpg')",
     backgroundRepeat: "no-repeat",
@@ -547,7 +539,7 @@ function MessagesContent() {
       className="min-h-screen bg-[#082623]"
       style={pageStyle}
     >
-      <div className="min-h-screen w-full px-5 py-6 sm:px-9 sm:py-8 lg:px-12">
+      <div className="min-h-screen w-full px-5 py-7 sm:px-9 sm:py-9 lg:px-[47px] lg:py-[46px]">
         <header className="flex items-center justify-between">
           <button
             type="button"
@@ -605,7 +597,7 @@ function MessagesContent() {
           </button>
         </header>
 
-        <section className="mt-9 sm:mt-11">
+        <section className="mt-10 sm:mt-12">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#a8e69b] text-[#a8e69b]">
               <svg
@@ -673,7 +665,7 @@ function MessagesContent() {
                         `/messages?conversation=${item.id}`
                       )
                     }
-                    className={`block w-full px-8 py-7 text-left transition hover:bg-white ${
+                    className={`block w-full px-8 py-6 text-left transition hover:bg-white ${
                       index > 0
                         ? "border-t border-[#dce6e2]"
                         : ""
@@ -726,7 +718,7 @@ function MessagesContent() {
                   </button>
                 ))}
 
-                <div className="min-h-[600px] bg-[#f8fbfa]" />
+                <div className="min-h-[630px] bg-[#f8fbfa]" />
               </div>
             )
           ) : (
