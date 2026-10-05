@@ -580,7 +580,10 @@ export default function HomePage() {
           }
 
           .listing-row {
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            overflow-x: visible;
           }
 
           .card {
