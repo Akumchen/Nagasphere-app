@@ -511,22 +511,12 @@ function MessagesContent() {
     }
   }
 
-  /*
-   * APPROVED NagaSphere Messages template:
-   * - dark green header
-   * - NagaSphere logo top-left
-   * - Dashboard button top-right with grid icon
-   * - Messages title + chat icon
-   * - exact subtitle
-   * - large pale conversation panel
-   * - scenic Nagaland background
-   * - conversation rows with avatars, titles,
-   *   previews, dates and dividers
-   */
-
   const pageStyle = {
     backgroundImage:
-      "linear-gradient(90deg, rgba(3,35,31,0.97) 0%, rgba(3,35,31,0.91) 38%, rgba(3,35,31,0.62) 70%, rgba(3,35,31,0.28) 100%), url('/NagaSphere_Local_Marketplace_in_Nagaland.png')",
+      "linear-gradient(90deg, rgba(3,35,31,0.99) 0%, rgba(3,35,31,0.96) 45%, rgba(3,35,31,0.58) 72%, rgba(3,35,31,0.10) 100%), url('/messages-scenic-small.jpg')",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "left top, right top",
+    backgroundSize: "100% 100%, 36% 100%",
   };
 
   if (loading) {
@@ -550,9 +540,6 @@ function MessagesContent() {
       style={pageStyle}
     >
       <div className="min-h-screen w-full px-5 py-6 sm:px-9 sm:py-8 lg:px-12">
-
-        {/* HEADER */}
-
         <header className="flex items-start justify-between">
           <button
             type="button"
@@ -562,7 +549,7 @@ function MessagesContent() {
             <img
               src="/nagasphere-logo.png"
               alt="NagaSphere"
-              className="block h-auto w-[225px] object-contain sm:w-[255px]"
+              className="block h-auto w-[255px] object-contain sm:w-[285px]"
             />
           </button>
 
@@ -577,41 +564,14 @@ function MessagesContent() {
               fill="currentColor"
               aria-hidden="true"
             >
-              <rect
-                x="3"
-                y="3"
-                width="7"
-                height="7"
-                rx="1"
-              />
-              <rect
-                x="14"
-                y="3"
-                width="7"
-                height="7"
-                rx="1"
-              />
-              <rect
-                x="3"
-                y="14"
-                width="7"
-                height="7"
-                rx="1"
-              />
-              <rect
-                x="14"
-                y="14"
-                width="7"
-                height="7"
-                rx="1"
-              />
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
             </svg>
-
             Dashboard
           </button>
         </header>
-
-        {/* TITLE */}
 
         <section className="mt-9 sm:mt-11">
           <div className="flex items-center gap-3">
@@ -646,12 +606,10 @@ function MessagesContent() {
             </div>
           )}
 
-          {/* INBOX */}
-
           {!conversationId ? (
             inbox.length === 0 ? (
-              <div className="mt-7 min-h-[620px] w-[746px] max-w-full rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] p-10 shadow-2xl">
-                <div className="flex min-h-[520px] items-center justify-center text-center">
+              <div className="mt-7 min-h-[915px] w-[746px] max-w-full rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] p-10 shadow-2xl">
+                <div className="flex min-h-[815px] items-center justify-center text-center">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">
                       No conversations yet
@@ -673,7 +631,7 @@ function MessagesContent() {
                 </div>
               </div>
             ) : (
-              <div className="mt-7 min-h-[620px] w-[746px] max-w-full overflow-hidden rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] shadow-2xl">
+              <div className="mt-7 min-h-[915px] w-[746px] max-w-full overflow-hidden rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] shadow-2xl">
                 {inbox.map((item, index) => (
                   <button
                     key={item.id}
@@ -690,8 +648,6 @@ function MessagesContent() {
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      {/* AVATAR */}
-
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0b3b31] text-[#c7ef91]">
                         <svg
                           viewBox="0 0 24 24"
@@ -738,13 +694,11 @@ function MessagesContent() {
                   </button>
                 ))}
 
-                <div className="min-h-[400px] bg-[#f8fbfa]" />
+                <div className="min-h-[600px] bg-[#f8fbfa]" />
               </div>
             )
           ) : (
             <>
-              {/* CONVERSATION */}
-
               <button
                 type="button"
                 onClick={() => router.push("/messages")}
@@ -868,8 +822,6 @@ function MessagesContent() {
                   )}
                 </div>
               </div>
-
-              {/* MESSAGE INPUT */}
 
               <div className="mt-4 w-[746px] max-w-full">
                 <div className="flex items-center gap-2 rounded-2xl border border-white/30 bg-white/95 p-2 shadow-2xl">
