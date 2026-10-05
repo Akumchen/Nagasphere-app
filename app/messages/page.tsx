@@ -785,7 +785,7 @@ function MessagesContent() {
 
   if (!conversationId) {
     return (
-      <main className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <main className="min-h-screen bg-[#082623] p-4 sm:p-6">
         <div className="mx-auto max-w-5xl">
 
           <header className="mb-6 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
@@ -903,7 +903,7 @@ function MessagesContent() {
   }
 
   return (
-    <main className="min-h-screen bg-white p-4 sm:p-6">
+    <main className="min-h-screen bg-[#082623] p-4 sm:p-6">
       <div className="mx-auto max-w-3xl">
 
         <header className="mb-5 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
