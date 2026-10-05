@@ -46,6 +46,9 @@ export default function HomePage() {
         <section className="hero">
           <header>
             <a href="/" className="brand">
+              <a href="/listing" className="marketplace-button">
+  Marketplace
+</a>
               <img src="/nagasphere-logo.png" alt="" />
               <span>
                 <b>NagaSphere</b>
