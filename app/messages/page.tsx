@@ -547,10 +547,10 @@ function MessagesContent() {
             className="shrink-0"
           >
             <img
-              src="/nagasphere-logo.png"
-              alt="NagaSphere"
-              className="block h-auto w-[100px] object-contain sm:w-[100px] md:w-[270px]"
-            />
+  src="/nagasphere-logo.png"
+  alt="NagaSphere"
+  className="block h-auto w-[100px] object-contain sm:w-[100px] md:w-[270px]"
+/>
           </button>
 
           <button
