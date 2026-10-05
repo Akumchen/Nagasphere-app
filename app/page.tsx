@@ -824,7 +824,7 @@ export default function HomePage() {
             gap: 10px;
           }
 
-          @media (max-width: 390px) {
+          @media (max-width: 700px) {
             .approved-desktop {
              display: none;
           }
