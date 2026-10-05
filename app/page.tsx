@@ -107,6 +107,7 @@ const features = [
 export default function HomePage() {
   return (
     <>
+      {/* Desktop approved homepage */}
       <div className="approved-desktop">
         <img
           src="/NagaSphere_Local_Marketplace_in_Nagaland.png"
@@ -114,9 +115,13 @@ export default function HomePage() {
         />
       </div>
 
+      {/* Mobile homepage */}
       <main className="mobile-home">
         <section className="hero">
+
+          {/* ================= HEADER ================= */}
           <header>
+            {/* LEFT: NagaSphere Home */}
             <a href="/" className="brand">
               <img src="/nagasphere-logo.png" alt="" />
 
@@ -126,6 +131,7 @@ export default function HomePage() {
               </span>
             </a>
 
+            {/* RIGHT: Marketplace + My Account */}
             <div className="header-actions">
               <a href="/listing" className="marketplace-button">
                 Marketplace
@@ -136,6 +142,7 @@ export default function HomePage() {
               </a>
             </div>
           </header>
+          {/* ========================================== */}
 
           <div className="hero-content">
             <small className="welcome">WELCOME TO</small>
@@ -144,7 +151,9 @@ export default function HomePage() {
               Naga<span>Sphere</span>
             </h1>
 
-            <div className="script">Buy · Sell · Support Local</div>
+            <div className="script">
+              Buy · Sell · Support Local
+            </div>
 
             <p>
               Your trusted online marketplace in Nagaland — connecting farmers,
@@ -170,6 +179,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= CATEGORIES ================= */}
         <section className="categories">
           <div className="heading">
             <div>
@@ -182,7 +192,11 @@ export default function HomePage() {
 
           <div className="cat-row">
             {categories.map(([name, image]) => (
-              <a className="cat" href="/marketplace" key={name}>
+              <a
+                className="cat"
+                href="/marketplace"
+                key={name}
+              >
                 <img src={image} alt="" />
                 <b>{name}</b>
               </a>
@@ -190,6 +204,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= FEATURES ================= */}
         <section className="features">
           <div className="feature-row">
             {features.map(([icon, title, text]) => (
@@ -205,6 +220,7 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= LISTINGS ================= */}
         <section className="listings">
           <div className="heading">
             <div>
@@ -233,7 +249,9 @@ export default function HomePage() {
 
                     <span>Local</span>
 
-                    <button aria-label="Save">♡</button>
+                    <button aria-label="Save">
+                      ♡
+                    </button>
                   </div>
 
                   <div className="card-body">
@@ -244,13 +262,16 @@ export default function HomePage() {
                       <small>{unit}</small>
                     </div>
 
-                    <div className="location">⌖ {location}</div>
+                    <div className="location">
+                      ⌖ {location}
+                    </div>
 
                     <div className="seller">
                       <span>{seller}</span>
 
                       <span>
-                        ★ {rating} <small>({reviews})</small>
+                        ★ {rating}{" "}
+                        <small>({reviews})</small>
                       </span>
                     </div>
                   </div>
@@ -260,38 +281,53 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ================= CTA ================= */}
         <section className="cta">
-          <img src="/vegetables.png" alt="Local farmers" />
+          <img
+            src="/vegetables.png"
+            alt="Local farmers"
+          />
 
           <div>
             <small>TOGETHER WE GROW</small>
 
-            <h2>Support Local. Build a Stronger Nagaland.</h2>
+            <h2>
+              Support Local. Build a Stronger Nagaland.
+            </h2>
 
             <p>
-              Every purchase makes a difference — for our farmers, our
-              businesses and our community.
+              Every purchase makes a difference — for our farmers,
+              our businesses and our community.
             </p>
 
-            <a href="/marketplace">Start Exploring →</a>
+            <a href="/marketplace">
+              Start Exploring →
+            </a>
           </div>
         </section>
 
+        {/* ================= FOOTER ================= */}
         <footer>
           <div className="footer-grid">
+
             <div>
               <div className="footer-brand">
-                <img src="/nagasphere-logo.png" alt="" />
+                <img
+                  src="/nagasphere-logo.png"
+                  alt=""
+                />
 
                 <b>
                   NagaSphere
-                  <small>Local Needs · Global Reach</small>
+                  <small>
+                    Local Needs · Global Reach
+                  </small>
                 </b>
               </div>
 
               <p>
-                Connecting Nagaland. Supporting local. Building a stronger
-                community together.
+                Connecting Nagaland. Supporting local.
+                Building a stronger community together.
               </p>
 
               <em>Proudly Nagaland</em>
@@ -311,20 +347,32 @@ export default function HomePage() {
 
               <a href="/help">Help Centre</a>
               <a href="/contact">Contact Us</a>
-              <a href="/terms">Terms & Conditions</a>
-              <a href="/privacy">Privacy Policy</a>
+              <a href="/terms">
+                Terms & Conditions
+              </a>
+              <a href="/privacy">
+                Privacy Policy
+              </a>
             </div>
 
             <div>
               <b>Stay Connected</b>
 
-              <p>Get the latest updates and offers.</p>
+              <p>
+                Get the latest updates and offers.
+              </p>
 
               <div className="subscribe">
-                <input placeholder="Your email address" />
-                <button>Subscribe</button>
+                <input
+                  placeholder="Your email address"
+                />
+
+                <button>
+                  Subscribe
+                </button>
               </div>
             </div>
+
           </div>
 
           <div className="bottom">
@@ -334,6 +382,7 @@ export default function HomePage() {
         </footer>
       </main>
 
+      {/* ================= GLOBAL CSS ================= */}
       <style jsx global>{`
         * {
           box-sizing: border-box;
@@ -347,7 +396,11 @@ export default function HomePage() {
           margin: 0;
           background: #082623;
           color: #123d2d;
-          font-family: Inter, Arial, Helvetica, sans-serif;
+          font-family:
+            Inter,
+            Arial,
+            Helvetica,
+            sans-serif;
         }
 
         a {
@@ -360,6 +413,7 @@ export default function HomePage() {
           font: inherit;
         }
 
+        /* Desktop approved design */
         .approved-desktop {
           display: block;
           width: 100%;
@@ -380,40 +434,48 @@ export default function HomePage() {
           display: none;
         }
 
+        /* ================= HERO ================= */
+
         .hero {
           height: 430px;
           min-height: 430px;
           color: #fff;
+
           background:
             linear-gradient(
               90deg,
               rgba(8, 32, 20, 0.68),
               rgba(8, 32, 20, 0.2)
             ),
-            url("/nagasphere-hero.jpg") 56% center / cover no-repeat;
+            url("/nagasphere-hero.jpg")
+              56% center / cover no-repeat;
         }
 
-        /* =========================
-           HEADER - FIXED
-           ========================= */
+        /* ================= HEADER ================= */
 
         header {
           position: relative;
           min-height: 60px;
           padding: 8px 12px;
+
           display: flex;
           align-items: center;
-          justify-content: center;
+          justify-content: space-between;
+
           background: rgba(8, 30, 20, 0.18);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+          border-bottom:
+            1px solid rgba(255, 255, 255, 0.18);
         }
 
+        /* LEFT SIDE LOGO */
         .brand {
+          position: static;
+          transform: none;
+
           display: flex;
           align-items: center;
-          justify-content: center;
+
           gap: 6px;
-          text-align: left;
           flex-shrink: 0;
         }
 
@@ -439,24 +501,36 @@ export default function HomePage() {
           opacity: 0.85;
         }
 
+        /* RIGHT SIDE BUTTONS */
         .header-actions {
-          position: absolute;
-          right: 12px;
-          top: 50%;
-          transform: translateY(-50%);
+          position: static;
+          transform: none;
+
+          margin-left: auto;
+
           display: flex;
           align-items: center;
+
           gap: 6px;
         }
 
         .marketplace-button,
         .account {
           font-size: 9px;
-          padding: 7px 8px;
-          border: 1px solid rgba(255, 255, 255, 0.55);
+
+          padding:
+            7px 8px;
+
+          border:
+            1px solid
+            rgba(255, 255, 255, 0.55);
+
           border-radius: 5px;
+
           white-space: nowrap;
         }
+
+        /* ================= HERO CONTENT ================= */
 
         .hero-content {
           padding: 30px 14px 0;
@@ -484,9 +558,12 @@ export default function HomePage() {
             "Comic Sans MS",
             "Segoe Print",
             cursive;
+
           color: #d8e9ae;
           font-size: 19px;
+
           transform: rotate(-2deg);
+
           margin-bottom: 13px;
         }
 
@@ -496,14 +573,23 @@ export default function HomePage() {
           margin: 0 0 15px;
         }
 
+        /* ================= SEARCH ================= */
+
         .search {
           height: 47px;
+
           border-radius: 24px;
+
           background: #fff;
+
           display: flex;
           align-items: center;
+
           overflow: hidden;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+
+          box-shadow:
+            0 10px 25px
+            rgba(0, 0, 0, 0.2);
         }
 
         .search span {
@@ -515,30 +601,43 @@ export default function HomePage() {
         .search input {
           min-width: 0;
           flex: 1;
+
           height: 100%;
+
           border: 0;
           outline: 0;
+
           padding: 0 7px;
+
           font-size: 11px;
         }
 
         .search button {
           height: 37px;
+
           margin-right: 5px;
+
           padding: 0 14px;
+
           border: 0;
           border-radius: 20px;
+
           background: #3eae69;
           color: #fff;
+
           font-size: 10px;
           font-weight: 700;
         }
+
+        /* ================= HERO NOTES ================= */
 
         .note {
           display: flex;
           flex-direction: column;
           align-items: flex-end;
+
           margin-top: 14px;
+
           font-size: 15px;
           line-height: 1.15;
         }
@@ -548,6 +647,7 @@ export default function HomePage() {
             "Comic Sans MS",
             "Segoe Print",
             cursive;
+
           transform: rotate(-4deg);
         }
 
@@ -559,6 +659,8 @@ export default function HomePage() {
           margin-right: 30px;
         }
 
+        /* ================= SECTIONS ================= */
+
         .categories,
         .listings {
           padding: 22px 14px;
@@ -568,6 +670,7 @@ export default function HomePage() {
           display: flex;
           justify-content: space-between;
           align-items: end;
+
           margin-bottom: 14px;
         }
 
@@ -582,7 +685,9 @@ export default function HomePage() {
           font:
             700 23px Georgia,
             serif;
+
           margin: 2px 0 0;
+
           color: #21432f;
         }
 
@@ -592,12 +697,17 @@ export default function HomePage() {
           font-weight: 800;
         }
 
+        /* ================= CATEGORY ROW ================= */
+
         .cat-row,
         .listing-row,
         .feature-row {
           display: flex;
+
           overflow-x: auto;
+
           gap: 12px;
+
           scrollbar-width: none;
         }
 
@@ -615,45 +725,69 @@ export default function HomePage() {
         .cat img {
           width: 62px;
           height: 62px;
+
           display: block;
+
           object-fit: cover;
+
           border-radius: 11px;
+
           border: 1px solid #e0ead8;
-          margin: 0 auto 7px;
+
+          margin:
+            0 auto 7px;
         }
 
         .cat b {
           display: block;
+
           font-size: 9px;
           line-height: 1.2;
+
           color: #304b38;
         }
 
+        /* ================= FEATURES ================= */
+
         .features {
           margin: 0 14px 22px;
+
           padding: 12px 8px;
+
           border-radius: 9px;
+
           background: #eef6e8;
+
           border: 1px solid #e3eddc;
         }
 
         .feature {
           flex: 0 0 225px;
+
           display: flex;
+
           gap: 9px;
+
           padding: 7px 8px;
-          border: 1px solid #e2eddf;
+
+          border:
+            1px solid #e2eddf;
+
           border-radius: 7px;
         }
 
         .feature > strong {
           flex: 0 0 29px;
+
           width: 29px;
           height: 29px;
+
           display: flex;
           align-items: center;
           justify-content: center;
+
           border-radius: 50%;
+
           background: #cfeecb;
           color: #15904f;
         }
@@ -664,25 +798,40 @@ export default function HomePage() {
 
         .feature p {
           margin: 3px 0 0;
+
           font-size: 8px;
           line-height: 1.4;
+
           color: #718074;
         }
 
+        /* ================= LISTINGS ================= */
+
         .listing-row {
           display: grid;
+
           grid-template-columns: 1fr;
+
           gap: 14px;
+
           overflow-x: visible;
         }
 
         .card {
           flex: 0 0 200px;
-          border: 1px solid #e2e9df;
+
+          border:
+            1px solid #e2e9df;
+
           border-radius: 7px;
+
           overflow: hidden;
+
           background: #fff;
-          box-shadow: 0 4px 16px rgba(36, 65, 43, 0.06);
+
+          box-shadow:
+            0 4px 16px
+            rgba(36, 65, 43, 0.06);
         }
 
         .card-image {
@@ -693,29 +842,42 @@ export default function HomePage() {
         .card-image img {
           width: 100%;
           height: 100%;
+
           object-fit: cover;
         }
 
         .card-image span {
           position: absolute;
+
           left: 8px;
           bottom: 8px;
+
           background: #167d49;
           color: #fff;
+
           padding: 4px 7px;
+
           border-radius: 3px;
+
           font-size: 8px;
         }
 
         .card-image button {
           position: absolute;
+
           right: 7px;
           top: 7px;
+
           width: 26px;
           height: 26px;
+
           border: 0;
+
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.92);
+
+          background:
+            rgba(255, 255, 255, 0.92);
+
           font-size: 16px;
         }
 
@@ -726,55 +888,78 @@ export default function HomePage() {
         .card h3 {
           font-size: 10px;
           line-height: 1.3;
+
           margin: 0 0 4px;
+
           color: #294731;
         }
 
         .price {
           font-size: 14px;
           font-weight: 800;
+
           color: #4e943b;
         }
 
         .price small {
           font-size: 8px;
+
           color: #788479;
+
           font-weight: 500;
         }
 
         .location {
           margin-top: 7px;
+
           font-size: 8px;
+
           color: #79857b;
         }
 
         .seller {
           margin-top: 9px;
+
           padding-top: 8px;
-          border-top: 1px solid #edf0eb;
+
+          border-top:
+            1px solid #edf0eb;
+
           display: flex;
+
           justify-content: space-between;
+
           font-size: 7px;
+
           color: #718076;
         }
 
         .seller > span:last-child {
           color: #789f45;
+
           font-weight: 800;
         }
 
+        /* ================= CTA ================= */
+
         .cta {
           margin: 0 14px 15px;
+
           border-radius: 8px;
+
           overflow: hidden;
+
           background: #eaf3e2;
+
           display: grid;
+
           grid-template-columns: 42% 58%;
         }
 
         .cta img {
           width: 100%;
           height: 145px;
+
           object-fit: cover;
         }
 
@@ -784,8 +969,11 @@ export default function HomePage() {
 
         .cta small {
           font-size: 7px;
+
           letter-spacing: 1.5px;
+
           color: #82a953;
+
           font-weight: 800;
         }
 
@@ -793,36 +981,50 @@ export default function HomePage() {
           font:
             700 17px/1.15 Georgia,
             serif;
+
           color: #244832;
+
           margin: 6px 0 8px;
         }
 
         .cta p {
           font-size: 8.5px;
           line-height: 1.45;
+
           color: #6d7e70;
+
           margin: 0 0 10px;
         }
 
         .cta a {
           display: inline-flex;
+
           background: #72a941;
           color: #fff;
+
           border-radius: 4px;
+
           padding: 8px 11px;
+
           font-size: 8px;
           font-weight: 800;
         }
 
+        /* ================= FOOTER ================= */
+
         footer {
           background: #183827;
+
           color: #dfe9df;
+
           padding: 29px 14px 0;
         }
 
         .footer-grid {
           display: grid;
+
           grid-template-columns: 1fr 1fr;
+
           gap: 22px 18px;
         }
 
@@ -833,7 +1035,9 @@ export default function HomePage() {
 
         .footer-brand {
           display: flex;
+
           gap: 8px;
+
           align-items: center;
         }
 
@@ -844,75 +1048,115 @@ export default function HomePage() {
 
         .footer-brand b {
           font-size: 16px;
+
           color: #fff;
         }
 
         .footer-brand small {
           display: block;
+
           font-size: 5.5px;
+
           color: #a9baa9;
+
           letter-spacing: 1px;
         }
 
         .footer-grid p {
           font-size: 8px;
           line-height: 1.5;
+
           color: #9fb0a1;
         }
 
         .footer-grid em {
           font-size: 8px;
+
           color: #a9cc6b;
         }
 
         .footer-grid > div > b {
           font-size: 10px;
+
           color: #fff;
         }
 
         .footer-grid a {
           display: block;
+
           margin-top: 9px;
+
           font-size: 8px;
+
           color: #9eafa1;
         }
 
         .subscribe {
           height: 32px;
+
           display: flex;
+
           margin-top: 8px;
         }
 
         .subscribe input {
           min-width: 0;
+
           flex: 1;
-          border: 1px solid rgba(255, 255, 255, 0.14);
-          background: rgba(255, 255, 255, 0.06);
+
+          border:
+            1px solid
+            rgba(255, 255, 255, 0.14);
+
+          background:
+            rgba(255, 255, 255, 0.06);
+
           color: #fff;
-          border-radius: 4px 0 0 4px;
+
+          border-radius:
+            4px 0 0 4px;
+
           padding: 0 8px;
+
           font-size: 8px;
         }
 
         .subscribe button {
           border: 0;
+
           background: #73a843;
+
           color: #fff;
-          border-radius: 0 4px 4px 0;
+
+          border-radius:
+            0 4px 4px 0;
+
           padding: 0 9px;
+
           font-size: 8px;
         }
 
         .bottom {
           margin-top: 22px;
+
           padding: 10px 0;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+          border-top:
+            1px solid
+            rgba(255, 255, 255, 0.1);
+
           font-size: 7px;
+
           color: #809386;
+
           display: flex;
+
           justify-content: space-between;
+
           gap: 10px;
         }
+
+        /* ================= MOBILE ================= */
 
         @media (max-width: 700px) {
           .approved-desktop {
@@ -974,11 +1218,18 @@ export default function HomePage() {
           }
         }
 
-        /* Extra protection for narrow phones */
+        /* ================= SMALL PHONES ================= */
+
         @media (max-width: 420px) {
           header {
             min-height: 64px;
-            padding: 8px 10px;
+
+            padding:
+              8px 10px;
+          }
+
+          .brand {
+            gap: 5px;
           }
 
           .brand img {
@@ -995,14 +1246,15 @@ export default function HomePage() {
           }
 
           .header-actions {
-            right: 8px;
             gap: 4px;
           }
 
           .marketplace-button,
           .account {
             font-size: 8px;
-            padding: 6px 7px;
+
+            padding:
+              6px 7px;
           }
         }
       `}</style>
