@@ -511,18 +511,26 @@ function MessagesContent() {
     }
   }
 
+  /*
+   * BACKGROUND ONLY
+   *
+   * The approved scenic background is now loaded from:
+   * /public/messages-scenic-bg.jpg
+   *
+   * Nothing else in the existing message layout is changed here.
+   */
   const pageStyle = {
-    backgroundImage:
-      "linear-gradient(90deg, rgba(3,35,31,0.99) 0%, rgba(3,35,31,0.96) 45%, rgba(3,35,31,0.58) 72%, rgba(3,35,31,0.10) 100%), url('/messages-scenic-small.jpg')",
+    backgroundImage: "url('/messages-scenic-bg.jpg')",
     backgroundRepeat: "no-repeat",
-    backgroundPosition: "left top, right top",
-    backgroundSize: "100% 100%, 36% 100%",
+    backgroundPosition: "center top",
+    backgroundSize: "cover",
+    backgroundAttachment: "scroll",
   };
 
   if (loading) {
     return (
       <main
-        className="min-h-screen bg-[#082623] bg-cover bg-center"
+        className="min-h-screen bg-[#082623]"
         style={pageStyle}
       >
         <div className="flex min-h-screen items-center justify-center">
@@ -536,7 +544,7 @@ function MessagesContent() {
 
   return (
     <main
-      className="min-h-screen bg-[#082623] bg-cover bg-center"
+      className="min-h-screen bg-[#082623]"
       style={pageStyle}
     >
       <div className="min-h-screen w-full px-5 py-6 sm:px-9 sm:py-8 lg:px-12">
@@ -564,10 +572,34 @@ function MessagesContent() {
               fill="currentColor"
               aria-hidden="true"
             >
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect
+                x="3"
+                y="3"
+                width="7"
+                height="7"
+                rx="1"
+              />
+              <rect
+                x="14"
+                y="3"
+                width="7"
+                height="7"
+                rx="1"
+              />
+              <rect
+                x="3"
+                y="14"
+                width="7"
+                height="7"
+                rx="1"
+              />
+              <rect
+                x="14"
+                y="14"
+                width="7"
+                height="7"
+                rx="1"
+              />
             </svg>
             Dashboard
           </button>
