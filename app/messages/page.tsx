@@ -549,7 +549,7 @@ function MessagesContent() {
             <img
               src="/nagasphere-logo.png"
               alt="NagaSphere"
-              className="block h-auto w-[165px] object-contain sm:w-[270px]"
+              className="block h-auto w-[165px] object-contain sm:w-[165px] md:w-[270px]"
             />
           </button>
 
