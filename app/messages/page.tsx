@@ -514,7 +514,7 @@ function MessagesContent() {
   const pageStyle = {
     backgroundImage: "url('/messages-scenic-bg.jpg')",
     backgroundRepeat: "no-repeat",
-    backgroundPosition: "center top",
+    backgroundPosition: "center calc(-100vw)",
     backgroundSize: "100% auto",
     backgroundAttachment: "scroll",
   };
