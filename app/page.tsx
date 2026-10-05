@@ -52,9 +52,9 @@ export default function HomePage() {
                 <small>Local Needs · Global Reach</small>
               </span>
             </a>
-<a href="/auth" className="account">
-              My Account
-            </a>
+          <a href="/dashboard" className="account">
+  My Account
+</a>
           </header>
 
           <div className="hero-content">
