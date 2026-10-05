@@ -326,7 +326,8 @@ export default function HomePage() {
           }
 
           header {
-            height: 60px;
+  position: relative;
+  height: 60px;
             padding: 0 14px;
             display: flex;
             align-items: center;
