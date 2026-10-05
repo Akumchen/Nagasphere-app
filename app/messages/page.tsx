@@ -800,7 +800,7 @@ function MessagesContent() {
               <img
                 src="/nagasphere-logo.png"
                 alt="NagaSphere"
-                className="block h-auto w-[150px]"
+                className="block h-auto max-h-12 w-auto max-w-[150px] object-contain sm:max-w-[180px]"
               />
             </button>
 
@@ -918,7 +918,7 @@ function MessagesContent() {
             <img
               src="/nagasphere-logo.png"
               alt="NagaSphere"
-              className="block h-auto w-[150px]"
+              className="block h-auto max-h-12 w-auto max-w-[150px] object-contain sm:max-w-[180px]"
             />
           </button>
 
