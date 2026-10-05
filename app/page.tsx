@@ -337,7 +337,10 @@ export default function HomePage() {
           }
 
           .brand {
-            display: flex;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
             align-items: center;
             gap: 6px;
           }
