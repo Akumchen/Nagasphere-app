@@ -904,7 +904,7 @@ function MessagesContent() {
 
   return (
     <main className="min-h-screen bg-[#082623] p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto w-full max-w-4xl">
 
         <header className="mb-5 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
           <button
@@ -1070,7 +1070,7 @@ function MessagesContent() {
 
         </div>
 
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex w-full gap-2 rounded-2xl border border-white/10 bg-white/95 p-2 shadow-lg">
 
           <input
             value={body}
