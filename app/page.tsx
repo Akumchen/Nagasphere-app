@@ -825,6 +825,13 @@ export default function HomePage() {
           }
 
           @media (max-width: 390px) {
+            .approved-desktop {
+             display: none;
+          }
+
+            .mobile-home {
+             display: block;
+          }
             .hero {
               height: 420px;
               min-height: 420px;
