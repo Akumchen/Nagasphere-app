@@ -542,16 +542,23 @@ function MessagesContent() {
       <div className="min-h-screen w-full px-5 py-7 sm:px-9 sm:py-9 lg:px-[47px] lg:py-[46px]">
         <header className="flex items-center justify-between">
           <button
-            type="button"
-            onClick={() => router.push("/")}
-            className="shrink-0"
-          >
-            <img
-  src="/nagasphere-logo.png"
-  alt="NagaSphere"
-  className="block h-auto w-[100px] object-contain sm:w-[100px] md:w-[270px]"
-/>
-          </button>
+  type="button"
+  onClick={() => router.push("/")}
+  className="flex shrink-0 items-center gap-[6px]"
+>
+  <img
+    src="/nagasphere-logo.png"
+    alt=""
+    className="h-8 w-8 object-contain"
+  />
+
+  <span className="flex flex-col">
+    <b className="text-[15px] leading-none">NagaSphere</b>
+    <small className="mt-[2px] text-[5.5px] uppercase tracking-[1px] text-white/85">
+      Local Needs · Global Reach
+    </small>
+  </span>
+</button>
 
           <button
             type="button"
