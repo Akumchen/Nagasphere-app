@@ -107,7 +107,6 @@ const features = [
 export default function HomePage() {
   return (
     <>
-      {/* Desktop: approved reference image is the visual source of truth */}
       <div className="approved-desktop">
         <img
           src="/NagaSphere_Local_Marketplace_in_Nagaland.png"
@@ -115,11 +114,9 @@ export default function HomePage() {
         />
       </div>
 
-      {/* Mobile homepage */}
       <main className="mobile-home">
         <section className="hero">
           <header>
-            {/* Centered NagaSphere brand */}
             <a href="/" className="brand">
               <img src="/nagasphere-logo.png" alt="" />
 
@@ -129,7 +126,6 @@ export default function HomePage() {
               </span>
             </a>
 
-            {/* Right-side actions */}
             <div className="header-actions">
               <a href="/listing" className="marketplace-button">
                 Marketplace
@@ -397,29 +393,33 @@ export default function HomePage() {
             url("/nagasphere-hero.jpg") 56% center / cover no-repeat;
         }
 
+        /* =========================
+           HEADER - FIXED
+           ========================= */
+
         header {
           position: relative;
-          height: 60px;
-          padding: 0 14px;
+          min-height: 60px;
+          padding: 8px 12px;
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
           background: rgba(8, 30, 20, 0.18);
           border-bottom: 1px solid rgba(255, 255, 255, 0.18);
         }
 
         .brand {
-          position: absolute;
-          left: 50%;
-          transform: translateX(-50%);
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 6px;
+          text-align: left;
+          flex-shrink: 0;
         }
 
         .brand img {
-          width: 36px;
-          height: 36px;
+          width: 32px;
+          height: 32px;
           object-fit: contain;
         }
 
@@ -440,23 +440,19 @@ export default function HomePage() {
         }
 
         .header-actions {
-          margin-left: auto;
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
         }
 
-        .marketplace-button {
-          font-size: 9px;
-          padding: 8px 10px;
-          border: 1px solid rgba(255, 255, 255, 0.55);
-          border-radius: 5px;
-          white-space: nowrap;
-        }
-
+        .marketplace-button,
         .account {
           font-size: 9px;
-          padding: 8px 10px;
+          padding: 7px 8px;
           border: 1px solid rgba(255, 255, 255, 0.55);
           border-radius: 5px;
           white-space: nowrap;
@@ -975,6 +971,38 @@ export default function HomePage() {
 
           .bottom {
             flex-direction: column;
+          }
+        }
+
+        /* Extra protection for narrow phones */
+        @media (max-width: 420px) {
+          header {
+            min-height: 64px;
+            padding: 8px 10px;
+          }
+
+          .brand img {
+            width: 29px;
+            height: 29px;
+          }
+
+          .brand b {
+            font-size: 13px;
+          }
+
+          .brand small {
+            font-size: 5px;
+          }
+
+          .header-actions {
+            right: 8px;
+            gap: 4px;
+          }
+
+          .marketplace-button,
+          .account {
+            font-size: 8px;
+            padding: 6px 7px;
           }
         }
       `}</style>
