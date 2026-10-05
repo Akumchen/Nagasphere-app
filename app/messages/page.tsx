@@ -63,19 +63,24 @@ function MessagesContent() {
   }
 
   async function loadInbox(currentUserId: string) {
-    const { data: memberships, error: membershipError } = await supabase
-      .from("conversation_members")
-      .select("conversation_id")
-      .eq("user_id", currentUserId);
+    const { data: memberships, error: membershipError } =
+      await supabase
+        .from("conversation_members")
+        .select("conversation_id")
+        .eq("user_id", currentUserId);
 
     if (membershipError) {
-      setError(`Unable to load your messages: ${membershipError.message}`);
+      setError(
+        `Unable to load your messages: ${membershipError.message}`
+      );
       return;
     }
 
     const conversationIds = Array.from(
       new Set(
-        (memberships || []).map((item) => item.conversation_id)
+        (memberships || []).map(
+          (item) => item.conversation_id
+        )
       )
     );
 
@@ -112,7 +117,9 @@ function MessagesContent() {
           .eq("id", row.post_id)
           .maybeSingle();
 
-        if (post?.title) postTitle = post.title;
+        if (post?.title) {
+          postTitle = post.title;
+        }
       }
 
       const { data: members } = await supabase
@@ -133,7 +140,9 @@ function MessagesContent() {
           .eq("id", otherId)
           .maybeSingle();
 
-        if (profile?.full_name) otherName = profile.full_name;
+        if (profile?.full_name) {
+          otherName = profile.full_name;
+        }
       }
 
       const { data: messageRows } = await supabase
@@ -153,8 +162,10 @@ function MessagesContent() {
         postId: row.post_id,
         postTitle,
         otherName,
-        latestMessage: latest?.body || "No messages yet",
-        latestMessageTime: latest?.created_at || null,
+        latestMessage:
+          latest?.body || "No messages yet",
+        latestMessageTime:
+          latest?.created_at || null,
       });
     }
 
@@ -178,10 +189,11 @@ function MessagesContent() {
       return;
     }
 
-    const { data: members, error: memberError } = await supabase
-      .from("conversation_members")
-      .select("user_id")
-      .eq("conversation_id", conversationId);
+    const { data: members, error: memberError } =
+      await supabase
+        .from("conversation_members")
+        .select("user_id")
+        .eq("conversation_id", conversationId);
 
     if (memberError) {
       setError(
@@ -195,7 +207,9 @@ function MessagesContent() {
     );
 
     if (!memberIds.includes(currentUserId)) {
-      setError("You do not have access to this conversation.");
+      setError(
+        "You do not have access to this conversation."
+      );
       return;
     }
 
@@ -203,12 +217,14 @@ function MessagesContent() {
       (id) => id !== currentUserId
     );
 
-    const { data: conversationRow, error: conversationError } =
-      await supabase
-        .from("conversations")
-        .select("id,post_id")
-        .eq("id", conversationId)
-        .single();
+    const {
+      data: conversationRow,
+      error: conversationError,
+    } = await supabase
+      .from("conversations")
+      .select("id,post_id")
+      .eq("id", conversationId)
+      .single();
 
     if (conversationError || !conversationRow) {
       setError("Conversation not found.");
@@ -224,7 +240,9 @@ function MessagesContent() {
         .eq("id", conversationRow.post_id)
         .maybeSingle();
 
-      if (post?.title) postTitle = post.title;
+      if (post?.title) {
+        postTitle = post.title;
+      }
     }
 
     let otherName = "NagaSphere user";
@@ -236,17 +254,21 @@ function MessagesContent() {
         .eq("id", otherId)
         .maybeSingle();
 
-      if (profile?.full_name) otherName = profile.full_name;
+      if (profile?.full_name) {
+        otherName = profile.full_name;
+      }
     }
 
-    const { data: messageRows, error: messagesError } =
-      await supabase
-        .from("messages")
-        .select(
-          "id,conversation_id,sender_id,body,created_at,deleted_at,deleted_by"
-        )
-        .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true });
+    const {
+      data: messageRows,
+      error: messagesError,
+    } = await supabase
+      .from("messages")
+      .select(
+        "id,conversation_id,sender_id,body,created_at,deleted_at,deleted_by"
+      )
+      .eq("conversation_id", conversationId)
+      .order("created_at", { ascending: true });
 
     if (messagesError) {
       setError(
@@ -297,7 +319,9 @@ function MessagesContent() {
         await loadConversation(user.id);
       }
 
-      if (mounted) setLoading(false);
+      if (mounted) {
+        setLoading(false);
+      }
     }
 
     load();
@@ -310,7 +334,9 @@ function MessagesContent() {
   async function sendMessage() {
     const text = body.trim();
 
-    if (!text || !conversationId || sending) return;
+    if (!text || !conversationId || sending) {
+      return;
+    }
 
     setSending(true);
     setError("");
@@ -320,7 +346,9 @@ function MessagesContent() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setError("Your login session has expired. Please log in again.");
+      setError(
+        "Your login session has expired. Please log in again."
+      );
       setSending(false);
       return;
     }
@@ -333,26 +361,32 @@ function MessagesContent() {
       .maybeSingle();
 
     if (!member) {
-      setError("You are not a member of this conversation.");
+      setError(
+        "You are not a member of this conversation."
+      );
       setSending(false);
       return;
     }
 
-    const { data: newMessage, error: insertError } =
-      await supabase
-        .from("messages")
-        .insert({
-          conversation_id: conversationId,
-          sender_id: user.id,
-          body: text,
-        })
-        .select(
-          "id,conversation_id,sender_id,body,created_at,deleted_at,deleted_by"
-        )
-        .single();
+    const {
+      data: newMessage,
+      error: insertError,
+    } = await supabase
+      .from("messages")
+      .insert({
+        conversation_id: conversationId,
+        sender_id: user.id,
+        body: text,
+      })
+      .select(
+        "id,conversation_id,sender_id,body,created_at,deleted_at,deleted_by"
+      )
+      .single();
 
     if (insertError) {
-      setError(`Message could not be sent: ${insertError.message}`);
+      setError(
+        `Message could not be sent: ${insertError.message}`
+      );
       setSending(false);
       return;
     }
@@ -367,13 +401,22 @@ function MessagesContent() {
     setBody("");
     setSending(false);
     setUserId(user.id);
+
     await loadInbox(user.id);
   }
 
   async function deleteForMe(messageId: string) {
-    if (!userId || deletingMessageId) return;
+    if (!userId || deletingMessageId) {
+      return;
+    }
 
-    if (!window.confirm("Delete this message from your view?")) return;
+    if (
+      !window.confirm(
+        "Delete this message from your view?"
+      )
+    ) {
+      return;
+    }
 
     setDeletingMessageId(messageId);
     setError("");
@@ -386,10 +429,14 @@ function MessagesContent() {
           user_id: userId,
         });
 
-      if (error && error.code !== "23505") throw error;
+      if (error && error.code !== "23505") {
+        throw error;
+      }
 
       setMessages((current) =>
-        current.filter((message) => message.id !== messageId)
+        current.filter(
+          (message) => message.id !== messageId
+        )
       );
 
       await loadInbox(userId);
@@ -405,14 +452,17 @@ function MessagesContent() {
   }
 
   async function deleteForEveryone(messageId: string) {
-    if (!userId || deletingMessageId) return;
+    if (!userId || deletingMessageId) {
+      return;
+    }
 
     if (
       !window.confirm(
         "Delete this message for everyone? This is only available for 15 minutes after sending."
       )
-    )
+    ) {
       return;
+    }
 
     setDeletingMessageId(messageId);
     setError("");
@@ -420,10 +470,14 @@ function MessagesContent() {
     try {
       const { data, error } = await supabase.rpc(
         "delete_message_for_everyone",
-        { p_message_id: messageId }
+        {
+          p_message_id: messageId,
+        }
       );
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       if (!data) {
         setError(
@@ -457,9 +511,22 @@ function MessagesContent() {
     }
   }
 
+  /*
+   * APPROVED NagaSphere Messages template:
+   * - dark green header
+   * - NagaSphere logo top-left
+   * - Dashboard button top-right with grid icon
+   * - Messages title + chat icon
+   * - exact subtitle
+   * - large pale conversation panel
+   * - scenic Nagaland background
+   * - conversation rows with avatars, titles,
+   *   previews, dates and dividers
+   */
+
   const pageStyle = {
     backgroundImage:
-      "linear-gradient(90deg, rgba(3,35,31,0.98) 0%, rgba(3,35,31,0.92) 35%, rgba(3,35,31,0.60) 68%, rgba(3,35,31,0.30) 100%), url('/NagaSphere_Local_Marketplace_in_Nagaland.png')",
+      "linear-gradient(90deg, rgba(3,35,31,0.97) 0%, rgba(3,35,31,0.91) 38%, rgba(3,35,31,0.62) 70%, rgba(3,35,31,0.28) 100%), url('/NagaSphere_Local_Marketplace_in_Nagaland.png')",
   };
 
   if (loading) {
@@ -469,7 +536,9 @@ function MessagesContent() {
         style={pageStyle}
       >
         <div className="flex min-h-screen items-center justify-center">
-          <p className="text-white/80">Loading messages...</p>
+          <p className="text-white/80">
+            Loading messages...
+          </p>
         </div>
       </main>
     );
@@ -477,10 +546,12 @@ function MessagesContent() {
 
   return (
     <main
-      className="min-h-screen bg-[#082623] bg-cover bg-center bg-fixed"
+      className="min-h-screen bg-[#082623] bg-cover bg-center"
       style={pageStyle}
     >
-      <div className="min-h-screen w-full px-6 py-7 sm:px-10 sm:py-9 lg:px-12">
+      <div className="min-h-screen w-full px-5 py-6 sm:px-9 sm:py-8 lg:px-12">
+
+        {/* HEADER */}
 
         <header className="flex items-start justify-between">
           <button
@@ -491,22 +562,60 @@ function MessagesContent() {
             <img
               src="/nagasphere-logo.png"
               alt="NagaSphere"
-              className="block h-auto w-[255px] object-contain sm:w-[285px]"
+              className="block h-auto w-[225px] object-contain sm:w-[255px]"
             />
           </button>
 
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="rounded-xl border border-white/45 bg-[#082623]/45 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-[#082623]/75"
+            className="flex items-center gap-2 rounded-xl border border-[#80c996]/70 bg-[#082623]/55 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-[#082623]/80"
           >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <rect
+                x="3"
+                y="3"
+                width="7"
+                height="7"
+                rx="1"
+              />
+              <rect
+                x="14"
+                y="3"
+                width="7"
+                height="7"
+                rx="1"
+              />
+              <rect
+                x="3"
+                y="14"
+                width="7"
+                height="7"
+                rx="1"
+              />
+              <rect
+                x="14"
+                y="14"
+                width="7"
+                height="7"
+                rx="1"
+              />
+            </svg>
+
             Dashboard
           </button>
         </header>
 
+        {/* TITLE */}
+
         <section className="mt-9 sm:mt-11">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-white">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#a8e69b] text-[#a8e69b]">
               <svg
                 viewBox="0 0 24 24"
                 className="h-6 w-6"
@@ -522,7 +631,7 @@ function MessagesContent() {
               </svg>
             </div>
 
-            <h1 className="text-4xl font-bold tracking-tight text-white">
+            <h1 className="text-[40px] font-bold leading-none tracking-tight text-white sm:text-[44px]">
               Messages
             </h1>
           </div>
@@ -537,10 +646,12 @@ function MessagesContent() {
             </div>
           )}
 
+          {/* INBOX */}
+
           {!conversationId ? (
             inbox.length === 0 ? (
-              <div className="mt-7 w-[746px] max-w-full rounded-2xl border border-gray-200 bg-white p-10 shadow-2xl">
-                <div className="flex min-h-[430px] items-center justify-center text-center">
+              <div className="mt-7 min-h-[620px] w-[746px] max-w-full rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] p-10 shadow-2xl">
+                <div className="flex min-h-[520px] items-center justify-center text-center">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-900">
                       No conversations yet
@@ -562,7 +673,7 @@ function MessagesContent() {
                 </div>
               </div>
             ) : (
-              <div className="mt-7 w-[746px] max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
+              <div className="mt-7 min-h-[620px] w-[746px] max-w-full overflow-hidden rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] shadow-2xl">
                 {inbox.map((item, index) => (
                   <button
                     key={item.id}
@@ -572,13 +683,15 @@ function MessagesContent() {
                         `/messages?conversation=${item.id}`
                       )
                     }
-                    className={`block w-full px-7 py-5 text-left transition hover:bg-gray-50 ${
+                    className={`block w-full px-8 py-7 text-left transition hover:bg-white ${
                       index > 0
-                        ? "border-t border-gray-200"
+                        ? "border-t border-[#dce6e2]"
                         : ""
                     }`}
                   >
                     <div className="flex items-center gap-4">
+                      {/* AVATAR */}
+
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0b3b31] text-[#c7ef91]">
                         <svg
                           viewBox="0 0 24 24"
@@ -624,10 +737,14 @@ function MessagesContent() {
                     </div>
                   </button>
                 ))}
+
+                <div className="min-h-[400px] bg-[#f8fbfa]" />
               </div>
             )
           ) : (
             <>
+              {/* CONVERSATION */}
+
               <button
                 type="button"
                 onClick={() => router.push("/messages")}
@@ -636,14 +753,15 @@ function MessagesContent() {
                 ← All Messages
               </button>
 
-              <div className="mt-4 w-[746px] max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
-                <div className="border-b border-gray-200 px-7 py-5">
+              <div className="mt-4 w-[746px] max-w-full overflow-hidden rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] shadow-2xl">
+                <div className="border-b border-[#dce6e2] px-7 py-5">
                   <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                     Conversation
                   </p>
 
                   <h2 className="mt-1 text-lg font-bold text-gray-900">
-                    {conversation?.otherName || "NagaSphere user"}
+                    {conversation?.otherName ||
+                      "NagaSphere user"}
                   </h2>
 
                   <p className="mt-1 text-sm text-gray-500">
@@ -751,13 +869,18 @@ function MessagesContent() {
                 </div>
               </div>
 
+              {/* MESSAGE INPUT */}
+
               <div className="mt-4 w-[746px] max-w-full">
                 <div className="flex items-center gap-2 rounded-2xl border border-white/30 bg-white/95 p-2 shadow-2xl">
                   <input
                     value={body}
                     onChange={(e) => {
                       setBody(e.target.value);
-                      if (error) setError("");
+
+                      if (error) {
+                        setError("");
+                      }
                     }}
                     onKeyDown={(e) => {
                       if (
