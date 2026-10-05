@@ -52,8 +52,7 @@ export default function HomePage() {
                 <small>Local Needs · Global Reach</small>
               </span>
             </a>
-
-            <a href="/account" className="account">
+<a href="/auth" className="account">
               My Account
             </a>
           </header>
