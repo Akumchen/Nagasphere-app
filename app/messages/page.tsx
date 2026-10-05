@@ -523,7 +523,7 @@ function MessagesContent() {
     backgroundImage: "url('/messages-scenic-bg.jpg')",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center top",
-    backgroundSize: "cover",
+    backgroundSize: "100% auto",
     backgroundAttachment: "scroll",
   };
 
