@@ -548,7 +548,7 @@ function MessagesContent() {
       style={pageStyle}
     >
       <div className="min-h-screen w-full px-5 py-6 sm:px-9 sm:py-8 lg:px-12">
-        <header className="flex items-start justify-between">
+        <header className="flex items-center justify-between">
           <button
             type="button"
             onClick={() => router.push("/")}
