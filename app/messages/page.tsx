@@ -41,7 +41,8 @@ function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const conversationId = searchParams.get("conversation");
+  const conversationId =
+    searchParams.get("conversation");
 
   const supabase = useMemo(
     () => createClient(),
@@ -773,9 +774,9 @@ function MessagesContent() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-white p-6">
-        <div className="mx-auto max-w-5xl">
-          <p className="text-gray-600">
+      <main className="min-h-screen bg-[#082623] p-4 sm:p-6">
+        <div className="mx-auto flex min-h-[70vh] w-full max-w-5xl items-center justify-center">
+          <p className="text-sm text-white/80">
             Loading messages...
           </p>
         </div>
@@ -785,44 +786,48 @@ function MessagesContent() {
 
   if (!conversationId) {
     return (
-      <main className="min-h-screen bg-[#082623] p-4 sm:p-6">
-        <div className="mx-auto max-w-5xl">
+      <main className="min-h-screen bg-[#082623] px-4 py-5 sm:px-6 sm:py-8">
+        <div className="mx-auto w-full max-w-5xl">
 
-          <header className="mb-6 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
-            <button
-              type="button"
-              onClick={() =>
-                router.push("/")
-              }
-              aria-label="Go to NagaSphere home"
-              className="flex items-center"
-            >
-              <img
-                src="/nagasphere-logo.png"
-                alt="NagaSphere"
-                className="block h-auto max-h-12 w-auto max-w-[150px] object-contain sm:max-w-[180px]"
-              />
-            </button>
+          <header className="mb-6 rounded-2xl border border-white/15 bg-white p-4 shadow-xl sm:p-5">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
 
-            <button
-              type="button"
-              onClick={() =>
-                router.push(
-                  "/dashboard"
-                )
-              }
-              className="text-sm font-medium text-gray-600 hover:text-black"
-            >
-              Dashboard
-            </button>
+              <button
+                type="button"
+                onClick={() =>
+                  router.push("/")
+                }
+                aria-label="Go to NagaSphere home"
+                className="flex w-full items-center justify-center sm:w-auto sm:justify-start"
+              >
+                <img
+                  src="/nagasphere-logo.png"
+                  alt="NagaSphere"
+                  className="block h-auto max-h-16 w-auto max-w-[210px] object-contain"
+                />
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  router.push(
+                    "/dashboard"
+                  )
+                }
+                className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-black"
+              >
+                Dashboard
+              </button>
+
+            </div>
           </header>
 
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-white sm:text-3xl">
               Messages
             </h1>
 
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-white/70">
               Your conversations with NagaSphere buyers and sellers.
             </p>
           </div>
@@ -834,7 +839,7 @@ function MessagesContent() {
           )}
 
           {inbox.length === 0 ? (
-            <div className="rounded-2xl border bg-white p-10 text-center shadow-sm">
+            <div className="rounded-2xl border border-white/10 bg-white p-8 text-center shadow-xl sm:p-10">
               <h2 className="text-lg font-semibold text-gray-900">
                 No conversations yet
               </h2>
@@ -849,7 +854,7 @@ function MessagesContent() {
                 onClick={() =>
                   router.push("/")
                 }
-                className="mt-5 rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white"
+                className="mt-5 rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
               >
                 Browse NagaSphere
               </button>
@@ -865,7 +870,7 @@ function MessagesContent() {
                       `/messages?conversation=${item.id}`
                     )
                   }
-                  className="w-full rounded-2xl border bg-white p-5 text-left shadow-sm transition hover:shadow-md"
+                  className="w-full rounded-2xl border border-white/10 bg-white p-5 text-left shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
                 >
                   <div className="flex items-start justify-between gap-4">
 
@@ -903,39 +908,43 @@ function MessagesContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#082623] p-4 sm:p-6">
-      <div className="mx-auto w-full max-w-4xl">
+    <main className="min-h-screen bg-[#082623] px-4 py-5 sm:px-6 sm:py-8">
+      <div className="mx-auto w-full max-w-5xl">
 
-        <header className="mb-5 flex items-center justify-between gap-4 rounded-2xl border bg-white p-4 shadow-sm">
-          <button
-            type="button"
-            onClick={() =>
-              router.push("/")
-            }
-            aria-label="Go to NagaSphere home"
-            className="flex items-center"
-          >
-            <img
-              src="/nagasphere-logo.png"
-              alt="NagaSphere"
-              className="block h-auto max-h-12 w-auto max-w-[150px] object-contain sm:max-w-[180px]"
-            />
-          </button>
+        <header className="mb-5 rounded-2xl border border-white/15 bg-white p-4 shadow-xl sm:p-5">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
 
-          <button
-            type="button"
-            onClick={() =>
-              router.push(
-                "/messages"
-              )
-            }
-            className="text-sm font-medium text-gray-600 hover:text-black"
-          >
-            ← All Messages
-          </button>
+            <button
+              type="button"
+              onClick={() =>
+                router.push("/")
+              }
+              aria-label="Go to NagaSphere home"
+              className="flex w-full items-center justify-center sm:w-auto sm:justify-start"
+            >
+              <img
+                src="/nagasphere-logo.png"
+                alt="NagaSphere"
+                className="block h-auto max-h-16 w-auto max-w-[210px] object-contain"
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                router.push(
+                  "/messages"
+                )
+              }
+              className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 hover:text-black"
+            >
+              ← All Messages
+            </button>
+
+          </div>
         </header>
 
-        <div className="mb-4 rounded-2xl border bg-white p-5 shadow-sm">
+        <div className="mx-auto mb-4 w-full max-w-4xl rounded-2xl border border-white/10 bg-white p-5 shadow-xl sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
             Conversation
           </p>
@@ -953,94 +962,79 @@ function MessagesContent() {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div className="mx-auto mb-4 w-full max-w-4xl rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             {error}
           </div>
         )}
 
-        <div className="min-h-[420px] rounded-2xl border bg-gray-50 p-4">
+        <div className="mx-auto w-full max-w-4xl rounded-2xl border border-gray-200 bg-white p-4 shadow-xl sm:p-5">
 
-          {messages.length === 0 ? (
-            <div className="flex min-h-[380px] items-center justify-center text-center text-sm text-gray-500">
-              No messages yet. Start the conversation below.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {messages.map(
-                (message) => {
-                  const mine =
-                    message.sender_id ===
-                    userId;
+          <div className="min-h-[420px]">
 
-                  const deletedForEveryone =
-                    Boolean(
-                      message.deleted_at
-                    );
+            {messages.length === 0 ? (
+              <div className="flex min-h-[380px] items-center justify-center text-center text-sm text-gray-500">
+                No messages yet. Start the conversation below.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {messages.map(
+                  (message) => {
+                    const mine =
+                      message.sender_id ===
+                      userId;
 
-                  return (
-                    <div
-                      key={message.id}
-                      className={`flex ${
-                        mine
-                          ? "justify-end"
-                          : "justify-start"
-                      }`}
-                    >
-                      <div className="max-w-[90%]">
+                    const deletedForEveryone =
+                      Boolean(
+                        message.deleted_at
+                      );
 
-                        <div
-                          className={`rounded-2xl px-4 py-3 text-sm ${
-                            deletedForEveryone
-                              ? "border border-gray-200 bg-gray-100 text-gray-500 italic"
-                              : mine
-                                ? "bg-black text-white"
-                                : "border bg-white text-gray-900"
-                          }`}
-                        >
-                          <p className="whitespace-pre-wrap break-words">
-                            {message.body}
-                          </p>
+                    return (
+                      <div
+                        key={message.id}
+                        className={`flex ${
+                          mine
+                            ? "justify-end"
+                            : "justify-start"
+                        }`}
+                      >
+                        <div className="max-w-[88%] sm:max-w-[75%]">
 
-                          <p
-                            className={`mt-1 text-[11px] ${
-                              deletedForEveryone
-                                ? "text-gray-400"
-                                : mine
-                                  ? "text-gray-300"
-                                  : "text-gray-500"
-                            }`}
-                          >
-                            {new Date(
-                              message.created_at
-                            ).toLocaleString()}
-                          </p>
-                        </div>
-
-                        {!deletedForEveryone && (
                           <div
-                            className={`mt-1 flex gap-2 ${
-                              mine
-                                ? "justify-end"
-                                : "justify-start"
+                            className={`rounded-2xl px-4 py-3 text-sm shadow-sm ${
+                              deletedForEveryone
+                                ? "border border-gray-200 bg-gray-100 text-gray-500 italic"
+                                : mine
+                                  ? "bg-black text-white"
+                                  : "border border-gray-200 bg-white text-gray-900"
                             }`}
                           >
-                            <button
-                              type="button"
-                              disabled={
-                                deletingMessageId ===
-                                message.id
-                              }
-                              onClick={() =>
-                                deleteForMe(
-                                  message.id
-                                )
-                              }
-                              className="text-[11px] text-gray-500 underline hover:text-black disabled:opacity-50"
-                            >
-                              Delete for me
-                            </button>
+                            <p className="whitespace-pre-wrap break-words">
+                              {message.body}
+                            </p>
 
-                            {mine && (
+                            <p
+                              className={`mt-1 text-[11px] ${
+                                deletedForEveryone
+                                  ? "text-gray-400"
+                                  : mine
+                                    ? "text-gray-300"
+                                    : "text-gray-500"
+                              }`}
+                            >
+                              {new Date(
+                                message.created_at
+                              ).toLocaleString()}
+                            </p>
+                          </div>
+
+                          {!deletedForEveryone && (
+                            <div
+                              className={`mt-1 flex flex-wrap gap-2 ${
+                                mine
+                                  ? "justify-end"
+                                  : "justify-start"
+                              }`}
+                            >
                               <button
                                 type="button"
                                 disabled={
@@ -1048,68 +1042,89 @@ function MessagesContent() {
                                   message.id
                                 }
                                 onClick={() =>
-                                  deleteForEveryone(
+                                  deleteForMe(
                                     message.id
                                   )
                                 }
-                                className="text-[11px] text-gray-500 underline hover:text-black disabled:opacity-50"
+                                className="text-[11px] text-white/70 underline hover:text-white disabled:opacity-50"
                               >
-                                Delete for everyone
+                                Delete for me
                               </button>
-                            )}
-                          </div>
-                        )}
 
+                              {mine && (
+                                <button
+                                  type="button"
+                                  disabled={
+                                    deletingMessageId ===
+                                    message.id
+                                  }
+                                  onClick={() =>
+                                    deleteForEveryone(
+                                      message.id
+                                    )
+                                  }
+                                  className="text-[11px] text-white/70 underline hover:text-white disabled:opacity-50"
+                                >
+                                  Delete for everyone
+                                </button>
+                              )}
+                            </div>
+                          )}
+
+                        </div>
                       </div>
-                    </div>
-                  );
-                }
-              )}
-            </div>
-          )}
+                    );
+                  }
+                )}
+              </div>
+            )}
+
+          </div>
 
         </div>
 
-        <div className="mt-4 flex w-full gap-2 rounded-2xl border border-white/10 bg-white/95 p-2 shadow-lg">
+        <div className="mx-auto mt-4 w-full max-w-4xl">
+          <div className="flex w-full items-center gap-2 rounded-2xl border border-white/15 bg-white p-2 shadow-xl">
 
-          <input
-            value={body}
-            onChange={(e) => {
-              setBody(e.target.value);
+            <input
+              value={body}
+              onChange={(e) => {
+                setBody(e.target.value);
 
-              if (error) {
-                setError("");
+                if (error) {
+                  setError("");
+                }
+              }}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "Enter" &&
+                  !e.shiftKey
+                ) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              maxLength={5000}
+              disabled={sending}
+              placeholder="Write a message..."
+              className="min-w-0 flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-black disabled:bg-gray-100"
+            />
+
+            <button
+              type="button"
+              onClick={sendMessage}
+              disabled={
+                sending ||
+                !body.trim()
               }
-            }}
-            onKeyDown={(e) => {
-              if (
-                e.key === "Enter" &&
-                !e.shiftKey
-              ) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            maxLength={5000}
-            disabled={sending}
-            placeholder="Write a message..."
-            className="min-w-0 flex-1 rounded-xl border px-4 py-3 text-sm outline-none focus:border-black disabled:bg-gray-100"
-          />
+              className="shrink-0 rounded-xl bg-black px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-800 disabled:opacity-50 sm:px-5"
+            >
+              {sending
+                ? "Sending..."
+                : "Send"}
+            </button>
 
-          <button
-            type="button"
-            onClick={sendMessage}
-            disabled={
-              sending ||
-              !body.trim()
-            }
-            className="rounded-xl bg-black px-5 py-3 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {sending
-              ? "Sending..."
-              : "Send"}
-          </button>
-
+          </div>
         </div>
 
       </div>
@@ -1121,9 +1136,9 @@ export default function MessagesPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-white p-6">
-          <div className="mx-auto max-w-3xl">
-            <p className="text-gray-600">
+        <main className="min-h-screen bg-[#082623] p-4 sm:p-6">
+          <div className="mx-auto flex min-h-[70vh] w-full max-w-5xl items-center justify-center">
+            <p className="text-sm text-white/80">
               Loading messages...
             </p>
           </div>
