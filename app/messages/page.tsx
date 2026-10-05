@@ -482,7 +482,6 @@ function MessagesContent() {
     >
       <div className="min-h-screen w-full px-6 py-7 sm:px-10 sm:py-9 lg:px-12">
 
-        {/* EXACT TEMPLATE HEADER */}
         <header className="flex items-start justify-between">
           <button
             type="button"
@@ -505,7 +504,6 @@ function MessagesContent() {
           </button>
         </header>
 
-        {/* EXACT TEMPLATE TITLE AREA */}
         <section className="mt-9 sm:mt-11">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-white text-white">
@@ -539,7 +537,6 @@ function MessagesContent() {
             </div>
           )}
 
-          {/* EXACT TEMPLATE CONVERSATION PANEL */}
           {!conversationId ? (
             inbox.length === 0 ? (
               <div className="mt-7 w-[746px] max-w-full rounded-2xl border border-gray-200 bg-white p-10 shadow-2xl">
@@ -566,7 +563,6 @@ function MessagesContent() {
               </div>
             ) : (
               <div className="mt-7 w-[746px] max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
-
                 {inbox.map((item, index) => (
                   <button
                     key={item.id}
@@ -583,8 +579,6 @@ function MessagesContent() {
                     }`}
                   >
                     <div className="flex items-center gap-4">
-
-                      {/* GREEN USER ICON */}
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#0b3b31] text-[#c7ef91]">
                         <svg
                           viewBox="0 0 24 24"
@@ -611,7 +605,7 @@ function MessagesContent() {
                             <span className="shrink-0 text-xs text-gray-400">
                               {new Date(
                                 item.latestMessageTime
-                              ).toLocaleDateString()}
+                              ).toLocaleDateString("en-GB")}
                             </span>
                           )}
                         </div>
@@ -643,7 +637,6 @@ function MessagesContent() {
               </button>
 
               <div className="mt-4 w-[746px] max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl">
-
                 <div className="border-b border-gray-200 px-7 py-5">
                   <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                     Conversation
@@ -758,7 +751,6 @@ function MessagesContent() {
                 </div>
               </div>
 
-              {/* TEMPLATE-STYLE COMPOSER */}
               <div className="mt-4 w-[746px] max-w-full">
                 <div className="flex items-center gap-2 rounded-2xl border border-white/30 bg-white/95 p-2 shadow-2xl">
                   <input
