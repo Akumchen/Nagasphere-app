@@ -303,11 +303,11 @@ export default function HomePage() {
         }
 
         .approved-desktop {
-  display: none;
+  display: block;
 }
 
 .mobile-home {
-  display: block;
+  display: none;
 }
 
           .hero {
