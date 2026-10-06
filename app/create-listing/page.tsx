@@ -1,12 +1,14 @@
 "use client";
- 
-import { FormEvent, useEffect, useState } from "react";
+
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 
 type Category = {
   id: string;
   name: string;
+  slug: string;
+  parent_id: string | null;
 };
 
 export default function CreateListingPage() {
@@ -16,15 +18,32 @@ export default function CreateListingPage() {
   const [type, setType] = useState<"have" | "need">("have");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+
+  const [parentCategoryId, setParentCategoryId] = useState("");
+  const [subcategoryId, setSubcategoryId] = useState("");
+
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [price, setPrice] = useState("");
   const [city, setCity] = useState("");
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const topCategories = useMemo(
+    () => categories.filter((category) => !category.parent_id),
+    [categories]
+  );
+
+  const subcategories = useMemo(
+    () =>
+      categories.filter(
+        (category) => category.parent_id === parentCategoryId
+      ),
+    [categories, parentCategoryId]
+  );
 
   useEffect(() => {
     async function load() {
@@ -37,7 +56,7 @@ export default function CreateListingPage() {
 
       const { data, error } = await supabase
         .from("categories")
-        .select("id,name")
+        .select("id,name,slug,parent_id")
         .order("name");
 
       if (error) {
@@ -52,11 +71,26 @@ export default function CreateListingPage() {
     load();
   }, [router, supabase]);
 
+  function handleParentCategoryChange(value: string) {
+    setParentCategoryId(value);
+    setSubcategoryId("");
+  }
+
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!title.trim()) {
       setMessage("Please enter a title.");
+      return;
+    }
+
+    if (!parentCategoryId) {
+      setMessage("Please select a category.");
+      return;
+    }
+
+    if (subcategories.length > 0 && !subcategoryId) {
+      setMessage("Please select a subcategory.");
       return;
     }
 
@@ -70,12 +104,15 @@ export default function CreateListingPage() {
       return;
     }
 
+    const finalCategoryId =
+      subcategoryId || parentCategoryId || null;
+
     const { error } = await supabase.from("posts").insert({
       owner_id: auth.user.id,
       type,
       title: title.trim(),
       description: description.trim() || null,
-      category_id: categoryId || null,
+      category_id: finalCategoryId,
       quantity: quantity ? Number(quantity) : null,
       unit: unit.trim() || null,
       budget_min: price ? Number(price) : null,
@@ -92,6 +129,7 @@ export default function CreateListingPage() {
 
     router.push("/listing");
   }
+
   if (loading) {
     return <main style={{ padding: 30 }}>Loading...</main>;
   }
@@ -183,8 +221,10 @@ export default function CreateListingPage() {
             <label>
               Category
               <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                value={parentCategoryId}
+                onChange={(e) =>
+                  handleParentCategoryChange(e.target.value)
+                }
                 style={{
                   width: "100%",
                   padding: 12,
@@ -193,13 +233,43 @@ export default function CreateListingPage() {
                 }}
               >
                 <option value="">Select a category</option>
-                {categories.map((category) => (
+
+                {topCategories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
                 ))}
               </select>
             </label>
+
+            {parentCategoryId && subcategories.length > 0 && (
+              <label>
+                Subcategory
+                <select
+                  value={subcategoryId}
+                  onChange={(e) =>
+                    setSubcategoryId(e.target.value)
+                  }
+                  style={{
+                    width: "100%",
+                    padding: 12,
+                    margin: "6px 0 16px",
+                    boxSizing: "border-box"
+                  }}
+                >
+                  <option value="">Select a subcategory</option>
+
+                  {subcategories.map((subcategory) => (
+                    <option
+                      key={subcategory.id}
+                      value={subcategory.id}
+                    >
+                      {subcategory.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
             <label>
               Quantity
