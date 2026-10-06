@@ -40,21 +40,25 @@ export default function DashboardPage() {
       title: "My Listings",
       description: "Manage the products and services you offer.",
       path: "/my-listings",
+      icon: "◇",
     },
     {
       title: "My Requests",
       description: "Manage the products and services you are looking for.",
       path: "/my-requests",
+      icon: "⌁",
     },
     {
       title: "Messages",
       description: "View and reply to buyers and sellers.",
       path: "/messages",
+      icon: "◌",
     },
     {
       title: "Profile",
       description: "Complete and manage your NagaSphere profile.",
       path: "/profile",
+      icon: "○",
     },
   ];
 
@@ -87,6 +91,7 @@ export default function DashboardPage() {
       style={pageStyle}
     >
       <div className="min-h-screen w-full px-5 py-7 sm:px-9 sm:py-9 lg:px-[47px] lg:py-[46px]">
+
         <header className="flex items-center justify-between">
           <button
             type="button"
@@ -121,59 +126,76 @@ export default function DashboardPage() {
         </header>
 
         <section className="mt-10 sm:mt-12">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#a8e69b] text-[#a8e69b]">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                aria-hidden="true"
-              >
-                <path
-                  d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-6 4v-4.5a2.5 2.5 0 0 1 0-1.5v-8.5Z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
 
-                <path
-                  d="M8 8h8M8 11h5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
+          <h1 className="text-[40px] font-bold leading-none tracking-tight text-white sm:text-[44px]">
+            Welcome to NagaSphere
+          </h1>
 
-            <h1 className="text-[40px] font-bold leading-none tracking-tight text-white sm:text-[44px]">
-              Welcome to NagaSphere
-            </h1>
-          </div>
-
-          <p className="ml-14 mt-3 text-base text-white/80">
+          <p className="mt-3 text-base text-white/80">
             {email}
           </p>
 
-          <div className="mt-7 min-h-[915px] w-[746px] max-w-full rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] p-7 shadow-2xl sm:p-8">
+          <div className="mt-7 min-h-[915px] w-[746px] max-w-full rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa]/95 p-7 shadow-2xl backdrop-blur-[2px] sm:p-8">
+
+            <div className="mb-7">
+              <h2 className="text-2xl font-bold tracking-tight text-[#143b34]">
+                Your NagaSphere
+              </h2>
+
+              <p className="mt-1 text-sm text-[#60736e]">
+                Everything you need to manage your marketplace activity.
+              </p>
+            </div>
+
             <div className="grid gap-4 sm:grid-cols-2">
+
               {cards.map((card) => (
                 <button
                   key={card.title}
                   type="button"
                   onClick={() => router.push(card.path)}
-                  className="min-h-[190px] rounded-2xl border border-[#dce6e2] bg-white p-6 text-left shadow-sm transition hover:bg-[#fbfdfc] hover:shadow-md"
+                  className="group relative min-h-[190px] overflow-hidden rounded-2xl border border-[#dce6e2] bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {card.title}
-                  </h2>
 
-                  <p className="mt-3 text-sm leading-6 text-gray-500">
-                    {card.description}
-                  </p>
+                  <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#e9f4ed] transition duration-300 group-hover:scale-125" />
+
+                  <div className="relative">
+
+                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full border border-[#8fc5a0] bg-[#f0f8f2] text-xl text-[#27634f]">
+                      {card.icon}
+                    </div>
+
+                    <h3 className="text-xl font-bold text-[#173d35]">
+                      {card.title}
+                    </h3>
+
+                    <p className="mt-3 max-w-[260px] text-sm leading-6 text-[#687a75]">
+                      {card.description}
+                    </p>
+
+                    <span className="mt-5 inline-block text-xs font-semibold uppercase tracking-[1.2px] text-[#39755e]">
+                      Open →
+                    </span>
+
+                  </div>
                 </button>
               ))}
+
             </div>
 
-            <div className="min-h-[500px] bg-[#f8fbfa]" />
+            <div className="mt-10 rounded-2xl border border-[#dce8e3] bg-[#edf6f0] px-6 py-5">
+              <p className="text-sm font-semibold text-[#285b4b]">
+                NagaSphere Marketplace
+              </p>
+
+              <p className="mt-1 text-sm leading-6 text-[#657873]">
+                Connect with people across Nagaland, discover local products
+                and services, and manage your marketplace activity in one place.
+              </p>
+            </div>
+
+            <div className="min-h-[270px]" />
+
           </div>
         </section>
       </div>
