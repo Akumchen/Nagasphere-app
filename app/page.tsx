@@ -462,10 +462,8 @@ export default function HomePage() {
           align-items: center;
           justify-content: space-between;
 
-          background: rgba(8, 30, 20, 0.18);
-          border-bottom:
-            1px solid rgba(255, 255, 255, 0.18);
-        }
+          background: transparent;
+border-bottom: none;
 
         /* LEFT SIDE LOGO */
         .brand {
