@@ -13,6 +13,16 @@ const categories = [
   ["More", "/basket.png"],
 ];
 
+const categorySlugs: Record<string, string> = {
+  "Fresh Produce": "fresh-produce",
+  "Food & Beverages": "food-beverages",
+  Handicrafts: "handicrafts",
+  "Fashion & Apparel": "fashion-apparel",
+  "Home & Living": "home-living",
+  Electronics: "electronics",
+  Services: "services",
+  More: "more",
+};
 const listings = [
   [
     "Naga Oranges (Local)",
@@ -187,16 +197,16 @@ export default function HomePage() {
               <h2>Shop by Category</h2>
             </div>
 
-            <a href="/marketplace">View All →</a>
+            <a href="/listing">View All →</a>
           </div>
 
           <div className="cat-row">
             {categories.map(([name, image]) => (
               <a
-                className="cat"
-                href="/marketplace"
-                key={name}
-              >
+  className="cat"
+  href={`/listing?category=${categorySlugs[name]}`}
+  key={name}
+>
                 <img src={image} alt="" />
                 <b>{name}</b>
               </a>
@@ -228,7 +238,7 @@ export default function HomePage() {
               <h2>Featured Listings</h2>
             </div>
 
-            <a href="/marketplace">View All →</a>
+            <a href="/listing">View All →</a>
           </div>
 
           <div className="listing-row">
@@ -299,10 +309,9 @@ export default function HomePage() {
               Every purchase makes a difference — for our farmers,
               our businesses and our community.
             </p>
-
-            <a href="/marketplace">
-              Start Exploring →
-            </a>
+<a href="/listing">
+  Start Exploring →
+</a>
           </div>
         </section>
 
@@ -337,7 +346,7 @@ export default function HomePage() {
               <b>Quick Links</b>
 
               <a href="/">Home</a>
-              <a href="/marketplace">Marketplace</a>
+              <a href="/listing">Marketplace</a>
               <a href="#categories">Categories</a>
               <a href="/requests">My Requests</a>
             </div>
