@@ -7,7 +7,15 @@ type Props = {
   searchParams: Promise<{
     search?: string;
     category?: string;
+    subcategory?: string;
   }>;
+};
+
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  parent_id: string | null;
 };
 
 type Listing = {
@@ -25,22 +33,13 @@ type Listing = {
   categories:
     | {
         name: string;
+        parent_id: string | null;
       }
     | {
         name: string;
+        parent_id: string | null;
       }[]
     | null;
-};
-
-const categoryMap: Record<string, string> = {
-  "Fresh Produce": "Produce",
-  "Food & Beverages": "Food & Agriculture",
-  Handicrafts: "Products",
-  "Fashion & Apparel": "Products",
-  "Home & Living": "Products",
-  Electronics: "Products",
-  Services: "Services",
-  More: "",
 };
 
 function getCategoryName(
@@ -81,9 +80,39 @@ export default async function MarketplacePage({
 
   const search = (params.search ?? "").trim();
   const category = (params.category ?? "").trim();
+  const subcategory = (params.subcategory ?? "").trim();
 
   const supabase = await createClient();
 
+  /*
+   * Load the complete category hierarchy from Supabase.
+   */
+  const { data: categoryData } = await supabase
+    .from("categories")
+    .select("id,name,slug,parent_id")
+    .order("name");
+
+  const categories = (categoryData ?? []) as Category[];
+
+  const topCategories = categories.filter(
+    (item) => !item.parent_id
+  );
+
+  const selectedTop = topCategories.find(
+    (item) => item.slug === category
+  );
+
+  const subcategories = categories.filter(
+    (item) => item.parent_id === selectedTop?.id
+  );
+
+  const selectedSubcategory = categories.find(
+    (item) => item.slug === subcategory
+  );
+
+  /*
+   * Load marketplace listings.
+   */
   let query = supabase
     .from("posts")
     .select(
@@ -99,37 +128,63 @@ export default async function MarketplacePage({
         city,
         state,
         category_id,
-        categories(name)
+        categories(name,parent_id)
       `
     )
     .eq("status", "active")
     .order("created_at", { ascending: false });
 
+  /*
+   * Search.
+   */
   if (search) {
     query = query.or(
       `title.ilike.%${search}%,description.ilike.%${search}%,city.ilike.%${search}%`
     );
   }
 
-  if (category) {
-    const mappedCategory = categoryMap[category] ?? category;
+  /*
+   * Category filtering.
+   *
+   * Selecting a top-level category includes:
+   * - the top-level category itself
+   * - all of its direct subcategories
+   *
+   * Selecting a subcategory filters to that exact category only.
+   */
+  if (subcategory) {
+    if (selectedSubcategory?.id) {
+      query = query.eq(
+        "category_id",
+        selectedSubcategory.id
+      );
+    }
+  } else if (category) {
+    if (selectedTop?.id) {
+      const childIds = subcategories.map(
+        (child) => child.id
+      );
 
-    if (mappedCategory) {
-      const { data: categoryRow } = await supabase
-        .from("categories")
-        .select("id")
-        .eq("name", mappedCategory)
-        .maybeSingle();
+      const ids = [
+        selectedTop.id,
+        ...childIds,
+      ];
 
-      if (categoryRow?.id) {
-        query = query.eq("category_id", categoryRow.id);
-      }
+      query = query.in("category_id", ids);
     }
   }
 
   const { data, error } = await query.limit(60);
 
   const listings = (data ?? []) as Listing[];
+
+  /*
+   * Determine the heading shown above results.
+   */
+  const selectedCategoryName =
+    selectedSubcategory?.name ??
+    selectedTop?.name ??
+    "";
 
   return (
     <main
@@ -270,7 +325,8 @@ export default async function MarketplacePage({
               lineHeight: 1.5,
             }}
           >
-            Buy, sell and connect with people and businesses across Nagaland.
+            Buy, sell and connect with people and businesses
+            across Nagaland.
           </p>
         </div>
 
@@ -304,6 +360,22 @@ export default async function MarketplacePage({
             }}
           />
 
+          {category && (
+            <input
+              type="hidden"
+              name="category"
+              value={category}
+            />
+          )}
+
+          {subcategory && (
+            <input
+              type="hidden"
+              name="subcategory"
+              value={subcategory}
+            />
+          )}
+
           <button
             type="submit"
             style={{
@@ -320,40 +392,48 @@ export default async function MarketplacePage({
           </button>
         </form>
 
-        {/* CATEGORY FILTERS */}
+        {/* TOP-LEVEL CATEGORY FILTERS */}
         <div
           style={{
             display: "flex",
             gap: "8px",
             overflowX: "auto",
             paddingBottom: "8px",
-            marginBottom: "24px",
+            marginBottom: "10px",
           }}
         >
-          {[
-            "All",
-            "Fresh Produce",
-            "Food & Beverages",
-            "Handicrafts",
-            "Fashion & Apparel",
-            "Home & Living",
-            "Electronics",
-            "Services",
-          ].map((item) => {
-            const active =
-              item === "All"
-                ? !category
-                : category === item;
+          <Link
+            href="/listing"
+            style={{
+              whiteSpace: "nowrap",
+              textDecoration: "none",
+              padding: "9px 14px",
+              borderRadius: "22px",
+              background:
+                !category && !subcategory
+                  ? "#063f35"
+                  : "#fff",
+              color:
+                !category && !subcategory
+                  ? "#fff"
+                  : "#31534c",
+              border: "1px solid #dfe6df",
+              fontSize: "12px",
+              fontWeight: 700,
+            }}
+          >
+            All
+          </Link>
 
-            const href =
-              item === "All"
-                ? "/listing"
-                : `/listing?category=${encodeURIComponent(item)}`;
+          {topCategories.map((item) => {
+            const active = category === item.slug;
 
             return (
               <Link
-                key={item}
-                href={href}
+                key={item.id}
+                href={`/listing?category=${encodeURIComponent(
+                  item.slug
+                )}`}
                 style={{
                   whiteSpace: "nowrap",
                   textDecoration: "none",
@@ -366,11 +446,58 @@ export default async function MarketplacePage({
                   fontWeight: 700,
                 }}
               >
-                {item}
+                {item.name}
               </Link>
             );
           })}
         </div>
+
+        {/* SUBCATEGORY FILTERS */}
+        {selectedTop && subcategories.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              gap: "7px",
+              overflowX: "auto",
+              paddingBottom: "10px",
+              marginBottom: "18px",
+              paddingLeft: "4px",
+            }}
+          >
+            {subcategories.map((item) => {
+              const active =
+                subcategory === item.slug;
+
+              return (
+                <Link
+                  key={item.id}
+                  href={`/listing?category=${encodeURIComponent(
+                    selectedTop.slug
+                  )}&subcategory=${encodeURIComponent(
+                    item.slug
+                  )}`}
+                  style={{
+                    whiteSpace: "nowrap",
+                    textDecoration: "none",
+                    padding: "7px 12px",
+                    borderRadius: "18px",
+                    background: active
+                      ? "#2dbd62"
+                      : "#edf7ef",
+                    color: active
+                      ? "#fff"
+                      : "#31534c",
+                    border: "1px solid #d7e9da",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                  }}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
         {/* RESULTS HEADER */}
         <div
@@ -391,8 +518,8 @@ export default async function MarketplacePage({
             >
               {search
                 ? `Results for "${search}"`
-                : category
-                  ? category
+                : selectedCategoryName
+                  ? selectedCategoryName
                   : "All Listings"}
             </h2>
 
@@ -404,7 +531,9 @@ export default async function MarketplacePage({
               }}
             >
               {listings.length} active{" "}
-              {listings.length === 1 ? "listing" : "listings"}
+              {listings.length === 1
+                ? "listing"
+                : "listings"}
             </p>
           </div>
 
@@ -480,8 +609,9 @@ export default async function MarketplacePage({
                 lineHeight: 1.5,
               }}
             >
-              Try another search or category. You can also be the first
-              person to post what you are looking for.
+              Try another search or category. You can also
+              be the first person to post what you are
+              looking for.
             </p>
 
             <Link
