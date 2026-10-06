@@ -93,35 +93,33 @@ export default function DashboardPage() {
       <div className="min-h-screen w-full px-5 py-7 sm:px-9 sm:py-9 lg:px-[47px] lg:py-[46px]">
 
         <header className="flex items-center justify-between">
-          <div className="rounded-2xl border border-white/20 bg-[#061d1a]/70 px-3 py-2 shadow-lg backdrop-blur-sm">
-            <button
-              type="button"
-              onClick={() => router.push("/")}
-              className="flex shrink-0 items-center gap-[6px]"
-              aria-label="Go to NagaSphere home"
-            >
-              <img
-                src="/nagasphere-logo.png"
-                alt=""
-                className="h-8 w-8 object-contain"
-              />
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="flex shrink-0 items-center gap-[6px]"
+            aria-label="Go to NagaSphere home"
+          >
+            <img
+              src="/nagasphere-logo.png"
+              alt=""
+              className="h-8 w-8 object-contain"
+            />
 
-              <span className="flex flex-col">
-                <b className="text-[15px] leading-none text-white">
-                  NagaSphere
-                </b>
+            <span className="flex flex-col">
+              <b className="text-[15px] leading-none text-white">
+                NagaSphere
+              </b>
 
-                <small className="mt-[2px] text-[5.5px] uppercase tracking-[1px] text-white">
-                  Local Needs · Global Reach
-                </small>
-              </span>
-            </button>
-          </div>
+              <small className="mt-[2px] text-[5.5px] uppercase tracking-[1px] text-white/85">
+                Local Needs · Global Reach
+              </small>
+            </span>
+          </button>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-xl border border-[#a8e69b]/80 bg-[#061d1a]/75 px-5 py-3 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition hover:bg-[#061d1a]/90"
+            className="text-sm font-semibold text-white/90 transition hover:text-white"
           >
             Sign out
           </button>
