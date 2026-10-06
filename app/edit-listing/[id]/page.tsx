@@ -1,12 +1,14 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "../../../lib/supabase/client";
 
 type Category = {
   id: string;
   name: string;
+  slug: string;
+  parent_id: string | null;
 };
 
 export default function EditListingPage() {
@@ -17,18 +19,33 @@ export default function EditListingPage() {
   const [type, setType] = useState<"have" | "need">("have");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+
+  const [parentCategoryId, setParentCategoryId] = useState("");
+  const [subcategoryId, setSubcategoryId] = useState("");
+
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [price, setPrice] = useState("");
   const [city, setCity] = useState("");
+
   const [status, setStatus] = useState<
     "active" | "paused" | "closed" | "removed"
   >("active");
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+
+  const topCategories = useMemo(() => {
+    return categories.filter((category) => !category.parent_id);
+  }, [categories]);
+
+  const subcategories = useMemo(() => {
+    return categories.filter(
+      (category) => category.parent_id === parentCategoryId
+    );
+  }, [categories, parentCategoryId]);
 
   useEffect(() => {
     async function load() {
@@ -41,19 +58,24 @@ export default function EditListingPage() {
         return;
       }
 
-      const [{ data: listing, error: listingError }, { data: categoryData }] =
-        await Promise.all([
-          supabase
-            .from("posts")
-            .select(
-              "id,type,title,description,category_id,quantity,unit,budget_min,city,status"
-            )
-            .eq("id", params.id)
-            .eq("owner_id", user.id)
-            .maybeSingle(),
+      const [
+        { data: listing, error: listingError },
+        { data: categoryData, error: categoryError },
+      ] = await Promise.all([
+        supabase
+          .from("posts")
+          .select(
+            "id,type,title,description,category_id,quantity,unit,budget_min,city,status"
+          )
+          .eq("id", params.id)
+          .eq("owner_id", user.id)
+          .maybeSingle(),
 
-          supabase.from("categories").select("id,name").order("name"),
-        ]);
+        supabase
+          .from("categories")
+          .select("id,name,slug,parent_id")
+          .order("name"),
+      ]);
 
       if (listingError) {
         setMessage(listingError.message);
@@ -61,37 +83,82 @@ export default function EditListingPage() {
         return;
       }
 
-      if (!listing) {
-        setMessage("Listing not found or you do not have access to it.");
+      if (categoryError) {
+        setMessage(categoryError.message);
         setLoading(false);
         return;
       }
 
+      if (!listing) {
+        setMessage(
+          "Listing not found or you do not have access to it."
+        );
+        setLoading(false);
+        return;
+      }
+
+      const loadedCategories = (categoryData ?? []) as Category[];
+
       setType(listing.type);
       setTitle(listing.title ?? "");
       setDescription(listing.description ?? "");
-      setCategoryId(listing.category_id ?? "");
+
       setQuantity(
         listing.quantity == null ? "" : String(listing.quantity)
       );
+
       setUnit(listing.unit ?? "");
+
       setPrice(
         listing.budget_min == null ? "" : String(listing.budget_min)
       );
+
       setCity(listing.city ?? "");
       setStatus(listing.status);
-      setCategories((categoryData ?? []) as Category[]);
+      setCategories(loadedCategories);
+
+      if (listing.category_id) {
+        const selectedCategory = loadedCategories.find(
+          (category) => category.id === listing.category_id
+        );
+
+        if (selectedCategory) {
+          if (selectedCategory.parent_id) {
+            setParentCategoryId(selectedCategory.parent_id);
+            setSubcategoryId(selectedCategory.id);
+          } else {
+            setParentCategoryId(selectedCategory.id);
+            setSubcategoryId("");
+          }
+        }
+      }
+
       setLoading(false);
     }
 
     load();
-  }, [params.id]);
+  }, [params.id, router, supabase]);
+
+  function handleParentCategoryChange(value: string) {
+    setParentCategoryId(value);
+    setSubcategoryId("");
+  }
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!title.trim()) {
       setMessage("Please enter a title.");
+      return;
+    }
+
+    if (!parentCategoryId) {
+      setMessage("Please select a category.");
+      return;
+    }
+
+    if (subcategories.length > 0 && !subcategoryId) {
+      setMessage("Please select a subcategory.");
       return;
     }
 
@@ -108,13 +175,16 @@ export default function EditListingPage() {
       return;
     }
 
+    const finalCategoryId =
+      subcategoryId || parentCategoryId || null;
+
     const { error } = await supabase
       .from("posts")
       .update({
         type,
         title: title.trim(),
         description: description.trim() || null,
-        category_id: categoryId || null,
+        category_id: finalCategoryId,
         quantity: quantity ? Number(quantity) : null,
         unit: unit || null,
         budget_min: price ? Number(price) : null,
@@ -151,7 +221,9 @@ export default function EditListingPage() {
 
     const { error } = await supabase
       .from("posts")
-      .update({ status: nextStatus })
+      .update({
+        status: nextStatus,
+      })
       .eq("id", params.id)
       .eq("owner_id", user.id);
 
@@ -165,7 +237,11 @@ export default function EditListingPage() {
   }
 
   if (loading) {
-    return <main style={{ padding: 30 }}>Loading listing...</main>;
+    return (
+      <main style={{ padding: 30 }}>
+        Loading listing...
+      </main>
+    );
   }
 
   return (
@@ -176,11 +252,18 @@ export default function EditListingPage() {
         padding: 20,
       }}
     >
-      <div style={{ maxWidth: 700, margin: "0 auto" }}>
+      <div
+        style={{
+          maxWidth: 700,
+          margin: "0 auto",
+        }}
+      >
         <button
           type="button"
           onClick={() => router.push("/my-listings")}
-          style={{ marginBottom: 20 }}
+          style={{
+            marginBottom: 20,
+          }}
         >
           ← Back to My Listings
         </button>
@@ -194,7 +277,11 @@ export default function EditListingPage() {
         >
           <h1>Edit Listing</h1>
 
-          <p style={{ color: "#697067" }}>
+          <p
+            style={{
+              color: "#697067",
+            }}
+          >
             Update your listing details without changing ownership.
           </p>
 
@@ -214,8 +301,13 @@ export default function EditListingPage() {
                   boxSizing: "border-box",
                 }}
               >
-                <option value="have">I Have Something</option>
-                <option value="need">I Need Something</option>
+                <option value="have">
+                  I Have Something
+                </option>
+
+                <option value="need">
+                  I Need Something
+                </option>
               </select>
             </label>
 
@@ -239,7 +331,9 @@ export default function EditListingPage() {
 
               <textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) =>
+                  setDescription(e.target.value)
+                }
                 rows={5}
                 style={{
                   width: "100%",
@@ -257,8 +351,10 @@ export default function EditListingPage() {
               Category
 
               <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
+                value={parentCategoryId}
+                onChange={(e) =>
+                  handleParentCategoryChange(e.target.value)
+                }
                 style={{
                   width: "100%",
                   padding: 12,
@@ -266,15 +362,53 @@ export default function EditListingPage() {
                   boxSizing: "border-box",
                 }}
               >
-                <option value="">Select a category</option>
+                <option value="">
+                  Select a category
+                </option>
 
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                {topCategories.map((category) => (
+                  <option
+                    key={category.id}
+                    value={category.id}
+                  >
                     {category.name}
                   </option>
                 ))}
               </select>
             </label>
+
+            {parentCategoryId &&
+              subcategories.length > 0 && (
+                <label>
+                  Subcategory
+
+                  <select
+                    value={subcategoryId}
+                    onChange={(e) =>
+                      setSubcategoryId(e.target.value)
+                    }
+                    style={{
+                      width: "100%",
+                      padding: 12,
+                      margin: "6px 0 16px",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <option value="">
+                      Select a subcategory
+                    </option>
+
+                    {subcategories.map((subcategory) => (
+                      <option
+                        key={subcategory.id}
+                        value={subcategory.id}
+                      >
+                        {subcategory.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
 
             <label>
               Quantity
@@ -282,7 +416,9 @@ export default function EditListingPage() {
               <input
                 type="number"
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                onChange={(e) =>
+                  setQuantity(e.target.value)
+                }
                 style={{
                   width: "100%",
                   padding: 12,
@@ -297,7 +433,9 @@ export default function EditListingPage() {
 
               <select
                 value={unit}
-                onChange={(e) => setUnit(e.target.value)}
+                onChange={(e) =>
+                  setUnit(e.target.value)
+                }
                 style={{
                   width: "100%",
                   padding: 12,
@@ -305,27 +443,63 @@ export default function EditListingPage() {
                   boxSizing: "border-box",
                 }}
               >
-                <option value="">Select a unit</option>
-                <option value="kg">kg</option>
-                <option value="gram">gram</option>
-                <option value="litre">litre</option>
-                <option value="piece">piece</option>
-                <option value="pack">pack</option>
-                <option value="dozen">dozen</option>
-                <option value="box">box</option>
-                <option value="bundle">bundle</option>
-                <option value="tonne">tonne</option>
-                <option value="other">other</option>
+                <option value="">
+                  Select a unit
+                </option>
+
+                <option value="kg">
+                  kg
+                </option>
+
+                <option value="gram">
+                  gram
+                </option>
+
+                <option value="litre">
+                  litre
+                </option>
+
+                <option value="piece">
+                  piece
+                </option>
+
+                <option value="pack">
+                  pack
+                </option>
+
+                <option value="dozen">
+                  dozen
+                </option>
+
+                <option value="box">
+                  box
+                </option>
+
+                <option value="bundle">
+                  bundle
+                </option>
+
+                <option value="tonne">
+                  tonne
+                </option>
+
+                <option value="other">
+                  other
+                </option>
               </select>
             </label>
 
             <label>
-              {type === "have" ? "Price" : "Budget"}
+              {type === "have"
+                ? "Price"
+                : "Budget"}
 
               <input
                 type="number"
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) =>
+                  setPrice(e.target.value)
+                }
                 placeholder="₹"
                 style={{
                   width: "100%",
@@ -341,7 +515,9 @@ export default function EditListingPage() {
 
               <input
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
+                onChange={(e) =>
+                  setCity(e.target.value)
+                }
                 placeholder="Example: Dimapur"
                 style={{
                   width: "100%",
@@ -364,7 +540,9 @@ export default function EditListingPage() {
                 borderRadius: 10,
               }}
             >
-              {saving ? "Saving..." : "Save Changes"}
+              {saving
+                ? "Saving..."
+                : "Save Changes"}
             </button>
           </form>
 
@@ -375,10 +553,17 @@ export default function EditListingPage() {
               borderTop: "1px solid #e5e7eb",
             }}
           >
-            <h2>Listing status</h2>
+            <h2>
+              Listing status
+            </h2>
 
-            <p style={{ color: "#697067" }}>
-              Current status: <strong>{status}</strong>
+            <p
+              style={{
+                color: "#697067",
+              }}
+            >
+              Current status:{" "}
+              <strong>{status}</strong>
             </p>
 
             <div
@@ -391,7 +576,9 @@ export default function EditListingPage() {
               {status !== "active" && (
                 <button
                   type="button"
-                  onClick={() => updateStatus("active")}
+                  onClick={() =>
+                    updateStatus("active")
+                  }
                   disabled={saving}
                 >
                   Set Active
@@ -401,7 +588,9 @@ export default function EditListingPage() {
               {status !== "paused" && (
                 <button
                   type="button"
-                  onClick={() => updateStatus("paused")}
+                  onClick={() =>
+                    updateStatus("paused")
+                  }
                   disabled={saving}
                 >
                   Pause
@@ -411,7 +600,9 @@ export default function EditListingPage() {
               {status !== "closed" && (
                 <button
                   type="button"
-                  onClick={() => updateStatus("closed")}
+                  onClick={() =>
+                    updateStatus("closed")
+                  }
                   disabled={saving}
                 >
                   Close
@@ -421,7 +612,12 @@ export default function EditListingPage() {
           </div>
 
           {message && (
-            <p style={{ marginTop: 18, color: "#b42318" }}>
+            <p
+              style={{
+                marginTop: 18,
+                color: "#b42318",
+              }}
+            >
               {message}
             </p>
           )}
