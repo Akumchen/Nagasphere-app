@@ -35,21 +35,6 @@ export default function DashboardPage() {
     router.refresh();
   }
 
-  if (loading) {
-    return (
-      <main
-        style={{
-          minHeight: "100vh",
-          display: "grid",
-          placeItems: "center",
-          background: "#f6f7f2",
-        }}
-      >
-        Loading your dashboard...
-      </main>
-    );
-  }
-
   const cards = [
     {
       title: "My Listings",
@@ -73,133 +58,123 @@ export default function DashboardPage() {
     },
   ];
 
+  const pageStyle = {
+    backgroundImage: "url('/messages-scenic-bg.jpg')",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center calc(-100vw)",
+    backgroundSize: "100% auto",
+    backgroundAttachment: "scroll",
+  };
+
+  if (loading) {
+    return (
+      <main
+        className="min-h-screen bg-[#082623]"
+        style={pageStyle}
+      >
+        <div className="flex min-h-screen items-center justify-center">
+          <p className="text-white/80">
+            Loading your dashboard...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main
-      style={{
-        minHeight: "100vh",
-        background: "#f6f7f2",
-        padding: "24px",
-      }}
+      className="min-h-screen bg-[#082623]"
+      style={pageStyle}
     >
-      <div
-        style={{
-          maxWidth: "1100px",
-          margin: "0 auto",
-        }}
-      >
-        <header
-          style={{
-            background: "white",
-            borderRadius: "20px",
-            padding: "18px 22px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "16px",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-          }}
-        >
+      <div className="min-h-screen w-full px-5 py-7 sm:px-9 sm:py-9 lg:px-[47px] lg:py-[46px]">
+        <header className="flex items-center justify-between">
           <button
             type="button"
             onClick={() => router.push("/")}
+            className="flex shrink-0 items-center gap-[6px]"
             aria-label="Go to NagaSphere home"
-            style={{
-              border: 0,
-              background: "transparent",
-              padding: 0,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
           >
             <img
               src="/nagasphere-logo.png"
-              alt="NagaSphere"
-              style={{
-                width: "170px",
-                height: "auto",
-                display: "block",
-              }}
+              alt=""
+              className="h-8 w-8 object-contain"
             />
+
+            <span className="flex flex-col">
+              <b className="text-[15px] leading-none text-white">
+                NagaSphere
+              </b>
+
+              <small className="mt-[2px] text-[5.5px] uppercase tracking-[1px] text-white/85">
+                Local Needs · Global Reach
+              </small>
+            </span>
           </button>
 
           <button
             type="button"
             onClick={handleLogout}
-            style={{
-              border: "1px solid #d7dcd5",
-              background: "white",
-              padding: "10px 16px",
-              borderRadius: "10px",
-              cursor: "pointer",
-            }}
+            className="rounded-xl border border-[#80c996]/70 bg-[#082623]/55 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-[#082623]/80"
           >
             Sign out
           </button>
         </header>
 
-        <section style={{ marginTop: "28px" }}>
-          <h1 style={{ marginBottom: "8px" }}>
-            Welcome to NagaSphere
-          </h1>
+        <section className="mt-10 sm:mt-12">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#a8e69b] text-[#a8e69b]">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-6 4v-4.5a2.5 2.5 0 0 1 0-1.5v-8.5Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
 
-          <p
-            style={{
-              color: "#697067",
-              margin: 0,
-            }}
-          >
+                <path
+                  d="M8 8h8M8 11h5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+
+            <h1 className="text-[40px] font-bold leading-none tracking-tight text-white sm:text-[44px]">
+              Welcome to NagaSphere
+            </h1>
+          </div>
+
+          <p className="ml-14 mt-3 text-base text-white/80">
             {email}
           </p>
-        </section>
 
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "18px",
-            marginTop: "28px",
-          }}
-        >
-          {cards.map((card) => (
-            <div
-              key={card.title}
-              onClick={() => router.push(card.path)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(event) => {
-                if (
-                  event.key === "Enter" ||
-                  event.key === " "
-                ) {
-                  event.preventDefault();
-                  router.push(card.path);
-                }
-              }}
-              style={{
-                background: "white",
-                padding: "24px",
-                borderRadius: "18px",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.05)",
-                cursor: "pointer",
-              }}
-            >
-              <h2 style={{ marginTop: 0 }}>
-                {card.title}
-              </h2>
+          <div className="mt-7 min-h-[915px] w-[746px] max-w-full rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] p-7 shadow-2xl sm:p-8">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {cards.map((card) => (
+                <button
+                  key={card.title}
+                  type="button"
+                  onClick={() => router.push(card.path)}
+                  className="min-h-[190px] rounded-2xl border border-[#dce6e2] bg-white p-6 text-left shadow-sm transition hover:bg-[#fbfdfc] hover:shadow-md"
+                >
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {card.title}
+                  </h2>
 
-              <p
-                style={{
-                  color: "#697067",
-                  lineHeight: 1.5,
-                  marginBottom: 0,
-                }}
-              >
-                {card.description}
-              </p>
+                  <p className="mt-3 text-sm leading-6 text-gray-500">
+                    {card.description}
+                  </p>
+                </button>
+              ))}
             </div>
-          ))}
+
+            <div className="min-h-[500px] bg-[#f8fbfa]" />
+          </div>
         </section>
       </div>
     </main>
