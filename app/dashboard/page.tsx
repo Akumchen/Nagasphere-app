@@ -154,10 +154,10 @@ export default function DashboardPage() {
                   key={card.title}
                   type="button"
                   onClick={() => router.push(card.path)}
-                  className="group relative min-h-[190px] overflow-hidden rounded-2xl border border-[#dce6e2] bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group relative min-h-[190px] overflow-hidden rounded-2xl border border-[#b8d8c4] bg-[#e8f3eb] p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:bg-[#deeee3] hover:shadow-xl"
                 >
 
-                  <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#e9f4ed] transition duration-300 group-hover:scale-125" />
+                  <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#d4e9da] transition duration-300 group-hover:scale-125" />
 
                   <div className="relative">
 
@@ -183,7 +183,7 @@ export default function DashboardPage() {
 
             </div>
 
-            <div className="mt-10 rounded-2xl border border-[#dce8e3] bg-[#edf6f0] px-6 py-5">
+            <div className="mt-10 rounded-2xl border border-[#c8ded0] bg-[#e1f0e5] px-6 py-5">
               <p className="text-sm font-semibold text-[#285b4b]">
                 NagaSphere Marketplace
               </p>
