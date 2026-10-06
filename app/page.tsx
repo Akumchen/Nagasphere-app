@@ -118,20 +118,16 @@ export default function HomePage() {
       {/* Mobile homepage */}
       <main className="mobile-home">
         <section className="hero">
-
-          {/* ================= HEADER ================= */}
+          {/* header */}
           <header>
-            {/* LEFT: NagaSphere Home */}
             <a href="/" className="brand">
               <img src="/nagasphere-logo.png" alt="" />
-
               <span>
                 <b>NagaSphere</b>
                 <small>Local Needs · Global Reach</small>
               </span>
             </a>
 
-            {/* RIGHT: Marketplace + My Account */}
             <div className="header-actions">
               <a href="/listing" className="marketplace-button">
                 Marketplace
@@ -142,10 +138,9 @@ export default function HomePage() {
               </a>
             </div>
           </header>
-          {/* ========================================== */}
 
           <div className="hero-content">
-            <small className="welcome">WELCOME TO</small>
+            <div className="welcome">WELCOME TO</div>
 
             <h1>
               Naga<span>Sphere</span>
@@ -156,47 +151,49 @@ export default function HomePage() {
             </div>
 
             <p>
-              Your trusted online marketplace in Nagaland — connecting farmers,
-              local businesses and consumers, for a stronger community and a
-              brighter future.
+              Nagaland&apos;s local marketplace connecting people,
+              products, services and opportunities.
             </p>
 
             <div className="search">
               <span>⌕</span>
 
               <input
-                placeholder="Search for products, services, businesses..."
+                type="text"
+                placeholder="What are you looking for?"
+                aria-label="Search"
               />
 
-              <button>Search</button>
+              <button type="button">Search</button>
             </div>
 
             <div className="note">
-              <i>Local Products</i>
-              <i>Local People</i>
-              <i>Stronger Together</i>
+              <i>✓</i>
+              Buy from local sellers
+            </div>
+
+            <div className="note">
+              <i>✓</i>
+              Sell your products &amp; services
+            </div>
+
+            <div className="note">
+              <i>✓</i>
+              Support Nagaland businesses
             </div>
           </div>
         </section>
 
-        {/* ================= CATEGORIES ================= */}
         <section className="categories">
           <div className="heading">
-            <div>
-              <small>EXPLORE</small>
-              <h2>Shop by Category</h2>
-            </div>
-
-            <a href="/marketplace">View All →</a>
+            <small>EXPLORE</small>
+            <h2>Shop by Category</h2>
+            <a href="/marketplace">View all →</a>
           </div>
 
           <div className="cat-row">
             {categories.map(([name, image]) => (
-              <a
-                className="cat"
-                href="/marketplace"
-                key={name}
-              >
+              <a href="/marketplace" className="cat" key={name}>
                 <img src={image} alt="" />
                 <b>{name}</b>
               </a>
@@ -204,58 +201,58 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ================= FEATURES ================= */}
         <section className="features">
+          <div className="heading">
+            <small>WHY NAGASPHERE</small>
+            <h2>Built for Our Community</h2>
+          </div>
+
           <div className="feature-row">
             {features.map(([icon, title, text]) => (
-              <article className="feature" key={title}>
+              <div className="feature" key={title}>
                 <strong>{icon}</strong>
-
-                <div>
-                  <b>{title}</b>
-                  <p>{text}</p>
-                </div>
-              </article>
+                <b>{title}</b>
+                <p>{text}</p>
+              </div>
             ))}
           </div>
         </section>
 
-        {/* ================= LISTINGS ================= */}
         <section className="listings">
           <div className="heading">
-            <div>
-              <small>DISCOVER</small>
-              <h2>Featured Listings</h2>
-            </div>
-
-            <a href="/marketplace">View All →</a>
+            <small>DISCOVER</small>
+            <h2>Featured Listings</h2>
+            <a href="/marketplace">View all →</a>
           </div>
 
           <div className="listing-row">
             {listings.map(
-              ([
-                name,
-                price,
-                unit,
-                location,
-                seller,
-                rating,
-                reviews,
-                image,
-              ]) => (
-                <article className="card" key={name}>
+              (
+                [
+                  title,
+                  price,
+                  unit,
+                  location,
+                  seller,
+                  rating,
+                  reviews,
+                  image,
+                ],
+                index,
+              ) => (
+                <article className="card" key={`${title}-${index}`}>
                   <div className="card-image">
-                    <img src={image} alt={name} />
+                    <img src={image} alt={title} />
 
-                    <span>Local</span>
+                    <span>Featured</span>
 
-                    <button aria-label="Save">
+                    <button type="button" aria-label={`Save ${title}`}>
                       ♡
                     </button>
                   </div>
 
                   <div className="card-body">
-                    <h3>{name}</h3>
+                    <h3>{title}</h3>
 
                     <div className="price">
                       {price}
@@ -263,149 +260,129 @@ export default function HomePage() {
                     </div>
 
                     <div className="location">
-                      ⌖ {location}
+                      📍 {location}
                     </div>
 
                     <div className="seller">
                       <span>{seller}</span>
-
                       <span>
-                        ★ {rating}{" "}
-                        <small>({reviews})</small>
+                        ★ {rating} ({reviews})
                       </span>
                     </div>
                   </div>
                 </article>
-              )
+              ),
             )}
           </div>
         </section>
-
-        {/* ================= CTA ================= */}
-        <section className="cta">
-          <img
-            src="/vegetables.png"
-            alt="Local farmers"
-          />
+                <section className="cta">
+          <img src="/nagasphere-logo.png" alt="" />
 
           <div>
-            <small>TOGETHER WE GROW</small>
+            <small>READY TO GET STARTED?</small>
 
-            <h2>
-              Support Local. Build a Stronger Nagaland.
-            </h2>
+            <h2>Have something to sell?</h2>
 
             <p>
-              Every purchase makes a difference — for our farmers,
-              our businesses and our community.
+              Join NagaSphere and connect with people across Nagaland.
             </p>
 
-            <a href="/marketplace">
-              Start Exploring →
-            </a>
+            <a href="/create-listing">Post a Listing →</a>
           </div>
         </section>
 
-        {/* ================= FOOTER ================= */}
         <footer>
           <div className="footer-grid">
-
             <div>
-              <div className="footer-brand">
-                <img
-                  src="/nagasphere-logo.png"
-                  alt=""
-                />
+              <a href="/" className="footer-brand">
+                <img src="/nagasphere-logo.png" alt="" />
 
-                <b>
-                  NagaSphere
-                  <small>
-                    Local Needs · Global Reach
-                  </small>
-                </b>
-              </div>
+                <span>
+                  <b>NagaSphere</b>
+                  <small>Local Needs · Global Reach</small>
+                </span>
+              </a>
 
               <p>
-                Connecting Nagaland. Supporting local.
-                Building a stronger community together.
+                Nagaland&apos;s local marketplace connecting our
+                community.
               </p>
 
-              <em>Proudly Nagaland</em>
+              <em>Built for Nagaland. Built for our people.</em>
             </div>
 
             <div>
-              <b>Quick Links</b>
+              <b>Marketplace</b>
 
-              <a href="/">Home</a>
-              <a href="/marketplace">Marketplace</a>
-              <a href="#categories">Categories</a>
-              <a href="/requests">My Requests</a>
+              <a href="/marketplace">Browse Listings</a>
+              <a href="/create-listing">Post a Listing</a>
+              <a href="/marketplace">Categories</a>
             </div>
 
             <div>
               <b>Support</b>
 
-              <a href="/help">Help Centre</a>
+              <a href="/help">Help Center</a>
               <a href="/contact">Contact Us</a>
-              <a href="/terms">
-                Terms & Conditions
-              </a>
-              <a href="/privacy">
-                Privacy Policy
-              </a>
+              <a href="/terms">Terms &amp; Conditions</a>
+              <a href="/privacy">Privacy Policy</a>
             </div>
 
             <div>
               <b>Stay Connected</b>
 
               <p>
-                Get the latest updates and offers.
+                Get updates about new listings and opportunities in
+                Nagaland.
               </p>
 
               <div className="subscribe">
                 <input
-                  placeholder="Your email address"
+                  type="email"
+                  placeholder="Your email"
+                  aria-label="Your email"
                 />
 
-                <button>
-                  Subscribe
-                </button>
+                <button type="button">→</button>
               </div>
             </div>
-
           </div>
 
           <div className="bottom">
-            © 2026 NagaSphere. All rights reserved.
-            <span>Made for Nagaland ♥</span>
+            <span>© 2026 NagaSphere. All rights reserved.</span>
+
+            <span>
+              Made with ♥ for Nagaland
+            </span>
           </div>
         </footer>
       </main>
 
-      {/* ================= GLOBAL CSS ================= */}
       <style jsx global>{`
         * {
           box-sizing: border-box;
         }
 
-        html {
-          scroll-behavior: smooth;
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          min-height: 100%;
         }
 
         body {
-          margin: 0;
-          background: #082623;
-          color: #123d2d;
           font-family:
-            Inter,
             Arial,
             Helvetica,
             sans-serif;
+          background: #f7f5ef;
+          color: #173b2a;
         }
 
         a {
-          text-decoration: none;
           color: inherit;
+          text-decoration: none;
         }
 
         button,
@@ -413,15 +390,10 @@ export default function HomePage() {
           font: inherit;
         }
 
-        /* Desktop approved design */
         .approved-desktop {
-          display: block;
           width: 100%;
-          line-height: 0;
-          margin: 0;
-          padding: 0;
-          height: auto;
-          overflow: hidden;
+          min-height: 100vh;
+          background: #f7f5ef;
         }
 
         .approved-desktop img {
@@ -432,26 +404,25 @@ export default function HomePage() {
 
         .mobile-home {
           display: none;
+          width: 100%;
+          overflow: hidden;
+          background: #f7f5ef;
         }
-
-        /* ================= HERO ================= */
 
         .hero {
-          height: 430px;
-          min-height: 430px;
-          color: #fff;
-
+          position: relative;
+          min-height: 620px;
+          color: white;
           background:
             linear-gradient(
-              90deg,
-              rgba(8, 32, 20, 0.68),
-              rgba(8, 32, 20, 0.2)
+              180deg,
+              rgba(5, 35, 21, 0.7),
+              rgba(5, 35, 21, 0.35) 45%,
+              rgba(5, 35, 21, 0.75)
             ),
-            url("/nagasphere-hero.jpg")
-              56% center / cover no-repeat;
+            url("/NagaSphere_Local_Marketplace_in_Nagaland.png")
+              center / cover no-repeat;
         }
-
-        /* ================= HEADER ================= */
 
         header {
           position: relative;
@@ -463,248 +434,225 @@ export default function HomePage() {
           justify-content: space-between;
 
           background: rgba(8, 30, 20, 0.18);
-border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+          border-bottom:
+            1px solid rgba(255, 255, 255, 0.18);
+        }
+
         /* LEFT SIDE LOGO */
         .brand {
-          position: static;
-          transform: none;
-
           display: flex;
           align-items: center;
-
-          gap: 6px;
-          flex-shrink: 0;
+          gap: 7px;
+          min-width: 0;
         }
 
         .brand img {
-          width: 32px;
-          height: 32px;
+          width: 38px;
+          height: 38px;
           object-fit: contain;
+          flex-shrink: 0;
         }
 
         .brand span {
           display: flex;
           flex-direction: column;
+          min-width: 0;
         }
 
         .brand b {
           font-size: 15px;
+          line-height: 1;
+          color: white;
+          white-space: nowrap;
         }
 
         .brand small {
+          margin-top: 3px;
           font-size: 5.5px;
+          line-height: 1;
           letter-spacing: 1px;
           text-transform: uppercase;
-          opacity: 0.85;
+          color: rgba(255, 255, 255, 0.85);
+          white-space: nowrap;
         }
 
-        /* RIGHT SIDE BUTTONS */
         .header-actions {
-          position: static;
-          transform: none;
-
-          margin-left: auto;
-
           display: flex;
           align-items: center;
-
-          gap: 6px;
+          gap: 8px;
+          flex-shrink: 0;
         }
 
         .marketplace-button,
         .account {
-          font-size: 9px;
-
-          padding:
-            7px 8px;
-
-          border:
-            1px solid
-            rgba(255, 255, 255, 0.55);
-
-          border-radius: 5px;
-
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 34px;
+          padding: 7px 12px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 700;
           white-space: nowrap;
         }
 
-        /* ================= HERO CONTENT ================= */
+        .marketplace-button {
+          color: #173b2a;
+          background: #f5f0df;
+        }
+
+        .account {
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.55);
+          background: rgba(255, 255, 255, 0.08);
+        }
 
         .hero-content {
-          padding: 30px 14px 0;
+          max-width: 700px;
+          padding: 100px 7vw 70px;
         }
 
         .welcome {
-          font-size: 9px;
-          letter-spacing: 2.5px;
+          margin-bottom: 8px;
+          font-size: 12px;
           font-weight: 700;
+          letter-spacing: 3px;
         }
 
         .hero h1 {
-          font-size: 46px;
+          margin: 0;
+          font-size: clamp(52px, 10vw, 90px);
           line-height: 0.95;
-          letter-spacing: -2px;
-          margin: 5px 0 8px;
+          font-weight: 800;
+          letter-spacing: -3px;
         }
 
         .hero h1 span {
-          color: #9fd15a;
+          color: #d6b86a;
         }
 
         .script {
-          font-family:
-            "Comic Sans MS",
-            "Segoe Print",
-            cursive;
-
-          color: #d8e9ae;
-          font-size: 19px;
-
-          transform: rotate(-2deg);
-
-          margin-bottom: 13px;
+          margin-top: 13px;
+          font-size: 22px;
+          font-style: italic;
+          font-family: Georgia, serif;
         }
 
         .hero p {
-          font-size: 11.5px;
-          line-height: 1.48;
-          margin: 0 0 15px;
+          max-width: 570px;
+          margin: 20px 0;
+          font-size: 15px;
+          line-height: 1.7;
+          color: rgba(255, 255, 255, 0.9);
         }
 
-        /* ================= SEARCH ================= */
-
         .search {
-          height: 47px;
-
-          border-radius: 24px;
-
-          background: #fff;
-
           display: flex;
           align-items: center;
-
+          max-width: 560px;
+          min-height: 52px;
           overflow: hidden;
-
-          box-shadow:
-            0 10px 25px
-            rgba(0, 0, 0, 0.2);
+          border-radius: 8px;
+          background: white;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
         }
 
         .search span {
-          color: #708374;
-          font-size: 21px;
-          margin-left: 13px;
+          padding-left: 16px;
+          color: #718078;
+          font-size: 23px;
         }
 
         .search input {
-          min-width: 0;
           flex: 1;
-
-          height: 100%;
-
+          min-width: 0;
+          padding: 14px;
           border: 0;
-          outline: 0;
+          outline: none;
+          color: #173b2a;
+          background: transparent;
+        }
 
-          padding: 0 7px;
-
-          font-size: 11px;
+        .search input::placeholder {
+          color: #929b96;
         }
 
         .search button {
-          height: 37px;
-
           margin-right: 5px;
-
-          padding: 0 14px;
-
+          padding: 11px 17px;
           border: 0;
-          border-radius: 20px;
-
-          background: #3eae69;
-          color: #fff;
-
-          font-size: 10px;
-          font-weight: 700;
+          border-radius: 6px;
+          color: white;
+          background: #174e36;
+          cursor: pointer;
         }
 
-        /* ================= HERO NOTES ================= */
-
         .note {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-
-          margin-top: 14px;
-
-          font-size: 15px;
-          line-height: 1.15;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          margin: 17px 18px 0 0;
+          font-size: 11px;
+          color: rgba(255, 255, 255, 0.88);
         }
 
         .note i {
-          font-family:
-            "Comic Sans MS",
-            "Segoe Print",
-            cursive;
-
-          transform: rotate(-4deg);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 17px;
+          height: 17px;
+          border-radius: 50%;
+          color: #173b2a;
+          background: #d6b86a;
+          font-size: 10px;
+          font-style: normal;
         }
-
-        .note i:nth-child(2) {
-          margin-right: 15px;
-        }
-
-        .note i:nth-child(3) {
-          margin-right: 30px;
-        }
-
-        /* ================= SECTIONS ================= */
 
         .categories,
         .listings {
-          padding: 22px 14px;
+          padding: 65px 7vw;
+          background: #f7f5ef;
         }
 
         .heading {
-          display: flex;
-          justify-content: space-between;
-          align-items: end;
-
-          margin-bottom: 14px;
+          position: relative;
+          margin-bottom: 28px;
         }
 
         .heading small {
-          font-size: 8px;
-          color: #72a447;
-          letter-spacing: 2px;
+          display: block;
+          margin-bottom: 7px;
+          color: #8a7850;
+          font-size: 10px;
           font-weight: 800;
+          letter-spacing: 2px;
         }
 
         .heading h2 {
-          font:
-            700 23px Georgia,
-            serif;
-
-          margin: 2px 0 0;
-
-          color: #21432f;
+          margin: 0;
+          color: #173b2a;
+          font-family: Georgia, serif;
+          font-size: 31px;
+          line-height: 1.1;
         }
 
         .heading > a {
-          font-size: 9px;
-          color: #57933d;
-          font-weight: 800;
+          position: absolute;
+          right: 0;
+          bottom: 2px;
+          color: #53755f;
+          font-size: 12px;
+          font-weight: 700;
         }
-
-        /* ================= CATEGORY ROW ================= */
 
         .cat-row,
         .listing-row,
         .feature-row {
           display: flex;
-
+          gap: 18px;
           overflow-x: auto;
-
-          gap: 12px;
-
+          padding-bottom: 8px;
           scrollbar-width: none;
         }
 
@@ -713,447 +661,343 @@ border-bottom: 1px solid rgba(255, 255, 255, 0.18);
         .feature-row::-webkit-scrollbar {
           display: none;
         }
-
-        .cat {
-          flex: 0 0 70px;
+                .cat {
+          flex: 0 0 125px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
           text-align: center;
         }
 
         .cat img {
-          width: 62px;
-          height: 62px;
-
-          display: block;
-
+          width: 105px;
+          height: 105px;
           object-fit: cover;
-
-          border-radius: 11px;
-
-          border: 1px solid #e0ead8;
-
-          margin:
-            0 auto 7px;
+          border-radius: 50%;
+          background: #e8e3d7;
         }
 
         .cat b {
-          display: block;
-
-          font-size: 9px;
-          line-height: 1.2;
-
-          color: #304b38;
+          color: #254b37;
+          font-size: 12px;
+          line-height: 1.3;
         }
 
-        /* ================= FEATURES ================= */
-
         .features {
-          margin: 0 14px 22px;
-
-          padding: 12px 8px;
-
-          border-radius: 9px;
-
-          background: #eef6e8;
-
-          border: 1px solid #e3eddc;
+          padding: 65px 7vw;
+          background: #e8e3d7;
         }
 
         .feature {
-          flex: 0 0 225px;
-
-          display: flex;
-
-          gap: 9px;
-
-          padding: 7px 8px;
-
-          border:
-            1px solid #e2eddf;
-
-          border-radius: 7px;
+          flex: 0 0 190px;
+          padding: 20px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.65);
         }
 
         .feature > strong {
-          flex: 0 0 29px;
-
-          width: 29px;
-          height: 29px;
-
           display: flex;
           align-items: center;
           justify-content: center;
-
+          width: 40px;
+          height: 40px;
+          margin-bottom: 15px;
           border-radius: 50%;
-
-          background: #cfeecb;
-          color: #15904f;
+          color: #173b2a;
+          background: #d6b86a;
+          font-size: 17px;
         }
 
         .feature b {
-          font-size: 10px;
+          display: block;
+          margin-bottom: 8px;
+          color: #173b2a;
+          font-size: 14px;
         }
 
         .feature p {
-          margin: 3px 0 0;
-
-          font-size: 8px;
-          line-height: 1.4;
-
-          color: #718074;
+          margin: 0;
+          color: #68766d;
+          font-size: 11px;
+          line-height: 1.6;
         }
-
-        /* ================= LISTINGS ================= */
 
         .listing-row {
           display: grid;
-
-          grid-template-columns: 1fr;
-
-          gap: 14px;
-
-          overflow-x: visible;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          overflow: visible;
         }
 
         .card {
-          flex: 0 0 200px;
-
-          border:
-            1px solid #e2e9df;
-
-          border-radius: 7px;
-
+          min-width: 0;
           overflow: hidden;
-
-          background: #fff;
-
-          box-shadow:
-            0 4px 16px
-            rgba(36, 65, 43, 0.06);
+          border-radius: 12px;
+          background: white;
+          box-shadow: 0 8px 25px rgba(30, 50, 40, 0.08);
         }
 
         .card-image {
-          height: 150px;
           position: relative;
+          aspect-ratio: 1.25;
+          overflow: hidden;
+          background: #e8e3d7;
         }
 
         .card-image img {
           width: 100%;
           height: 100%;
-
           object-fit: cover;
         }
 
         .card-image span {
           position: absolute;
-
-          left: 8px;
-          bottom: 8px;
-
-          background: #167d49;
-          color: #fff;
-
-          padding: 4px 7px;
-
-          border-radius: 3px;
-
-          font-size: 8px;
+          top: 10px;
+          left: 10px;
+          padding: 5px 8px;
+          border-radius: 4px;
+          color: white;
+          background: #174e36;
+          font-size: 9px;
+          font-weight: 700;
         }
 
         .card-image button {
           position: absolute;
-
-          right: 7px;
-          top: 7px;
-
-          width: 26px;
-          height: 26px;
-
+          top: 9px;
+          right: 9px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;
+          height: 30px;
           border: 0;
-
           border-radius: 50%;
-
-          background:
-            rgba(255, 255, 255, 0.92);
-
-          font-size: 16px;
+          color: #173b2a;
+          background: rgba(255, 255, 255, 0.9);
+          cursor: pointer;
         }
 
         .card-body {
-          padding: 10px;
+          padding: 15px;
         }
 
         .card h3 {
-          font-size: 10px;
-          line-height: 1.3;
-
-          margin: 0 0 4px;
-
-          color: #294731;
+          margin: 0 0 8px;
+          color: #173b2a;
+          font-size: 14px;
+          line-height: 1.35;
         }
 
         .price {
-          font-size: 14px;
+          color: #174e36;
+          font-size: 18px;
           font-weight: 800;
-
-          color: #4e943b;
         }
 
         .price small {
-          font-size: 8px;
-
-          color: #788479;
-
+          color: #778078;
+          font-size: 10px;
           font-weight: 500;
         }
 
         .location {
-          margin-top: 7px;
-
-          font-size: 8px;
-
-          color: #79857b;
+          margin-top: 8px;
+          color: #778078;
+          font-size: 10px;
         }
 
         .seller {
-          margin-top: 9px;
-
-          padding-top: 8px;
-
-          border-top:
-            1px solid #edf0eb;
-
           display: flex;
-
+          align-items: center;
           justify-content: space-between;
-
-          font-size: 7px;
-
-          color: #718076;
+          gap: 8px;
+          margin-top: 13px;
+          padding-top: 11px;
+          border-top: 1px solid #eeeae2;
+          color: #69766e;
+          font-size: 9px;
         }
 
         .seller > span:last-child {
-          color: #789f45;
-
-          font-weight: 800;
+          color: #a17c2d;
+          white-space: nowrap;
         }
 
-        /* ================= CTA ================= */
-
         .cta {
-          margin: 0 14px 15px;
-
-          border-radius: 8px;
-
-          overflow: hidden;
-
-          background: #eaf3e2;
-
-          display: grid;
-
-          grid-template-columns: 42% 58%;
+          display: flex;
+          align-items: center;
+          gap: 35px;
+          padding: 65px 7vw;
+          color: white;
+          background:
+            linear-gradient(
+              90deg,
+              rgba(9, 55, 35, 0.98),
+              rgba(18, 75, 49, 0.94)
+            );
         }
 
         .cta img {
-          width: 100%;
-          height: 145px;
-
-          object-fit: cover;
+          width: 100px;
+          height: 100px;
+          object-fit: contain;
+          flex-shrink: 0;
         }
 
         .cta > div {
-          padding: 17px 13px;
+          max-width: 600px;
         }
 
         .cta small {
-          font-size: 7px;
-
-          letter-spacing: 1.5px;
-
-          color: #82a953;
-
+          display: block;
+          margin-bottom: 7px;
+          color: #d6b86a;
+          font-size: 9px;
           font-weight: 800;
+          letter-spacing: 2px;
         }
 
         .cta h2 {
-          font:
-            700 17px/1.15 Georgia,
-            serif;
-
-          color: #244832;
-
-          margin: 6px 0 8px;
+          margin: 0;
+          font-family: Georgia, serif;
+          font-size: 32px;
         }
 
         .cta p {
-          font-size: 8.5px;
-          line-height: 1.45;
-
-          color: #6d7e70;
-
-          margin: 0 0 10px;
+          margin: 10px 0 20px;
+          color: rgba(255, 255, 255, 0.78);
+          font-size: 13px;
+          line-height: 1.6;
         }
 
         .cta a {
           display: inline-flex;
-
-          background: #72a941;
-          color: #fff;
-
-          border-radius: 4px;
-
-          padding: 8px 11px;
-
-          font-size: 8px;
+          padding: 11px 17px;
+          border-radius: 5px;
+          color: #173b2a;
+          background: #d6b86a;
+          font-size: 11px;
           font-weight: 800;
         }
 
-        /* ================= FOOTER ================= */
-
         footer {
-          background: #183827;
-
-          color: #dfe9df;
-
-          padding: 29px 14px 0;
+          padding: 55px 7vw 25px;
+          color: rgba(255, 255, 255, 0.75);
+          background: #0d2b1d;
         }
 
         .footer-grid {
           display: grid;
-
-          grid-template-columns: 1fr 1fr;
-
-          gap: 22px 18px;
+          grid-template-columns: 1.5fr 1fr 1fr 1.4fr;
+          gap: 35px;
+          padding-bottom: 40px;
         }
 
-        .footer-grid > div:first-child,
+        .footer-grid > div:first-child {
+          max-width: 260px;
+        }
+
         .footer-grid > div:last-child {
-          grid-column: 1 / -1;
+          max-width: 290px;
         }
 
         .footer-brand {
-          display: flex;
-
-          gap: 8px;
-
+          display: inline-flex;
           align-items: center;
+          gap: 8px;
+          margin-bottom: 13px;
         }
 
         .footer-brand img {
           width: 38px;
           height: 38px;
+          object-fit: contain;
+        }
+
+        .footer-brand span {
+          display: flex;
+          flex-direction: column;
         }
 
         .footer-brand b {
-          font-size: 16px;
-
-          color: #fff;
+          color: white;
+          font-size: 15px;
         }
 
         .footer-brand small {
-          display: block;
-
+          margin-top: 2px;
           font-size: 5.5px;
-
-          color: #a9baa9;
-
           letter-spacing: 1px;
+          text-transform: uppercase;
         }
 
         .footer-grid p {
-          font-size: 8px;
-          line-height: 1.5;
-
-          color: #9fb0a1;
+          margin: 0 0 12px;
+          font-size: 10px;
+          line-height: 1.7;
         }
 
         .footer-grid em {
-          font-size: 8px;
-
-          color: #a9cc6b;
+          color: #d6b86a;
+          font-size: 9px;
+          font-style: normal;
         }
 
         .footer-grid > div > b {
-          font-size: 10px;
-
-          color: #fff;
+          display: block;
+          margin-bottom: 15px;
+          color: white;
+          font-size: 11px;
         }
 
         .footer-grid a {
           display: block;
-
-          margin-top: 9px;
-
-          font-size: 8px;
-
-          color: #9eafa1;
+          margin-bottom: 10px;
+          color: rgba(255, 255, 255, 0.68);
+          font-size: 10px;
         }
 
         .subscribe {
-          height: 32px;
-
           display: flex;
-
-          margin-top: 8px;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 5px;
         }
 
         .subscribe input {
-          min-width: 0;
-
           flex: 1;
+          min-width: 0;
+          padding: 10px;
+          border: 0;
+          outline: none;
+          color: white;
+          background: rgba(255, 255, 255, 0.05);
+          font-size: 10px;
+        }
 
-          border:
-            1px solid
-            rgba(255, 255, 255, 0.14);
-
-          background:
-            rgba(255, 255, 255, 0.06);
-
-          color: #fff;
-
-          border-radius:
-            4px 0 0 4px;
-
-          padding: 0 8px;
-
-          font-size: 8px;
+        .subscribe input::placeholder {
+          color: rgba(255, 255, 255, 0.5);
         }
 
         .subscribe button {
+          width: 40px;
           border: 0;
-
-          background: #73a843;
-
-          color: #fff;
-
-          border-radius:
-            0 4px 4px 0;
-
-          padding: 0 9px;
-
-          font-size: 8px;
+          color: #173b2a;
+          background: #d6b86a;
+          cursor: pointer;
         }
 
         .bottom {
-          margin-top: 22px;
-
-          padding: 10px 0;
-
-          border-top:
-            1px solid
-            rgba(255, 255, 255, 0.1);
-
-          font-size: 7px;
-
-          color: #809386;
-
           display: flex;
-
+          align-items: center;
           justify-content: space-between;
-
-          gap: 10px;
+          gap: 15px;
+          padding-top: 20px;
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.45);
+          font-size: 9px;
         }
-
-        /* ================= MOBILE ================= */
 
         @media (max-width: 700px) {
           .approved-desktop {
@@ -1165,12 +1009,15 @@ border-bottom: 1px solid rgba(255, 255, 255, 0.18);
           }
 
           .hero {
-            height: 420px;
             min-height: 420px;
           }
 
+          .hero-content {
+            padding: 65px 6vw 45px;
+          }
+
           .hero h1 {
-            font-size: 43px;
+            font-size: 58px;
           }
 
           .script {
@@ -1178,51 +1025,89 @@ border-bottom: 1px solid rgba(255, 255, 255, 0.18);
           }
 
           .hero p {
+            font-size: 12px;
+          }
+
+          .search {
+            min-height: 47px;
+          }
+
+          .search input {
             font-size: 11px;
           }
 
-          .note {
-            font-size: 14px;
+          .search button {
+            padding: 9px 13px;
+            font-size: 10px;
+          }
+
+          .categories,
+          .listings,
+          .features {
+            padding: 45px 6vw;
+          }
+
+          .heading h2 {
+            font-size: 25px;
           }
 
           .cat {
-            flex-basis: 66px;
+            flex-basis: 100px;
           }
 
           .cat img {
-            width: 60px;
-            height: 60px;
+            width: 82px;
+            height: 82px;
           }
 
           .feature {
-            flex-basis: 215px;
+            flex-basis: 175px;
+          }
+
+          .listing-row {
+            display: flex;
+            overflow-x: auto;
           }
 
           .card {
-            flex-basis: 190px;
+            flex: 0 0 260px;
           }
 
           .cta {
-            grid-template-columns: 1fr;
+            padding: 45px 6vw;
           }
 
           .cta img {
-            height: 145px;
+            width: 75px;
+            height: 75px;
           }
 
-          .bottom {
+          .cta h2 {
+            font-size: 25px;
+          }
+
+          .footer-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 30px 20px;
+          }
+
+          .footer-grid > div:first-child,
+          .footer-grid > div:last-child {
+            max-width: none;
+          }
+
+          footer {
+            padding: 45px 6vw 20px;
+          }
+                    .bottom {
             flex-direction: column;
+            align-items: flex-start;
           }
         }
 
-        /* ================= SMALL PHONES ================= */
-
         @media (max-width: 420px) {
           header {
-            min-height: 64px;
-
-            padding:
-              8px 10px;
+            padding: 7px 10px;
           }
 
           .brand {
@@ -1230,8 +1115,8 @@ border-bottom: 1px solid rgba(255, 255, 255, 0.18);
           }
 
           .brand img {
-            width: 29px;
-            height: 29px;
+            width: 34px;
+            height: 34px;
           }
 
           .brand b {
@@ -1240,18 +1125,53 @@ border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 
           .brand small {
             font-size: 5px;
+            letter-spacing: 0.8px;
           }
 
           .header-actions {
-            gap: 4px;
+            gap: 5px;
           }
 
           .marketplace-button,
           .account {
-            font-size: 8px;
+            min-height: 31px;
+            padding: 6px 9px;
+            font-size: 9px;
+          }
 
-            padding:
-              6px 7px;
+          .hero-content {
+            padding-top: 55px;
+          }
+
+          .hero h1 {
+            font-size: 50px;
+          }
+
+          .script {
+            font-size: 16px;
+          }
+
+          .note {
+            display: flex;
+            margin-right: 0;
+          }
+
+          .heading > a {
+            font-size: 10px;
+          }
+
+          .cta {
+            align-items: flex-start;
+            gap: 20px;
+          }
+
+          .cta img {
+            width: 60px;
+            height: 60px;
+          }
+
+          .cta h2 {
+            font-size: 22px;
           }
         }
       `}</style>
