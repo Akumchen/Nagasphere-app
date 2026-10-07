@@ -245,7 +245,25 @@ export default function ProfilePage() {
               {saving ? "Saving..." : "Save profile"}
             </button>
           </form>
-
+          
+          <button
+            type="button"
+            onClick={() => router.push("/business-profile")}
+            style={{
+              width: "100%",
+              padding: "14px",
+              marginTop: "14px",
+              border: "1px solid #d7dcd5",
+              borderRadius: "10px",
+              background: "white",
+              color: "#18251b",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Business Profile
+          </button>
+          
           {message && (
             <p
               style={{
