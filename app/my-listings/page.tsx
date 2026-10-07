@@ -162,13 +162,14 @@ export default function MyListingsPage() {
   }
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background: "#f6f7f2",
-        padding: "24px",
-      }}
-    >
+  <main
+    className="nagasphere-inner-page"
+    style={{
+      minHeight: "100vh",
+      background: "transparent",
+      padding: "24px",
+    }}
+  >
       <div
         style={{
           maxWidth: "1100px",
