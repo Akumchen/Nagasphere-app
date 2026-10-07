@@ -160,13 +160,14 @@ export default function MyRequestsPage() {
   }
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background: "#f6f7f2",
-        padding: 24,
-      }}
-    >
+  <main
+    className="nagasphere-inner-page"
+    style={{
+      minHeight: "100vh",
+      background: "transparent",
+      padding: 24,
+    }}
+  >
       <div
         style={{
           maxWidth: 1100,
