@@ -153,15 +153,14 @@ if (!businessError && businessData) {
   }
 
   return (
-    <main
-
-      className="nagasphere-inner-page"
-      style={{
-        minHeight: "100vh",
-        background: "#f6f7f2",
-        padding: 20
-      }}
-    >
+  <main
+    className="nagasphere-inner-page"
+    style={{
+      minHeight: "100vh",
+      background: "transparent",
+      padding: 20
+    }}
+  >
       <div style={{ maxWidth: 700, margin: "0 auto" }}>
         <button
           type="button"
