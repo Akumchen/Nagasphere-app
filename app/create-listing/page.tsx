@@ -235,7 +235,7 @@ if (!businessError && businessData) {
                 }}
               />
             </label>
-            />
+          
             </label>
 
             {business && (
