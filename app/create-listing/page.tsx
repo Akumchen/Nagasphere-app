@@ -154,6 +154,8 @@ if (!businessError && businessData) {
 
   return (
     <main
+
+      className="nagasphere-inner-page"
       style={{
         minHeight: "100vh",
         background: "#f6f7f2",
