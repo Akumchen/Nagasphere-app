@@ -93,11 +93,12 @@ export default function ProfilePage() {
     );
   }
 
-  return (
+    return (
     <main
+      className="nagasphere-inner-page"
       style={{
         minHeight: "100vh",
-        background: "#f6f7f2",
+        background: "transparent",
         padding: "24px",
       }}
     >
