@@ -59,13 +59,14 @@ export default function AuthPage() {
 
   return (
     <main
+      className="nagasphere-inner-page"
       style={{
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
-        background: "#f6f7f2",
+        background: "transparent",
       }}
     >
       <div
