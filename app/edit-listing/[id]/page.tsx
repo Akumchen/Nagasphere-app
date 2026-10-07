@@ -236,7 +236,7 @@ export default function EditListingPage() {
     setSaving(false);
   }
 
-  if (loading) {
+    if (loading) {
     return (
       <main style={{ padding: 30 }}>
         Loading listing...
@@ -246,9 +246,10 @@ export default function EditListingPage() {
 
   return (
     <main
+      className="nagasphere-inner-page"
       style={{
         minHeight: "100vh",
-        background: "#f6f7f2",
+        background: "transparent",
         padding: 20,
       }}
     >
