@@ -236,8 +236,6 @@ if (!businessError && businessData) {
               />
             </label>
           
-            </label>
-
             {business && (
               <label>
                 Business Profile
