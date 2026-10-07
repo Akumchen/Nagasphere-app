@@ -11,6 +11,11 @@ type Category = {
   parent_id: string | null;
 };
 
+type Business = {
+  id: string;
+  name: string;
+};
+
 export default function CreateListingPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -28,7 +33,9 @@ export default function CreateListingPage() {
   const [city, setCity] = useState("");
 
   const [categories, setCategories] = useState<Category[]>([]);
-  const [message, setMessage] = useState("");
+const [business, setBusiness] = useState<Business | null>(null);
+const [businessId, setBusinessId] = useState("");
+const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -60,11 +67,21 @@ export default function CreateListingPage() {
         .order("name");
 
       if (error) {
-        setMessage(error.message);
-      } else {
-        setCategories(data || []);
-      }
+  setMessage(error.message);
+} else {
+  setCategories(data || []);
+}
 
+const { data: businessData, error: businessError } = await supabase
+  .from("businesses")
+  .select("id,name")
+  .eq("owner_id", auth.user.id)
+  .maybeSingle();
+
+if (!businessError && businessData) {
+  setBusiness(businessData);
+}
+      
       setLoading(false);
     }
 
@@ -112,6 +129,7 @@ export default function CreateListingPage() {
       type,
       title: title.trim(),
       description: description.trim() || null,
+      business_id: businessId || null,
       category_id: finalCategoryId,
       quantity: quantity ? Number(quantity) : null,
       unit: unit.trim() || null,
@@ -217,7 +235,28 @@ export default function CreateListingPage() {
                 }}
               />
             </label>
+            />
+            </label>
 
+            {business && (
+              <label>
+                Business Profile
+                <select
+                  value={businessId}
+                  onChange={(e) => setBusinessId(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 12,
+                    margin: "6px 0 16px",
+                    boxSizing: "border-box"
+                  }}
+                >
+                  <option value="">Personal Listing</option>
+                  <option value={business.id}>{business.name}</option>
+                </select>
+              </label>
+            )}
+          
             <label>
               Category
               <select
