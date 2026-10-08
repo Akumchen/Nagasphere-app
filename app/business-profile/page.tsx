@@ -68,9 +68,9 @@ export default function BusinessProfilePage() {
     }
 
     setLoading(false);
-    }
+  }
 
-    async function saveBusiness() {
+  async function saveBusiness() {
     setSaving(true);
     setMessage("");
 
@@ -134,13 +134,22 @@ export default function BusinessProfilePage() {
 
   if (loading) {
     return (
-      <main style={{ padding: "40px", textAlign: "center" }}>
+      <main
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          background: "#f6f7f2",
+          color: "#18251b",
+          fontSize: "15px",
+        }}
+      >
         Loading business profile...
       </main>
     );
   }
 
-    return (
+  return (
     <main
       className="nagasphere-inner-page"
       style={{
@@ -150,280 +159,414 @@ export default function BusinessProfilePage() {
     >
       <div
         style={{
+          width: "100%",
           maxWidth: "760px",
           margin: "0 auto",
         }}
       >
-        <Link
-          href="/profile"
-          style={{
-            display: "inline-block",
-            marginBottom: "20px",
-            color: "#146b4a",
-            textDecoration: "none",
-            fontWeight: 600,
-          }}
-        >
-          ← Back to Profile
-        </Link>
-
+        {/* Navigation */}
         <div
           style={{
-            background: "#ffffff",
-            borderRadius: "18px",
-            padding: "24px",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.08)",
+            marginBottom: "18px",
           }}
         >
-          <div style={{ textAlign: "center", marginBottom: "28px" }}>
-            <img
-              src="/nagasphere-logo.png"
-              alt="NagaSphere"
-              style={{
-                width: "110px",
-                height: "auto",
-                display: "inline-block",
-              }}
-            />
-
-            <h1
-              style={{
-                margin: "18px 0 8px",
-                color: "#123d2b",
-                fontSize: "28px",
-              }}
-            >
-              Business Profile
-            </h1>
-
-            <p
-              style={{
-                margin: 0,
-                color: "#66756d",
-              }}
-            >
-              Create your business identity on NagaSphere.
-            </p>
-          </div>
-
-          {business?.verified && (
-            <div
-              style={{
-                background: "#e8f7ee",
-                color: "#17633f",
-                padding: "12px 14px",
-                borderRadius: "10px",
-                marginBottom: "20px",
-                fontWeight: 600,
-              }}
-            >
-              ✓ Your business profile is verified.
-            </div>
-          )}
-
-          <label
+          <Link
+            href="/profile"
             style={{
-              display: "block",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "7px",
+              padding: "9px 13px",
+              borderRadius: "12px",
+              background: "rgba(255, 255, 255, 0.68)",
+              border: "1px solid rgba(35, 65, 43, 0.14)",
+              color: "#18251b",
+              textDecoration: "none",
               fontWeight: 600,
-              marginBottom: "7px",
-              color: "#263b32",
+              fontSize: "14px",
+              boxShadow:
+                "0 6px 16px rgba(7, 29, 19, 0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
             }}
           >
-            Business Name *
-          </label>
+            ← Back to Profile
+          </Link>
+        </div>
 
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your business name"
+        {/* Master NagaSphere premium surface */}
+        <section
+          style={{
+            position: "relative",
+            background:
+              "linear-gradient(135deg, rgba(255, 253, 247, 0.96) 0%, rgba(244, 248, 241, 0.93) 48%, rgba(226, 237, 226, 0.90) 100%)",
+            padding: "34px",
+            borderRadius: "26px",
+            border: "1px solid rgba(255, 255, 255, 0.92)",
+            boxShadow:
+              "0 28px 70px rgba(7, 29, 19, 0.25), 0 8px 24px rgba(7, 29, 19, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.96), inset 0 -1px 0 rgba(27, 60, 38, 0.08)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            overflow: "hidden",
+          }}
+        >
+          {/* Subtle premium glow */}
+          <div
+            aria-hidden="true"
             style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              border: "1px solid #d5ddd8",
-              marginBottom: "18px",
-              boxSizing: "border-box",
-              fontSize: "16px",
-            }}
-          />
-
-          <label
-            style={{
-              display: "block",
-              fontWeight: 600,
-              marginBottom: "7px",
-              color: "#263b32",
-            }}
-          >
-            Business Description
-          </label>
-
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Tell customers about your business"
-            rows={5}
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              border: "1px solid #d5ddd8",
-              marginBottom: "18px",
-              boxSizing: "border-box",
-              fontSize: "16px",
-              resize: "vertical",
-            }}
-          />
-
-                    <label
-            style={{
-              display: "block",
-              fontWeight: 600,
-              marginBottom: "7px",
-              color: "#263b32",
-            }}
-          >
-            Business Phone
-          </label>
-
-          <input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Business phone number"
-            type="tel"
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              border: "1px solid #d5ddd8",
-              marginBottom: "18px",
-              boxSizing: "border-box",
-              fontSize: "16px",
-            }}
-          />
-
-          <label
-            style={{
-              display: "block",
-              fontWeight: 600,
-              marginBottom: "7px",
-              color: "#263b32",
-            }}
-          >
-            Business Address
-          </label>
-
-          <textarea
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Street, locality or landmark"
-            rows={3}
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              border: "1px solid #d5ddd8",
-              marginBottom: "18px",
-              boxSizing: "border-box",
-              fontSize: "16px",
-              resize: "vertical",
-            }}
-          />
-
-          <label
-            style={{
-              display: "block",
-              fontWeight: 600,
-              marginBottom: "7px",
-              color: "#263b32",
-            }}
-          >
-            City / Town
-          </label>
-
-          <input
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="City or town in Nagaland"
-            style={{
-              width: "100%",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              border: "1px solid #d5ddd8",
-              marginBottom: "18px",
-              boxSizing: "border-box",
-              fontSize: "16px",
+              position: "absolute",
+              width: "280px",
+              height: "280px",
+              top: "-160px",
+              right: "-100px",
+              borderRadius: "50%",
+              background:
+                "radial-gradient(circle, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0) 72%)",
+              pointerEvents: "none",
             }}
           />
 
           <div
             style={{
-              background: "#f1f5f3",
-              padding: "12px 14px",
-              borderRadius: "10px",
-              marginBottom: "20px",
-              color: "#52635a",
-              fontSize: "14px",
+              position: "relative",
+              zIndex: 1,
             }}
           >
-            State: <strong>Nagaland</strong>
-          </div>
-
-                    {message && (
+            {/* Page heading */}
             <div
               style={{
-                marginBottom: "16px",
-                padding: "12px 14px",
-                borderRadius: "10px",
-                background: message.includes("successfully")
-                  ? "#e8f7ee"
-                  : "#fff1f0",
-                color: message.includes("successfully")
-                  ? "#17633f"
-                  : "#a33a32",
+                marginBottom: "28px",
               }}
             >
-              {message}
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "6px 11px",
+                  marginBottom: "12px",
+                  borderRadius: "999px",
+                  background: "rgba(20, 107, 74, 0.08)",
+                  border: "1px solid rgba(20, 107, 74, 0.12)",
+                  color: "#146b4a",
+                  fontSize: "12px",
+                  fontWeight: 700,
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Business
+              </div>
+
+              <h1
+                style={{
+                  margin: 0,
+                  color: "#18251b",
+                  fontSize: "clamp(28px, 5vw, 38px)",
+                  lineHeight: 1.12,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                Business Profile
+              </h1>
+
+              <p
+                style={{
+                  margin: "10px 0 0",
+                  color: "#697067",
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                  maxWidth: "580px",
+                }}
+              >
+                Create and manage your business identity on NagaSphere so
+                customers can discover and connect with you.
+              </p>
             </div>
-          )}
 
-          <button
-            type="button"
-            onClick={saveBusiness}
-            disabled={saving}
-            style={{
-              width: "100%",
-              padding: "14px",
-              border: "none",
-              borderRadius: "10px",
-              background: "#146b4a",
-              color: "#ffffff",
-              fontSize: "16px",
-              fontWeight: 700,
-              cursor: saving ? "not-allowed" : "pointer",
-              opacity: saving ? 0.7 : 1,
-            }}
-          >
-            {saving
-              ? "Saving..."
-              : business
-                ? "Update Business Profile"
-                : "Create Business Profile"}
-          </button>
+            {/* Verification */}
+            {business?.verified && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginBottom: "24px",
+                  padding: "13px 15px",
+                  borderRadius: "13px",
+                  background: "rgba(20, 107, 74, 0.08)",
+                  border: "1px solid rgba(20, 107, 74, 0.15)",
+                  color: "#146b4a",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                }}
+              >
+                <span
+                  style={{
+                    display: "grid",
+                    placeItems: "center",
+                    width: "24px",
+                    height: "24px",
+                    borderRadius: "50%",
+                    background: "#146b4a",
+                    color: "#ffffff",
+                    fontSize: "13px",
+                  }}
+                >
+                  ✓
+                </span>
 
-          <div style={{ marginTop: "18px", textAlign: "center" }}>
-            <Link
-              href="/dashboard"
+                Your business profile is verified.
+              </div>
+            )}
+
+            {/* Business name */}
+            <label
               style={{
-                color: "#146b4a",
-                textDecoration: "none",
-                fontWeight: 600,
+                display: "block",
+                marginBottom: "22px",
+                color: "#263229",
+                fontSize: "14px",
+                fontWeight: 700,
               }}
             >
-              Go to Dashboard
-            </Link>
+              Business Name *
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your business name"
+                style={{
+                  width: "100%",
+                  padding: "14px 15px",
+                  marginTop: "8px",
+                  border: "1px solid rgba(35, 65, 43, 0.16)",
+                  borderRadius: "13px",
+                  boxSizing: "border-box",
+                  fontSize: "15px",
+                  color: "#172018",
+                  boxShadow:
+                    "0 4px 14px rgba(7, 29, 19, 0.04), inset 0 1px 0 rgba(255,255,255,0.65)",
+                }}
+              />
+            </label>
+
+            {/* Description */}
+            <label
+              style={{
+                display: "block",
+                marginBottom: "22px",
+                color: "#263229",
+                fontSize: "14px",
+                fontWeight: 700,
+              }}
+            >
+              Business Description
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Tell customers about your business"
+                rows={5}
+                style={{
+                  width: "100%",
+                  padding: "14px 15px",
+                  marginTop: "8px",
+                  border: "1px solid rgba(35, 65, 43, 0.16)",
+                  borderRadius: "13px",
+                  boxSizing: "border-box",
+                  fontSize: "15px",
+                  color: "#172018",
+                  resize: "vertical",
+                  boxShadow:
+                    "0 4px 14px rgba(7, 29, 19, 0.04), inset 0 1px 0 rgba(255,255,255,0.65)",
+                }}
+              />
+            </label>
+
+            {/* Phone */}
+            <label
+              style={{
+                display: "block",
+                marginBottom: "22px",
+                color: "#263229",
+                fontSize: "14px",
+                fontWeight: 700,
+              }}
+            >
+              Business Phone
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Business phone number"
+                type="tel"
+                style={{
+                  width: "100%",
+                  padding: "14px 15px",
+                  marginTop: "8px",
+                  border: "1px solid rgba(35, 65, 43, 0.16)",
+                  borderRadius: "13px",
+                  boxSizing: "border-box",
+                  fontSize: "15px",
+                  color: "#172018",
+                  boxShadow:
+                    "0 4px 14px rgba(7, 29, 19, 0.04), inset 0 1px 0 rgba(255,255,255,0.65)",
+                }}
+              />
+            </label>
+
+            {/* Address */}
+            <label
+              style={{
+                display: "block",
+                marginBottom: "22px",
+                color: "#263229",
+                fontSize: "14px",
+                fontWeight: 700,
+              }}
+            >
+              Business Address
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Street, locality or landmark"
+                rows={3}
+                style={{
+                  width: "100%",
+                  padding: "14px 15px",
+                  marginTop: "8px",
+                  border: "1px solid rgba(35, 65, 43, 0.16)",
+                  borderRadius: "13px",
+                  boxSizing: "border-box",
+                  fontSize: "15px",
+                  color: "#172018",
+                  resize: "vertical",
+                  boxShadow:
+                    "0 4px 14px rgba(7, 29, 19, 0.04), inset 0 1px 0 rgba(255,255,255,0.65)",
+                }}
+              />
+            </label>
+
+            {/* City */}
+            <label
+              style={{
+                display: "block",
+                marginBottom: "22px",
+                color: "#263229",
+                fontSize: "14px",
+                fontWeight: 700,
+              }}
+            >
+              City / Town
+              <input
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="City or town in Nagaland"
+                style={{
+                  width: "100%",
+                  padding: "14px 15px",
+                  marginTop: "8px",
+                  border: "1px solid rgba(35, 65, 43, 0.16)",
+                  borderRadius: "13px",
+                  boxSizing: "border-box",
+                  fontSize: "15px",
+                  color: "#172018",
+                  boxShadow:
+                    "0 4px 14px rgba(7, 29, 19, 0.04), inset 0 1px 0 rgba(255,255,255,0.65)",
+                }}
+              />
+            </label>
+
+            {/* State */}
+            <div
+              style={{
+                marginBottom: "22px",
+                padding: "14px 15px",
+                borderRadius: "13px",
+                background: "rgba(236, 239, 234, 0.68)",
+                border: "1px solid rgba(35, 65, 43, 0.10)",
+                color: "#52635a",
+                fontSize: "14px",
+              }}
+            >
+              State:{" "}
+              <strong
+                style={{
+                  color: "#263229",
+                }}
+              >
+                Nagaland
+              </strong>
+            </div>
+
+            {/* Status message */}
+            {message && (
+              <div
+                style={{
+                  marginBottom: "18px",
+                  padding: "13px 15px",
+                  borderRadius: "12px",
+                  background: message.includes("successfully")
+                    ? "rgba(20, 107, 74, 0.08)"
+                    : "rgba(150, 55, 40, 0.08)",
+                  border: message.includes("successfully")
+                    ? "1px solid rgba(20, 107, 74, 0.14)"
+                    : "1px solid rgba(150, 55, 40, 0.14)",
+                  color: message.includes("successfully")
+                    ? "#146b4a"
+                    : "#8a392d",
+                  fontSize: "14px",
+                  lineHeight: 1.5,
+                }}
+              >
+                {message}
+              </div>
+            )}
+
+            {/* Save */}
+            <button
+              type="button"
+              onClick={saveBusiness}
+              disabled={saving}
+              style={{
+                width: "100%",
+                padding: "15px",
+                border: "1px solid rgba(255,255,255,0.16)",
+                borderRadius: "13px",
+                background:
+                  "linear-gradient(135deg, #18251b 0%, #146b4a 100%)",
+                color: "#ffffff",
+                fontSize: "15px",
+                fontWeight: 700,
+                cursor: saving ? "not-allowed" : "pointer",
+                opacity: saving ? 0.7 : 1,
+                boxShadow:
+                  "0 10px 24px rgba(7, 29, 19, 0.18), inset 0 1px 0 rgba(255,255,255,0.12)",
+              }}
+            >
+              {saving
+                ? "Saving..."
+                : business
+                  ? "Update Business Profile"
+                  : "Create Business Profile"}
+            </button>
+
+            {/* Dashboard */}
+            <div
+              style={{
+                marginTop: "18px",
+                textAlign: "center",
+              }}
+            >
+              <Link
+                href="/dashboard"
+                style={{
+                  color: "#146b4a",
+                  textDecoration: "none",
+                  fontWeight: 700,
+                  fontSize: "14px",
+                }}
+              >
+                Go to Dashboard →
+              </Link>
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </main>
   );
