@@ -164,7 +164,6 @@ export default function MyRequestsPage() {
     className="nagasphere-inner-page"
     style={{
       minHeight: "100vh",
-      background: "transparent",
       padding: 24,
     }}
   >
