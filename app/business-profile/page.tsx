@@ -145,7 +145,6 @@ export default function BusinessProfilePage() {
       className="nagasphere-inner-page"
       style={{
         minHeight: "100vh",
-        background: "transparent",
         padding: "24px 16px 60px",
       }}
     >
