@@ -66,7 +66,6 @@ export default function AuthPage() {
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
-        background: "transparent",
       }}
     >
       <div
