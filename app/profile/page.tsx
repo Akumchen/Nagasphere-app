@@ -111,7 +111,7 @@ export default function ProfilePage() {
           style={{
             background: "white",
             borderRadius: "20px",
-            padding: "18px 22px",
+            padding: "12px 16px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -137,7 +137,7 @@ export default function ProfilePage() {
               src="/nagasphere-logo.png"
               alt="NagaSphere"
               style={{
-                width: "150px",
+                width: "125px",
                 height: "auto",
                 display: "block",
               }}
@@ -150,7 +150,7 @@ export default function ProfilePage() {
             style={{
               border: "1px solid #d7dcd5",
               background: "white",
-              padding: "10px 16px",
+              padding: "8px 12px",
               borderRadius: "10px",
               cursor: "pointer",
             }}
