@@ -163,14 +163,15 @@ export default function ProfilePage() {
 
         <section
   style={{
-    background: "rgba(255, 252, 245, 0.88)",
+    background:
+      "linear-gradient(145deg, rgba(255, 251, 240, 0.94), rgba(232, 240, 229, 0.88))",
     padding: "28px",
     borderRadius: "20px",
-    border: "1px solid rgba(255, 255, 255, 0.72)",
+    border: "1px solid rgba(255, 255, 255, 0.82)",
     boxShadow:
-      "0 16px 42px rgba(8, 30, 20, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.82)",
-    backdropFilter: "blur(14px)",
-    WebkitBackdropFilter: "blur(14px)",
+      "0 20px 50px rgba(8, 30, 20, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(35, 65, 43, 0.08)",
+    backdropFilter: "blur(18px)",
+    WebkitBackdropFilter: "blur(18px)",
   }}
 >
           <h1 style={{ marginBottom: "8px" }}>My Profile</h1>
