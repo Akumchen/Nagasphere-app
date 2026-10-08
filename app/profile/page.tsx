@@ -162,13 +162,17 @@ export default function ProfilePage() {
         </header>
 
         <section
-          style={{
-            background: "white",
-            padding: "28px",
-            borderRadius: "20px",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-          }}
-        >
+  style={{
+    background: "rgba(255, 252, 245, 0.88)",
+    padding: "28px",
+    borderRadius: "20px",
+    border: "1px solid rgba(255, 255, 255, 0.72)",
+    boxShadow:
+      "0 16px 42px rgba(8, 30, 20, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.82)",
+    backdropFilter: "blur(14px)",
+    WebkitBackdropFilter: "blur(14px)",
+  }}
+>
           <h1 style={{ marginBottom: "8px" }}>My Profile</h1>
 
           <p style={{ color: "#697067", marginBottom: "28px" }}>
