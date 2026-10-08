@@ -249,7 +249,6 @@ export default function EditListingPage() {
       className="nagasphere-inner-page"
       style={{
         minHeight: "100vh",
-        background: "transparent",
         padding: 20,
       }}
     >
