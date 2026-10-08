@@ -161,19 +161,21 @@ export default function ProfilePage() {
           </button>
         </header>
 
-        <section
-  style={{
-    background:
-      "linear-gradient(145deg, rgba(255, 251, 240, 0.94), rgba(232, 240, 229, 0.88))",
-    padding: "28px",
-    borderRadius: "20px",
-    border: "1px solid rgba(255, 255, 255, 0.82)",
-    boxShadow:
-      "0 20px 50px rgba(8, 30, 20, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(35, 65, 43, 0.08)",
-    backdropFilter: "blur(18px)",
-    WebkitBackdropFilter: "blur(18px)",
-  }}
->
+                <section
+          style={{
+            position: "relative",
+            background:
+              "linear-gradient(135deg, rgba(255, 253, 247, 0.94) 0%, rgba(242, 247, 239, 0.88) 48%, rgba(226, 237, 226, 0.84) 100%)",
+            padding: "30px",
+            borderRadius: "24px",
+            border: "1px solid rgba(255, 255, 255, 0.9)",
+            boxShadow:
+              "0 24px 60px rgba(7, 29, 19, 0.24), 0 6px 18px rgba(7, 29, 19, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.95), inset 0 -1px 0 rgba(27, 60, 38, 0.08)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            overflow: "hidden",
+          }}
+        >
           <h1 style={{ marginBottom: "8px" }}>My Profile</h1>
 
           <p style={{ color: "#697067", marginBottom: "28px" }}>
