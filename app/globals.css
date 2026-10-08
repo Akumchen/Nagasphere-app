@@ -348,36 +348,9 @@ footer b {
 .nagasphere-inner-page {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 12% 8%, rgba(118, 155, 123, 0.16), transparent 28%),
-    radial-gradient(circle at 88% 18%, rgba(54, 105, 83, 0.13), transparent 30%),
-    radial-gradient(circle at 50% 100%, rgba(214, 224, 205, 0.55), transparent 42%),
-    linear-gradient(135deg, #f7f5ef 0%, #edf2e9 48%, #f7f5ef 100%);
+    linear-gradient(rgba(8, 30, 20, 0.28), rgba(8, 30, 20, 0.28)),
+    url("/nagasphere-inner-bg.png") center center / cover fixed no-repeat;
   position: relative;
   isolation: isolate;
   overflow: hidden;
-}
-
-.nagasphere-inner-page::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.5;
-  background:
-    radial-gradient(circle at 20% 30%, transparent 0 18%, rgba(29, 50, 31, 0.035) 18.2% 18.35%, transparent 18.55%),
-    radial-gradient(circle at 78% 70%, transparent 0 22%, rgba(29, 50, 31, 0.03) 22.2% 22.35%, transparent 22.55%);
-}
-
-.nagasphere-inner-page::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.22;
-  background-image:
-    linear-gradient(115deg, transparent 0 49.7%, rgba(29, 50, 31, 0.055) 49.8% 50%, transparent 50.1%),
-    linear-gradient(25deg, transparent 0 49.7%, rgba(29, 50, 31, 0.04) 49.8% 50%, transparent 50.1%);
-  background-size: 140px 140px, 180px 180px;
 }
