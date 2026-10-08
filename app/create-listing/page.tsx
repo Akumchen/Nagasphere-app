@@ -157,7 +157,6 @@ if (!businessError && businessData) {
     className="nagasphere-inner-page"
     style={{
       minHeight: "100vh",
-      background: "transparent",
       padding: 20
     }}
   >
