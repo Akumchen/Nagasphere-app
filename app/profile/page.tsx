@@ -109,15 +109,17 @@ export default function ProfilePage() {
       >
         <header
           style={{
-            background: "white",
+            background: "rgba(255, 255, 255, 0.86)",
             borderRadius: "20px",
+            border: "1px solid rgba(255, 255, 255, 0.65)",
             padding: "12px 16px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: "16px",
-            boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
+            boxShadow: "0 12px 35px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7)",
             marginBottom: "20px",
+            backdropFilter: "blur(12px)",
           }}
         >
           <button
