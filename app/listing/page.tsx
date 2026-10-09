@@ -301,31 +301,121 @@ boxShadow: "0 4px 12px rgba(16,41,30,0.08), inset 0 1px 0 rgba(255,255,255,0.95)
                 boxShadow: "0 4px 11px rgba(16,41,30,0.2)",
                 border: "1px solid rgba(207,176,105,0.4)",
               }}
+        {/* PREMIUM INTEGRATED BRAND HEADER */}
+        <header
+          style={{
+            borderRadius: "22px",
+            padding: "14px 18px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "14px 20px",
+            border: "1px solid rgba(207,176,105,0.75)",
+            background:
+              "linear-gradient(115deg, #102d21 0%, #174331 52%, #0b241a 100%)",
+            boxShadow:
+              "0 16px 34px rgba(5,25,15,0.27), inset 0 1px 0 rgba(255,255,255,0.12)",
+            boxSizing: "border-box",
+          }}
+        >
+          <Link
+            href="/"
+            aria-label="NagaSphere home"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              flex: "0 1 auto",
+              minWidth: 0,
+              textDecoration: "none",
+            }}
+          >
+            <img
+              src="/nagasphere-logo.png"
+              alt="NagaSphere"
+              style={{
+                display: "block",
+                width: "clamp(108px, 27vw, 148px)",
+                maxWidth: "100%",
+                height: "auto",
+                maxHeight: "54px",
+                objectFit: "contain",
+                objectPosition: "center",
+              }}
+            />
+          </Link>
+
+          <nav
+            aria-label="Main navigation"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
+              gap: "8px",
+              flex: "1 1 420px",
+            }}
+          >
+            <Link
+              href="/"
+              style={{
+                ...chipBase,
+                color: "#f7f3e6",
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(224,205,157,0.42)",
+                padding: "10px 14px",
+                minHeight: "42px",
+                boxSizing: "border-box",
+              }}
+            >
+              Home
+            </Link>
+
+            <Link
+              href="/listing"
+              aria-current="page"
+              style={{
+                ...chipBase,
+                color: "#fff9e9",
+                background:
+                  "linear-gradient(135deg, #326347, #173c2a)",
+                border: "1px solid #d5b875",
+                boxShadow:
+                  "0 0 0 1px rgba(213,184,117,0.12), 0 5px 14px rgba(0,0,0,0.18)",
+                padding: "10px 14px",
+                minHeight: "42px",
+                boxSizing: "border-box",
+              }}
             >
               Marketplace
             </Link>
 
-                        <Link
+            <Link
               href="/my-listings"
               style={{
                 ...chipBase,
-                color: colors.green,
-                padding: "9px 12px",
-                background: "rgba(255,255,255,0.58)",
-                border: "1px solid rgba(20,60,42,0.08)",
+                color: "#f7f3e6",
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(224,205,157,0.42)",
+                padding: "10px 14px",
+                minHeight: "42px",
+                boxSizing: "border-box",
               }}
             >
               My Listings
             </Link>
 
-                        <Link
+            <Link
               href="/messages"
               style={{
                 ...chipBase,
-                color: colors.green,
-                padding: "9px 12px",
-                background: "rgba(255,255,255,0.58)",
-                border: "1px solid rgba(20,60,42,0.08)",
+                color: "#f7f3e6",
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(224,205,157,0.42)",
+                padding: "10px 14px",
+                minHeight: "42px",
+                boxSizing: "border-box",
               }}
             >
               Messages
