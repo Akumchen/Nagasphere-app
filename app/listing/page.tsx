@@ -218,90 +218,8 @@ export default async function MarketplacePage({
           margin: "0 auto",
         }}
       >
-        {/* COMPACT BRAND HEADER */}
-        <header
-          style={{
-            ...panelStyle,
-            borderRadius: "22px",
-            padding: "10px 14px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "12px",
-            border: "1px solid rgba(207,176,105,0.48)",
-background:
-  "linear-gradient(135deg, rgba(255,253,246,0.97), rgba(237,241,226,0.94))",
-boxShadow:
-  "0 12px 30px rgba(5,25,15,0.18), inset 0 1px 0 rgba(255,255,255,0.9)",
-          }}
-        >
-          <Link
-            href="/"
-            aria-label="NagaSphere home"
-            style={{
-              display: "inline-flex",
-alignItems: "center",
-justifyContent: "center",
-flexShrink: 0,
-minHeight: "60px",
-padding: "5px 12px",
-boxSizing: "border-box",
-              borderRadius: "15px",
-border: "1px solid rgba(207,176,105,0.38)",
-background: "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(245,241,225,0.9))",
-boxShadow: "0 4px 12px rgba(16,41,30,0.08), inset 0 1px 0 rgba(255,255,255,0.95)",
-            }}
-          >
-            <img
-              src="/nagasphere-logo.png"
-              alt="NagaSphere"
-              style={{
-                width: "clamp(108px, 27vw, 142px)",
-                maxWidth: "100%",
-                height: "auto",
-               maxHeight: "46px",
-                objectFit: "contain",
-                objectPosition: "center",
-                display: "block",
-              }}
-            />
-          </Link>
 
-          <nav
-            aria-label="Main navigation"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              flexWrap: "wrap",
-              gap: "8px",
-            }}
-          >
-            <Link
-              href="/"
-              style={{
-                ...chipBase,
-                color: colors.green,
-                padding: "9px 12px",
-              }}
-            >
-              Home
-            </Link>
-
-                        <Link
-              href="/listing"
-              aria-current="page"
-              style={{
-                ...chipBase,
-                color: colors.ivory,
-                background:
-                  "linear-gradient(135deg, #204d37, #123725)",
-                padding: "9px 12px",
-                boxShadow: "0 4px 11px rgba(16,41,30,0.2)",
-                border: "1px solid rgba(207,176,105,0.4)",
-              }}
-        {/* PREMIUM INTEGRATED BRAND HEADER */}
+                {/* PREMIUM INTEGRATED BRAND HEADER */}
         <header
           style={{
             borderRadius: "22px",
@@ -325,7 +243,6 @@ boxShadow: "0 4px 12px rgba(16,41,30,0.08), inset 0 1px 0 rgba(255,255,255,0.95)
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "10px",
               flex: "0 1 auto",
               minWidth: 0,
               textDecoration: "none",
@@ -341,7 +258,6 @@ boxShadow: "0 4px 12px rgba(16,41,30,0.08), inset 0 1px 0 rgba(255,255,255,0.95)
                 height: "auto",
                 maxHeight: "54px",
                 objectFit: "contain",
-                objectPosition: "center",
               }}
             />
           </Link>
