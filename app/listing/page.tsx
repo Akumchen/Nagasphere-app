@@ -924,14 +924,15 @@ export default async function MarketplacePage({
                     flexDirection: "column",
                     minWidth: 0,
                     boxSizing: "border-box",
-                    padding: "21px",
-                    borderRadius: "19px",
+                                        padding: "23px",
+                    borderRadius: "20px",
                     border:
-                      "1px solid rgba(255,255,255,0.76)",
+                      "1px solid rgba(199,169,107,0.38)",
+                    borderTop: "3px solid rgba(199,169,107,0.88)",
                     background:
-                      "linear-gradient(145deg, rgba(250,249,242,0.97), rgba(239,242,229,0.93))",
+                      "linear-gradient(145deg, rgba(255,254,248,0.98), rgba(239,242,229,0.96))",
                     boxShadow:
-                      "0 12px 30px rgba(5,25,15,0.16)",
+                      "0 15px 34px rgba(5,25,15,0.19), inset 0 1px 0 rgba(255,255,255,0.92)",
                     color: colors.deepGreen,
                     textDecoration: "none",
                     overflowWrap: "anywhere",
