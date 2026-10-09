@@ -293,18 +293,22 @@ export default function CreateListingPage() {
         </button>
 
         {/* Main premium form card */}
-        <section
-          style={{
-            background:
-              "linear-gradient(145deg, rgba(255,253,247,0.98), rgba(244,247,238,0.97))",
-            padding: "clamp(20px, 4vw, 32px)",
-            borderRadius: 24,
-            border: "1px solid rgba(255,255,255,0.78)",
-            boxShadow:
-              "0 20px 55px rgba(6,28,16,0.24), inset 0 1px 0 rgba(255,255,255,0.9)",
-            color: "#26392b",
-          }}
-        >
+       
+<section
+  style={{
+    background:
+      "linear-gradient(145deg, rgba(255,253,247,0.84), rgba(244,247,238,0.76))",
+    backdropFilter: "blur(18px)",
+    WebkitBackdropFilter: "blur(18px)",
+    padding: "clamp(20px, 4vw, 32px)",
+    borderRadius: 26,
+    border: "1px solid rgba(255,255,255,0.72)",
+    boxShadow:
+      "0 24px 65px rgba(4,22,14,0.30), inset 0 1px 0 rgba(255,255,255,0.88)",
+    color: "#26392b",
+  }}
+>
+
           <p
             style={{
               margin: "0 0 7px",
