@@ -244,7 +244,9 @@ boxShadow:
 alignItems: "center",
 justifyContent: "center",
 flexShrink: 0,
-padding: "6px 12px",
+minHeight: "60px",
+padding: "5px 12px",
+boxSizing: "border-box",
               borderRadius: "15px",
 border: "1px solid rgba(207,176,105,0.38)",
 background: "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(245,241,225,0.9))",
@@ -258,8 +260,9 @@ boxShadow: "0 4px 12px rgba(16,41,30,0.08), inset 0 1px 0 rgba(255,255,255,0.95)
                 width: "clamp(108px, 27vw, 142px)",
                 maxWidth: "100%",
                 height: "auto",
-               maxHeight: "48px",
+               maxHeight: "46px",
                 objectFit: "contain",
+                objectPosition: "center",
                 display: "block",
               }}
             />
@@ -280,42 +283,49 @@ boxShadow: "0 4px 12px rgba(16,41,30,0.08), inset 0 1px 0 rgba(255,255,255,0.95)
               style={{
                 ...chipBase,
                 color: colors.green,
+                padding: "9px 12px",
               }}
             >
               Home
             </Link>
 
-            <Link
+                        <Link
               href="/listing"
               aria-current="page"
               style={{
                 ...chipBase,
                 color: colors.ivory,
-                background: colors.green,
-                boxShadow:
-                  "0 5px 13px rgba(16,41,30,0.17)",
+                background:
+                  "linear-gradient(135deg, #204d37, #123725)",
+                padding: "9px 12px",
+                boxShadow: "0 4px 11px rgba(16,41,30,0.2)",
+                border: "1px solid rgba(207,176,105,0.4)",
               }}
             >
               Marketplace
             </Link>
 
-            <Link
+                        <Link
               href="/my-listings"
               style={{
                 ...chipBase,
                 color: colors.green,
-                background: "rgba(255,255,255,0.55)",
+                padding: "9px 12px",
+                background: "rgba(255,255,255,0.58)",
+                border: "1px solid rgba(20,60,42,0.08)",
               }}
             >
               My Listings
             </Link>
 
-            <Link
+                        <Link
               href="/messages"
               style={{
                 ...chipBase,
                 color: colors.green,
-                background: "rgba(255,255,255,0.55)",
+                padding: "9px 12px",
+                background: "rgba(255,255,255,0.58)",
+                border: "1px solid rgba(20,60,42,0.08)",
               }}
             >
               Messages
