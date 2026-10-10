@@ -993,6 +993,23 @@ export default async function MarketplacePage({
                       </span>
                     )}
                   </div>
+                  
+
+                  {/* LISTING PHOTO */}
+                  {listing.image_url && (
+                    <img
+                      src={listing.image_url}
+                      alt={listing.title}
+                      style={{
+                        width: "100%",
+                        height: "190px",
+                        objectFit: "cover",
+                        borderRadius: "14px",
+                        marginBottom: "16px",
+                        display: "block",
+                      }}
+                    />
+                  )}
 
                   {/* TITLE */}
                   <h3
