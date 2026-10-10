@@ -21,6 +21,7 @@ type Category = {
 
 type Listing = {
   id: string;
+  image_url: string | null;
   title: string;
   description: string | null;
   type: string;
@@ -126,6 +127,7 @@ export default async function MarketplacePage({
       id,
       title,
       description,
+      image_url,
       type,
       quantity,
       unit,
