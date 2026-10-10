@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ type RequestItem = {
   id: string;
   type: "have" | "need";
   title: string;
+  image_url: string | null;
   description: string | null;
   quantity: number | null;
   unit: string | null;
@@ -83,7 +85,7 @@ export default function MyRequestsPage() {
       supabase
         .from("posts")
         .select(
-          "id,type,title,description,quantity,unit,budget_min,city,state,category_id,status,created_at"
+          "id,type,title,image_url,description,quantity,unit,budget_min,city,state,category_id,status,created_at"
         )
         .eq("owner_id", user.id)
         .eq("type", "need")
@@ -685,6 +687,24 @@ export default function MyRequestsPage() {
                       transition: "opacity 160ms ease",
                     }}
                   >
+                    {/* Request photo */}
+                    {request.image_url && (
+                      <img
+                        src={request.image_url}
+                        alt={request.title}
+                        loading="lazy"
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          maxHeight: 300,
+                          objectFit: "cover",
+                          borderRadius: 15,
+                          marginBottom: 20,
+                          background: "#e9eee6",
+                        }}
+                      />
+                    )}
+
                     <div
                       style={{
                         display: "flex",
