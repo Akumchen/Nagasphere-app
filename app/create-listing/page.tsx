@@ -1,3 +1,4 @@
+
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -23,6 +24,7 @@ export default function CreateListingPage() {
   const [type, setType] = useState<"have" | "need">("have");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
 
   const [parentCategoryId, setParentCategoryId] = useState("");
   const [subcategoryId, setSubcategoryId] = useState("");
@@ -112,42 +114,100 @@ export default function CreateListingPage() {
       return;
     }
 
+    if (photo) {
+      if (
+        !["image/jpeg", "image/png", "image/webp"].includes(photo.type)
+      ) {
+        setMessage("Please choose a JPG, PNG, or WebP image.");
+        return;
+      }
+
+      if (photo.size > 5 * 1024 * 1024) {
+        setMessage("Please choose an image no larger than 5 MB.");
+        return;
+      }
+    }
+
     setSaving(true);
     setMessage("");
 
-    const { data: auth } = await supabase.auth.getUser();
+    try {
+      const { data: auth, error: authError } =
+        await supabase.auth.getUser();
 
-    if (!auth.user) {
-      router.replace("/auth");
+      if (authError || !auth.user) {
+        router.replace("/auth");
+        return;
+      }
+
+      let imageUrl: string | null = null;
+
+      if (photo) {
+        const extensionByType: Record<string, string> = {
+          "image/jpeg": "jpg",
+          "image/png": "png",
+          "image/webp": "webp",
+        };
+
+        const extension = extensionByType[photo.type];
+        const filePath =
+          `${auth.user.id}/${crypto.randomUUID()}.${extension}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("listing-images")
+          .upload(filePath, photo, {
+            contentType: photo.type,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          setMessage(`Photo upload failed: ${uploadError.message}`);
+          return;
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("listing-images")
+          .getPublicUrl(filePath);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+
+      const finalCategoryId =
+        subcategoryId || parentCategoryId || null;
+
+      const { error: insertError } = await supabase
+        .from("posts")
+        .insert({
+          owner_id: auth.user.id,
+          type,
+          title: title.trim(),
+          description: description.trim() || null,
+          business_id: businessId || null,
+          category_id: finalCategoryId,
+          quantity: quantity ? Number(quantity) : null,
+          unit: unit.trim() || null,
+          budget_min: price ? Number(price) : null,
+          budget_max: price ? Number(price) : null,
+          city: city.trim() || null,
+          state: "Nagaland",
+          image_url: imageUrl,
+        });
+
+      if (insertError) {
+        setMessage(`Could not publish listing: ${insertError.message}`);
+        return;
+      }
+
+      router.push("/listing");
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
       setSaving(false);
-      return;
     }
-
-    const finalCategoryId =
-      subcategoryId || parentCategoryId || null;
-
-    const { error } = await supabase.from("posts").insert({
-      owner_id: auth.user.id,
-      type,
-      title: title.trim(),
-      description: description.trim() || null,
-      business_id: businessId || null,
-      category_id: finalCategoryId,
-      quantity: quantity ? Number(quantity) : null,
-      unit: unit.trim() || null,
-      budget_min: price ? Number(price) : null,
-      budget_max: price ? Number(price) : null,
-      city: city.trim() || null,
-      state: "Nagaland",
-    });
-
-    if (error) {
-      setMessage(error.message);
-      setSaving(false);
-      return;
-    }
-
-    router.push("/listing");
   }
 
   const fieldStyle = {
@@ -204,7 +264,6 @@ export default function CreateListingPage() {
       }}
     >
       <div style={{ maxWidth: 760, margin: "0 auto" }}>
-        {/* Compact brand header */}
         <header
           style={{
             display: "flex",
@@ -292,23 +351,20 @@ export default function CreateListingPage() {
           ← Back to Dashboard
         </button>
 
-        {/* Main premium form card */}
-       
-<section
-  style={{
-    background:
-      "linear-gradient(145deg, rgba(255,253,247,0.84), rgba(244,247,238,0.76))",
-    backdropFilter: "blur(18px)",
-    WebkitBackdropFilter: "blur(18px)",
-    padding: "clamp(20px, 4vw, 32px)",
-    borderRadius: 26,
-    border: "1px solid rgba(255,255,255,0.72)",
-    boxShadow:
-      "0 24px 65px rgba(4,22,14,0.30), inset 0 1px 0 rgba(255,255,255,0.88)",
-    color: "#26392b",
-  }}
->
-
+        <section
+          style={{
+            background:
+              "linear-gradient(145deg, rgba(255,253,247,0.84), rgba(244,247,238,0.76))",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            padding: "clamp(20px, 4vw, 32px)",
+            borderRadius: 26,
+            border: "1px solid rgba(255,255,255,0.72)",
+            boxShadow:
+              "0 24px 65px rgba(4,22,14,0.30), inset 0 1px 0 rgba(255,255,255,0.88)",
+            color: "#26392b",
+          }}
+        >
           <p
             style={{
               margin: "0 0 7px",
@@ -387,6 +443,52 @@ export default function CreateListingPage() {
               />
             </label>
 
+            <label>
+              Product photo (optional, maximum 5 MB)
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) =>
+                  setPhoto(e.target.files?.[0] || null)
+                }
+                style={fieldStyle}
+              />
+            </label>
+
+            {photo && (
+              <div style={{ marginBottom: 17 }}>
+                <p style={{ fontSize: 13, margin: "0 0 8px" }}>
+                  Selected photo: {photo.name}
+                </p>
+                <img
+                  src={URL.createObjectURL(photo)}
+                  alt="Selected product preview"
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    maxWidth: 300,
+                    maxHeight: 220,
+                    objectFit: "contain",
+                    borderRadius: 12,
+                    background: "rgba(255,255,255,0.7)",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setPhoto(null)}
+                  style={{
+                    marginTop: 8,
+                    border: "none",
+                    background: "transparent",
+                    color: "#923b32",
+                    cursor: "pointer",
+                  }}
+                >
+                  Remove photo
+                </button>
+              </div>
+            )}
+
             {business && (
               <label>
                 Business Profile
@@ -411,7 +513,6 @@ export default function CreateListingPage() {
                 style={fieldStyle}
               >
                 <option value="">Select a category</option>
-
                 {topCategories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.name}
@@ -429,7 +530,6 @@ export default function CreateListingPage() {
                   style={fieldStyle}
                 >
                   <option value="">Select a subcategory</option>
-
                   {subcategories.map((subcategory) => (
                     <option
                       key={subcategory.id}
