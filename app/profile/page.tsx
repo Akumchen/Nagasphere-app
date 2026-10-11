@@ -1,4 +1,3 @@
-
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
@@ -55,6 +54,17 @@ const bubbleStyle = {
   WebkitBackdropFilter: "blur(16px)",
 };
 
+type ProfileListing = {
+  id: string;
+  title: string;
+  description: string | null;
+  type: string | null;
+  city: string | null;
+  state: string | null;
+  status: string | null;
+  image_url: string | null;
+};
+
 export default function ProfilePage() {
   const router = useRouter();
   const supabase = createClient();
@@ -66,33 +76,57 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
+  const [listings, setListings] = useState<ProfileListing[]>([]);
+  const [listingsLoading, setListingsLoading] = useState(true);
+  const [listingsError, setListingsError] = useState("");
+
   useEffect(() => {
     async function loadProfile() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
 
-      if (!user) {
-        router.replace("/auth");
-        return;
+        if (!user) {
+          router.replace("/auth");
+          return;
+        }
+
+        setEmail(user.email ?? "");
+
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("full_name, phone")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (error) {
+          setMessage(error.message);
+        } else if (data) {
+          setFullName(data.full_name ?? "");
+          setPhone(data.phone ?? "");
+        }
+
+        const { data: posts, error: postsError } = await supabase
+          .from("posts")
+          .select(
+            "id, title, description, type, city, state, status, image_url, created_at"
+          )
+          .eq("owner_id", user.id)
+          .order("created_at", { ascending: false });
+
+        if (postsError) {
+          setListingsError("Your listings could not be loaded.");
+        } else {
+          setListings((posts ?? []) as ProfileListing[]);
+        }
+      } catch {
+        setMessage("We couldn't load your profile. Please try again.");
+        setListingsError("Your listings could not be loaded.");
+      } finally {
+        setLoading(false);
+        setListingsLoading(false);
       }
-
-      setEmail(user.email ?? "");
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name, phone")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        setMessage(error.message);
-      } else if (data) {
-        setFullName(data.full_name ?? "");
-        setPhone(data.phone ?? "");
-      }
-
-      setLoading(false);
     }
 
     loadProfile();
@@ -657,6 +691,296 @@ export default function ProfilePage() {
             </button>
           </section>
         </form>
+
+        {/* My marketplace listings */}
+        <section
+          style={{
+            ...bubbleStyle,
+            marginTop: "26px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "14px",
+              marginBottom: "22px",
+            }}
+          >
+            <div>
+              <h2
+                style={{
+                  margin: "0 0 7px",
+                  color: colors.forest,
+                  fontSize: "22px",
+                  lineHeight: 1.3,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                My Marketplace Listings
+              </h2>
+              <p
+                style={{
+                  margin: 0,
+                  color: colors.muted,
+                  fontSize: "13px",
+                  lineHeight: 1.6,
+                }}
+              >
+                View the products and services you have posted.
+              </p>
+            </div>
+
+            <Link
+              href="/my-listings"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "11px 15px",
+                borderRadius: "12px",
+                background: colors.forest,
+                color: colors.ivory,
+                fontSize: "13px",
+                fontWeight: 700,
+                textDecoration: "none",
+              }}
+            >
+              Manage listings →
+            </Link>
+          </div>
+
+          {listingsLoading ? (
+            <p style={{ color: colors.muted, fontSize: "14px" }}>
+              Loading your listings...
+            </p>
+          ) : listingsError ? (
+            <div
+              role="status"
+              style={{
+                padding: "16px",
+                borderRadius: "14px",
+                background: "rgba(150,55,40,0.07)",
+                color: "#8a392d",
+                fontSize: "13px",
+                lineHeight: 1.6,
+              }}
+            >
+              {listingsError} You can try opening{" "}
+              <Link
+                href="/my-listings"
+                style={{ color: colors.green, fontWeight: 700 }}
+              >
+                My Listings
+              </Link>
+              .
+            </div>
+          ) : listings.length === 0 ? (
+            <div
+              style={{
+                padding: "28px 18px",
+                border: `1px dashed ${colors.line}`,
+                borderRadius: "18px",
+                textAlign: "center",
+                background: "rgba(255,255,255,0.48)",
+              }}
+            >
+              <div
+                aria-hidden="true"
+                style={{ fontSize: "30px", marginBottom: "10px" }}
+              >
+                ◈
+              </div>
+              <h3
+                style={{
+                  margin: "0 0 8px",
+                  color: colors.forest,
+                  fontSize: "17px",
+                }}
+              >
+                No listings yet
+              </h3>
+              <p
+                style={{
+                  margin: "0 auto 17px",
+                  maxWidth: "440px",
+                  color: colors.muted,
+                  fontSize: "13px",
+                  lineHeight: 1.7,
+                }}
+              >
+                When you post a product or service, it will appear here.
+              </p>
+              <Link
+                href="/create-listing"
+                style={{
+                  display: "inline-flex",
+                  padding: "12px 17px",
+                  borderRadius: "12px",
+                  background: colors.forest,
+                  color: colors.ivory,
+                  fontSize: "13px",
+                  fontWeight: 700,
+                  textDecoration: "none",
+                }}
+              >
+                Create a listing →
+              </Link>
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit,minmax(min(100%,230px),1fr))",
+                gap: "18px",
+              }}
+            >
+              {listings.map((listing) => (
+                <article
+                  key={listing.id}
+                  style={{
+                    minWidth: 0,
+                    overflow: "hidden",
+                    borderRadius: "18px",
+                    border: `1px solid ${colors.line}`,
+                    background: "rgba(255,255,255,0.72)",
+                    boxShadow: "0 8px 22px rgba(7,29,19,0.06)",
+                  }}
+                >
+                  {listing.image_url ? (
+                    <img
+                      src={listing.image_url}
+                      alt={listing.title}
+                      loading="lazy"
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        height: "190px",
+                        objectFit: "cover",
+                        background: "rgba(23,103,71,0.07)",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        display: "grid",
+                        placeItems: "center",
+                        width: "100%",
+                        height: "150px",
+                        background:
+                          "linear-gradient(135deg,rgba(23,103,71,0.1),rgba(216,213,160,0.24))",
+                        color: colors.green,
+                        fontSize: "34px",
+                      }}
+                      aria-label="No listing photo available"
+                    >
+                      ◈
+                    </div>
+                  )}
+
+                  <div style={{ padding: "17px" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                        gap: "8px",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: colors.green,
+                          fontSize: "11px",
+                          fontWeight: 800,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.06em",
+                        }}
+                      >
+                        {listing.type || "Listing"}
+                      </span>
+                      <span
+                        style={{
+                          padding: "5px 8px",
+                          borderRadius: "999px",
+                          background: "rgba(23,103,71,0.09)",
+                          color: colors.green,
+                          fontSize: "10px",
+                          fontWeight: 750,
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {listing.status || "Submitted"}
+                      </span>
+                    </div>
+
+                    <h3
+                      style={{
+                        margin: "0 0 8px",
+                        color: colors.forest,
+                        fontSize: "17px",
+                        lineHeight: 1.4,
+                        overflowWrap: "anywhere",
+                      }}
+                    >
+                      {listing.title}
+                    </h3>
+
+                    {listing.description && (
+                      <p
+                        style={{
+                          margin: "0 0 12px",
+                          color: colors.muted,
+                          fontSize: "12px",
+                          lineHeight: 1.7,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {listing.description}
+                      </p>
+                    )}
+
+                    {(listing.city || listing.state) && (
+                      <p
+                        style={{
+                          margin: "0 0 14px",
+                          color: colors.muted,
+                          fontSize: "12px",
+                        }}
+                      >
+                        <span aria-hidden="true">⌖ </span>
+                        {[listing.city, listing.state]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                    )}
+
+                    <Link
+                      href={`/listing/${listing.id}`}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        color: colors.green,
+                        fontSize: "13px",
+                        fontWeight: 750,
+                        textDecoration: "none",
+                      }}
+                    >
+                      View listing →
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
 
         {/* Business profile link */}
         <Link
