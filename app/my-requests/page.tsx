@@ -944,6 +944,21 @@ export default function MyRequestsPage() {
                       >
                         View request
                       </button>
+                      {request.status === "active" && (
+  <button
+    type="button"
+    onClick={() => router.push("/matches/" + request.id)}
+    disabled={isBusy}
+    style={{
+      ...buttonBase,
+      background: "#e5f3e7",
+      color: "#21633b",
+      borderColor: "#c8e3ce",
+    }}
+  >
+    Find Matches
+  </button>
+)}
 
                       {request.status === "active" && (
                         <button
