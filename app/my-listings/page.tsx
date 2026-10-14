@@ -531,7 +531,6 @@ export default function MyListingsPage() {
     />
   </div>
 ) : null}
-                >
                   <div
                     style={{
                       display: "flex",
