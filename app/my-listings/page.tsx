@@ -507,6 +507,7 @@ export default function MyListingsPage() {
                     minWidth: 0,
                     overflowWrap: "anywhere",
                   }}
+                  >
                   {listing.image_url ? (
   <div
     style={{
