@@ -18,6 +18,7 @@ type Listing = {
   state: string | null;
   category_id: string | null;
   status: string;
+    image_url: string | null;
 };
 
 type Category = {
@@ -61,7 +62,7 @@ export default function ListingPage() {
       const listingQuery = supabase
         .from("posts")
         .select(
-          "id, owner_id, type, title, description, quantity, unit, budget_min, budget_max, city, state, category_id, status"
+       "id, owner_id, type, title, description, quantity, unit, budget_min, budget_max, city, state, category_id, status, image_url"  
         )
         .eq("id", id);
 
@@ -332,6 +333,41 @@ export default function ListingPage() {
               </p>
             )}
           </header>
+          <section aria-label="Listing photo" style={{ marginTop: "22px" }}>
+            {listing.image_url ? (
+              <img
+                src={listing.image_url}
+                alt={listing.title}
+                loading="eager"
+                style={{
+                  display: "block",
+                  width: "100%",
+                  maxHeight: "460px",
+                  objectFit: "contain",
+                  borderRadius: "16px",
+                  border: "1px solid rgba(66,91,68,0.14)",
+                  background: "rgba(255,255,255,0.55)",
+                }}
+              />
+            ) : (
+              <div
+                role="img"
+                aria-label="No photo available for this listing"
+                style={{
+                  display: "grid",
+                  placeItems: "center",
+                  minHeight: "150px",
+                  borderRadius: "16px",
+                  border: "1px dashed rgba(66,91,68,0.22)",
+                  background: "linear-gradient(135deg,rgba(23,103,71,0.07),rgba(216,213,160,0.18))",
+                  color: "#5b695b",
+                  fontSize: "14px",
+                }}
+              >
+                No photo available
+              </div>
+            )}
+          </section>
 
           {listing.description && (
             <section style={{ marginTop: "25px" }}>
