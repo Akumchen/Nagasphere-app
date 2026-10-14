@@ -85,7 +85,7 @@ export default function MyListingsPage() {
         supabase
           .from("posts")
           .select(
-            "id,title,description,type,quantity,unit,budget_min,budget_max,city,state,status,category_id"
+            "id,title,description,type,quantity,unit,budget_min,budget_max,city,state,status,category_id,image_url"
           )
           .eq("owner_id", user.id)
           .order("created_at", { ascending: false }),
@@ -507,6 +507,29 @@ export default function MyListingsPage() {
                     minWidth: 0,
                     overflowWrap: "anywhere",
                   }}
+                  {listing.image_url ? (
+  <div
+    style={{
+      marginBottom: "18px",
+      overflow: "hidden",
+      borderRadius: "15px",
+      background: "rgba(31,65,47,0.06)",
+    }}
+  >
+    <img
+      src={listing.image_url}
+      alt={listing.title}
+      loading="lazy"
+      style={{
+        display: "block",
+        width: "100%",
+        maxHeight: "280px",
+        objectFit: "cover",
+        borderRadius: "15px",
+      }}
+    />
+  </div>
+) : null}
                 >
                   <div
                     style={{
