@@ -18,6 +18,7 @@ type Listing = {
   state: string | null;
   status: string;
   category_id: string | null;
+    image_url: string | null;
 };
 
 type Category = {
