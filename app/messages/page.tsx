@@ -27,6 +27,7 @@ type ConversationInfo = {
   id: string;
   postTitle: string;
   otherName: string;
+  otherUserId: string | null;
 };
 
 function MessagesContent() {
@@ -45,8 +46,9 @@ function MessagesContent() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const [deletingMessageId, setDeletingMessageId] =
+    const [deletingMessageId, setDeletingMessageId] =
     useState<string | null>(null);
+  const [blockingUser, setBlockingUser] = useState(false);
 
   async function getMyDeletedMessageIds(currentUserId: string) {
     const { data, error } = await supabase
@@ -280,10 +282,11 @@ function MessagesContent() {
     const deletedIds =
       await getMyDeletedMessageIds(currentUserId);
 
-    setConversation({
+        setConversation({
       id: conversationId,
       postTitle,
       otherName,
+      otherUserId: otherId || null,
     });
 
     setMessages(
@@ -403,6 +406,31 @@ function MessagesContent() {
     setUserId(user.id);
 
     await loadInbox(user.id);
+  }
+
+  
+  async function blockConversationUser() {
+    if (!userId || !conversation?.otherUserId || blockingUser) return;
+
+    if (!window.confirm(`Block ${conversation.otherName}? You will not be able to message each other.`)) return;
+
+    setBlockingUser(true);
+    setError("");
+
+    try {
+      const { error: blockError } = await supabase.from("blocks").insert({
+        blocker_id: userId,
+        blocked_id: conversation.otherUserId,
+      });
+
+      if (blockError && blockError.code !== "23505") throw blockError;
+
+      setError(`You blocked ${conversation.otherName}.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to block this user.");
+    } finally {
+      setBlockingUser(false);
+    }
   }
 
   async function deleteForMe(messageId: string) {
@@ -739,19 +767,30 @@ function MessagesContent() {
               </button>
 
               <div className="mt-4 w-[746px] max-w-full overflow-hidden rounded-2xl border border-[#dfe8e5] bg-[#f8fbfa] shadow-2xl">
-                <div className="border-b border-[#dce6e2] px-7 py-5">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
-                    Conversation
-                  </p>
+                
+                <div className="flex items-start justify-between gap-4 border-b border-[#dce6e2] px-7 py-5">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      Conversation
+                    </p>
 
-                  <h2 className="mt-1 text-lg font-bold text-gray-900">
-                    {conversation?.otherName ||
-                      "NagaSphere user"}
-                  </h2>
+                    <h2 className="mt-1 text-lg font-bold text-gray-900">
+                      {conversation?.otherName || "NagaSphere user"}
+                    </h2>
 
-                  <p className="mt-1 text-sm text-gray-500">
-                    {conversation?.postTitle || "Listing"}
-                  </p>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {conversation?.postTitle || "Listing"}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={blockConversationUser}
+                    disabled={!conversation?.otherUserId || blockingUser}
+                    className="shrink-0 rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {blockingUser ? "Blocking…" : "Block user"}
+                  </button>
                 </div>
 
                 <div className="min-h-[500px] p-6">
