@@ -49,6 +49,8 @@ function MessagesContent() {
     const [deletingMessageId, setDeletingMessageId] =
     useState<string | null>(null);
   const [blockingUser, setBlockingUser] = useState(false);
+const [hasBlockedOtherUser, setHasBlockedOtherUser] = useState(false);
+   const [unblockingUser, setUnblockingUser] = useState(false);
 
   async function getMyDeletedMessageIds(currentUserId: string) {
     const { data, error } = await supabase
@@ -218,7 +220,26 @@ function MessagesContent() {
     const otherId = memberIds.find(
       (id) => id !== currentUserId
     );
+setHasBlockedOtherUser(false);
 
+if (otherId) {
+  const { data: existingBlock, error: blockCheckError } =
+    await supabase
+      .from("blocks")
+      .select("blocker_id")
+      .eq("blocker_id", currentUserId)
+      .eq("blocked_id", otherId)
+      .maybeSingle();
+
+  if (blockCheckError) {
+    setError(
+      `Unable to check block status: ${blockCheckError.message}`
+    );
+    return;
+  }
+
+  setHasBlockedOtherUser(Boolean(existingBlock));
+}
     const {
       data: conversationRow,
       error: conversationError,
@@ -424,15 +445,43 @@ function MessagesContent() {
       });
 
       if (blockError && blockError.code !== "23505") throw blockError;
-
-      setError(`You blocked ${conversation.otherName}.`);
+setHasBlockedOtherUser(true);
+setError(`You blocked ${conversation.otherName}.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to block this user.");
     } finally {
       setBlockingUser(false);
     }
   }
+async function unblockConversationUser() {
+  if (!userId || !conversation?.otherUserId || unblockingUser) return;
 
+  if (!window.confirm(`Unblock ${conversation.otherName}?`)) return;
+
+  setUnblockingUser(true);
+  setError("");
+
+  try {
+    const { error: unblockError } = await supabase
+      .from("blocks")
+      .delete()
+      .eq("blocker_id", userId)
+      .eq("blocked_id", conversation.otherUserId);
+
+    if (unblockError) throw unblockError;
+
+    setHasBlockedOtherUser(false);
+setError(`You unblocked ${conversation.otherName}.`);
+  } catch (err) {
+    setError(
+      err instanceof Error
+        ? err.message
+        : "Unable to unblock this user."
+    );
+  } finally {
+    setUnblockingUser(false);
+  }
+}
   async function deleteForMe(messageId: string) {
     if (!userId || deletingMessageId) {
       return;
@@ -785,11 +834,21 @@ function MessagesContent() {
 
                   <button
                     type="button"
-                    onClick={blockConversationUser}
-                    disabled={!conversation?.otherUserId || blockingUser}
+                    onClick={
+  hasBlockedOtherUser
+    ? unblockConversationUser
+    : blockConversationUser
+}
+                    disabled={!conversation?.otherUserId || blockingUser || unblockingUser}
                     className="shrink-0 rounded-lg border border-red-200 px-3 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {blockingUser ? "Blocking…" : "Block user"}
+                    {blockingUser
+  ? "Blocking…"
+  : unblockingUser
+    ? "Unblocking…"
+    : hasBlockedOtherUser
+      ? "Unblock user"
+      : "Block user"}
                   </button>
                 </div>
 
