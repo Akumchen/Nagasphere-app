@@ -919,7 +919,7 @@ setError(`You unblocked ${conversation.otherName}.`);
                                     onClick={() =>
                                       deleteForMe(message.id)
                                     }
-                                    className="text-[10px] text-white/70 underline"
+                                    className="inline-flex min-h-8 items-center rounded-lg border border-[#cbd9d1] bg-[#fffdf5] px-3 py-1.5 text-xs font-semibold text-[#173c2a] shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
                                   >
                                     Delete for me
                                   </button>
