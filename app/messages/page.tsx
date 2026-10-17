@@ -936,7 +936,7 @@ setError(`You unblocked ${conversation.otherName}.`);
                                           message.id
                                         )
                                       }
-                                      className="text-[10px] text-white/70 underline"
+                                      className="inline-flex min-h-8 items-center rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 shadow-sm transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                       Delete for everyone
                                     </button>
