@@ -911,35 +911,69 @@ setError(`You unblocked ${conversation.otherName}.`);
                                   }`}
                                 >
                                   <button
-                                    type="button"
-                                    disabled={
-                                      deletingMessageId ===
-                                      message.id
-                                    }
-                                    onClick={() =>
-                                      deleteForMe(message.id)
-                                    }
-                                    className="inline-flex min-h-8 items-center rounded-lg border border-[#cbd9d1] bg-[#fffdf5] px-3 py-1.5 text-xs font-semibold text-[#173c2a] shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
-                                  >
-                                    Delete for me
-                                  </button>
+  type="button"
+  disabled={deletingMessageId === message.id}
+  onClick={() => deleteForMe(message.id)}
+  className="group inline-flex min-h-[58px] items-center gap-3 rounded-xl border border-[#8da99a] bg-gradient-to-br from-[#234c3b] via-[#183c2e] to-[#102b21] px-4 py-3 text-left text-[#f5edcf] shadow-[0_4px_18px_rgba(16,43,33,0.22)] transition duration-200 hover:border-[#c9c08f] hover:shadow-[0_0_0_1px_rgba(201,192,143,0.18),0_6px_22px_rgba(16,43,33,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c9c08f] disabled:cursor-not-allowed disabled:opacity-50"
+>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    className="h-5 w-5 shrink-0 text-[#d9d0a5]"
+    aria-hidden="true"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A10.8 10.8 0 0 1 12 5c5 0 8.5 4.5 9 7-.2 1-.9 2.2-2 3.3M6.2 6.2C3.8 7.8 2.3 10.2 2 12c.5 2.5 4 7 10 7 1.3 0 2.5-.3 3.6-.7"
+    />
+  </svg>
 
-                                  {mine && (
-                                    <button
-                                      type="button"
-                                      disabled={
-                                        deletingMessageId ===
-                                        message.id
-                                      }
-                                      onClick={() =>
-                                        deleteForEveryone(
-                                          message.id
-                                        )
-                                      }
-                                      className="inline-flex min-h-8 items-center rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 shadow-sm transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                    >
-                                      Delete for everyone
-                                    </button>
+  <span className="flex flex-col gap-0.5">
+    <span className="text-xs font-semibold tracking-wide">
+      Delete for me
+    </span>
+    <span className="text-[11px] font-normal text-[#d2d8cc]">
+      Only remove from your view
+    </span>
+  </span>
+</button>
+                                  
+  {mine && (
+                                    
+<button
+  type="button"
+  disabled={deletingMessageId === message.id}
+  onClick={() => deleteForEveryone(message.id)}
+  className="group inline-flex min-h-[58px] items-center gap-3 rounded-xl border border-[#d17b69] bg-gradient-to-br from-[#6b3b32] via-[#4b2c27] to-[#2e211e] px-4 py-3 text-left text-[#ffe0d4] shadow-[0_4px_18px_rgba(116,48,37,0.2)] transition duration-200 hover:border-[#ff9c85] hover:shadow-[0_0_0_1px_rgba(255,156,133,0.2),0_6px_22px_rgba(116,48,37,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff9c85] disabled:cursor-not-allowed disabled:opacity-50"
+>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    className="h-5 w-5 shrink-0 text-[#ffc3b0]"
+    aria-hidden="true"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M4 7h16M9 7V4h6v3m-9 0 1 13h10l1-13M10 11v5m4-5v5"
+    />
+  </svg>
+
+  <span className="flex flex-col gap-0.5">
+    <span className="text-xs font-semibold tracking-wide">
+      Delete for everyone
+    </span>
+    <span className="text-[11px] font-normal text-[#f0b9aa]">
+      Remove for all participants
+    </span>
+  </span>
+</button>
+
                                   )}
                                 </div>
                               )}
