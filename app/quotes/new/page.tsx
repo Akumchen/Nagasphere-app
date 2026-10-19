@@ -40,6 +40,7 @@ export default function NewQuotePage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [buyers, setBuyers] = useState<BuyerOption[]>([]);
   const [postId, setPostId] = useState("");
+  const [listingMenuOpen, setListingMenuOpen] = useState(false);
   const [buyerKey, setBuyerKey] = useState("");
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
@@ -532,26 +533,76 @@ export default function NewQuotePage() {
                 <label htmlFor="quote-listing" style={labelStyle}>
                   Your active listing
                 </label>
-                <select
-                  id="quote-listing"
-                  value={postId}
-                  onChange={(event) =>
-                    handleListingChange(event.target.value)
-                  }
-                                    style={{
-                    ...inputStyle,
-                    appearance: "auto",
-                    WebkitAppearance: "menulist",
-                    cursor: "pointer",
-                  }}
-                  required
-                >
-                  {listings.map((listing) => (
-                    <option key={listing.id} value={listing.id}>
-                      {listing.title}
-                    </option>
-                  ))}
-                </select>
+                
+<div style={{ position: "relative" }}>
+  <button
+    type="button"
+    aria-haspopup="listbox"
+    aria-expanded={listingMenuOpen}
+    onClick={() => setListingMenuOpen((open) => !open)}
+    style={{
+      ...inputStyle,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      textAlign: "left",
+      minHeight: 48,
+      cursor: "pointer",
+    }}
+  >
+    <span>
+      {listings.find((listing) => listing.id === postId)?.title ??
+        "Choose a listing"}
+    </span>
+    <span aria-hidden="true">▾</span>
+  </button>
+
+  {listingMenuOpen && (
+    <div
+      role="listbox"
+      aria-label="Your active listings"
+      style={{
+        marginTop: 6,
+        padding: 6,
+        borderRadius: 12,
+        border: "1px solid rgba(23,60,42,0.2)",
+        background: "#fffdf5",
+        boxShadow: "0 10px 24px rgba(4,24,14,0.14)",
+      }}
+    >
+      {listings.map((listing) => (
+        <button
+          type="button"
+          role="option"
+          aria-selected={listing.id === postId}
+          key={listing.id}
+          onClick={() => {
+            handleListingChange(listing.id);
+            setListingMenuOpen(false);
+          }}
+          style={{
+            display: "block",
+            width: "100%",
+            textAlign: "left",
+            padding: "12px",
+            border: 0,
+            borderRadius: 8,
+            background:
+              listing.id === postId
+                ? "rgba(23,103,71,0.1)"
+                : "transparent",
+            color: palette.deepForest,
+            fontSize: 14,
+            cursor: "pointer",
+          }}
+        >
+          {listing.title}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+   
               </div>
 
               <div style={{ marginBottom: 20 }}>
