@@ -53,7 +53,13 @@ export default function CreateListingPage() {
       ),
     [categories, parentCategoryId]
   );
-
+  useEffect(() => {
+    const requestedType = new URLSearchParams(window.location.search).get("type");
+    if (requestedType === "need") {
+      setType("need");
+    }
+  }, []);
+  
   useEffect(() => {
     async function load() {
       const { data: auth } = await supabase.auth.getUser();
