@@ -422,7 +422,7 @@ export default function MyRequestsPage() {
 
             <button
               type="button"
-              onClick={() => router.push("/create-listing")}
+              onClick={() => router.push("/create-listing?type=need")}
               style={{
                 ...buttonBase,
                 marginTop: 23,
@@ -651,7 +651,7 @@ export default function MyRequestsPage() {
 
               <button
                 type="button"
-                onClick={() => router.push("/create-listing")}
+                onClick={() => router.push("/create-listing?type=need")}
                 style={{
                   ...buttonBase,
                   marginTop: 22,
