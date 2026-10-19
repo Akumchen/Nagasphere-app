@@ -538,7 +538,12 @@ export default function NewQuotePage() {
                   onChange={(event) =>
                     handleListingChange(event.target.value)
                   }
-                  style={inputStyle}
+                                    style={{
+                    ...inputStyle,
+                    appearance: "auto",
+                    WebkitAppearance: "menulist",
+                    cursor: "pointer",
+                  }}
                   required
                 >
                   {listings.map((listing) => (
