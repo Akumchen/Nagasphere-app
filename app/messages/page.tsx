@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
+import QuotePanel from "./QuotePanel";
 
 type Message = {
   id: string;
@@ -25,6 +26,7 @@ type InboxConversation = {
 
 type ConversationInfo = {
   id: string;
+  postId: string | null;
   postTitle: string;
   otherName: string;
   otherUserId: string | null;
@@ -305,6 +307,7 @@ if (otherId) {
 
         setConversation({
       id: conversationId,
+      postId: conversationRow.post_id,
       postTitle,
       otherName,
       otherUserId: otherId || null,
@@ -851,6 +854,17 @@ setError(`You unblocked ${conversation.otherName}.`);
       : "Block user"}
                   </button>
                 </div>
+
+                {conversation && userId && (
+  <div className="px-6 pt-4">
+    <QuotePanel
+      conversationId={conversation.id}
+      postId={conversation.postId}
+      currentUserId={userId}
+      otherUserId={conversation.otherUserId}
+    />
+  </div>
+)}
 
                 <div className="min-h-[500px] p-6">
                   {messages.length === 0 ? (
