@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "../../../lib/supabase/client";
+import OffersPanel from "./OffersPanel";
 
 type Listing = {
   id: string;
@@ -598,6 +599,14 @@ export default function ListingPage() {
             </div>
           </section>
 
+                    {listing.type === "have" && (
+            <OffersPanel
+              listingId={listing.id}
+              sellerId={listing.owner_id}
+              listingStatus={listing.status}
+            />
+          )}
+          
           <div style={{ marginTop: "28px" }}>
             <button
               type="button"
