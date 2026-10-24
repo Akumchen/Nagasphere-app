@@ -174,7 +174,7 @@ export default function OffersPanel({
       quantity: number;
     }
   ) {
-  
+   
     setError("");
     setMessage("");
 
