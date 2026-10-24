@@ -13,7 +13,6 @@ type Offer = {
   created_by: string;
   amount: number | string;
   quantity: number | string;
-  note: string | null;
   status: string;
   expires_at: string;
   created_at: string;
@@ -63,13 +62,11 @@ export default function OffersPanel({
 
   const [amount, setAmount] = useState("");
   const [quantity, setQuantity] = useState("1");
-  const [note, setNote] = useState("");
-
+  
   const [counterFor, setCounterFor] = useState<string | null>(null);
   const [counterAmount, setCounterAmount] = useState("");
   const [counterQuantity, setCounterQuantity] = useState("1");
-  const [counterNote, setCounterNote] = useState("");
-
+  
   const isSeller = userId !== "" && userId === sellerId;
   const isActive = listingStatus === "active";
 
@@ -99,7 +96,7 @@ export default function OffersPanel({
     const { data, error: queryError } = await supabase
       .from("listing_offers")
       .select(
-        "id, thread_id, post_id, buyer_id, seller_id, created_by, amount, quantity, note, status, expires_at, created_at"
+      "id, thread_id, post_id, buyer_id, seller_id, created_by, amount, quantity, status, expires_at, created_at"
       )
       .eq("post_id", listingId)
       .order("created_at", { ascending: true });
@@ -152,7 +149,7 @@ export default function OffersPanel({
         p_post_id: listingId,
         p_amount: parsedAmount,
         p_quantity: parsedQuantity,
-        p_note: note.trim() || null,
+        p_note: null,
       }
     );
 
@@ -165,7 +162,6 @@ export default function OffersPanel({
 
     setAmount("");
     setQuantity("1");
-    setNote("");
     setMessage("Your offer has been submitted.");
     await loadOffers();
   }
@@ -173,10 +169,10 @@ export default function OffersPanel({
   async function respond(
     offer: Offer,
     action: "accept" | "decline" | "withdraw" | "counter",
-    counter?: {
+        counter?: {
       amount: number;
       quantity: number;
-      note: string | null;
+        }
     }
   ) {
     setError("");
@@ -196,7 +192,7 @@ export default function OffersPanel({
         p_action: action,
         p_amount: counter?.amount ?? null,
         p_quantity: counter?.quantity ?? null,
-        p_note: counter?.note ?? null,
+        p_note: null,
       }
     );
 
@@ -210,8 +206,7 @@ export default function OffersPanel({
     setCounterFor(null);
     setCounterAmount("");
     setCounterQuantity("1");
-    setCounterNote("");
-
+    
     const successMessages: Record<string, string> = {
       accept: "Offer accepted.",
       decline: "Offer declined.",
@@ -245,7 +240,6 @@ export default function OffersPanel({
     void respond(offer, "counter", {
       amount: parsedAmount,
       quantity: parsedQuantity,
-      note: counterNote.trim() || null,
     });
   }
 
@@ -378,22 +372,6 @@ export default function OffersPanel({
                 style={fieldStyle}
               />
 
-              <label
-                htmlFor="offer-note"
-                style={{ display: "block", fontWeight: 650, margin: "12px 0 6px" }}
-              >
-                Note (optional)
-              </label>
-              <textarea
-                id="offer-note"
-                maxLength={1000}
-                rows={3}
-                value={note}
-                onChange={(event) => setNote(event.target.value)}
-                placeholder="Add a message for the seller"
-                style={{ ...fieldStyle, resize: "vertical" }}
-              />
-
               <button type="submit" disabled={busy} style={primaryButton}>
                 {busy ? "Submitting…" : "Submit offer"}
               </button>
@@ -496,19 +474,7 @@ export default function OffersPanel({
                     <p style={{ margin: "0 0 8px", color: "#526456" }}>
                       Quantity: {offer.quantity}
                     </p>
-
-                    {offer.note && (
-                      <p
-                        style={{
-                          whiteSpace: "pre-wrap",
-                          overflowWrap: "anywhere",
-                          margin: "8px 0",
-                        }}
-                      >
-                        {offer.note}
-                      </p>
-                    )}
-
+                    
                     <p style={{ fontSize: 12, color: "#687568", margin: "8px 0" }}>
                       {isCreator
                         ? "Submitted by you"
@@ -569,7 +535,6 @@ export default function OffersPanel({
                             );
                             setCounterAmount(String(offer.amount));
                             setCounterQuantity(String(offer.quantity));
-                            setCounterNote("");
                             setError("");
                           }}
                           style={secondaryButton}
@@ -628,23 +593,6 @@ export default function OffersPanel({
                             setCounterQuantity(event.target.value)
                           }
                           style={fieldStyle}
-                        />
-
-                        <label
-                          htmlFor={`counter-note-${offer.id}`}
-                          style={{ display: "block", fontWeight: 650, margin: "12px 0 6px" }}
-                        >
-                          Note (optional)
-                        </label>
-                        <textarea
-                          id={`counter-note-${offer.id}`}
-                          maxLength={1000}
-                          rows={3}
-                          value={counterNote}
-                          onChange={(event) =>
-                            setCounterNote(event.target.value)
-                          }
-                          style={{ ...fieldStyle, resize: "vertical" }}
                         />
 
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
