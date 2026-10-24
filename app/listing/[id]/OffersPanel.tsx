@@ -166,15 +166,15 @@ export default function OffersPanel({
     await loadOffers();
   }
 
-  async function respond(
+    async function respond(
     offer: Offer,
     action: "accept" | "decline" | "withdraw" | "counter",
-        counter?: {
+    counter?: {
       amount: number;
       quantity: number;
-        }
     }
   ) {
+  {
     setError("");
     setMessage("");
 
