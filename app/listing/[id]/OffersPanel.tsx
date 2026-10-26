@@ -504,7 +504,7 @@ export default function OffersPanel({
                           </button>
                         )}
 
-                        {isSeller && isBuyer && (
+                        {isSeller && (
                           <button
                             type="button"
                             disabled={busy}
