@@ -422,9 +422,9 @@ export default function HomePage() {
           font: inherit;
         }
 
-        /* Desktop approved design */
+        /* Responsive homepage: use the real webpage, not a static screenshot */
         .approved-desktop {
-          display: block;
+          display: none;
           width: 100%;
           line-height: 0;
           margin: 0;
@@ -440,7 +440,7 @@ export default function HomePage() {
         }
 
         .mobile-home {
-          display: none;
+          display: block;
         }
 
         /* ================= HERO ================= */
