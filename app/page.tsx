@@ -1165,6 +1165,214 @@ export default function HomePage() {
           gap: 10px;
         }
 
+
+        /* ================= TABLET + DESKTOP ================= */
+
+        @media (min-width: 701px) {
+          .approved-desktop {
+            display: none;
+          }
+
+          .mobile-home {
+            display: block;
+          }
+
+          .hero {
+            height: auto;
+            min-height: 540px;
+          }
+
+          header {
+            min-height: 84px;
+            padding: 16px 5%;
+          }
+
+          .brand {
+            gap: 12px;
+          }
+
+          .brand img {
+            width: 52px;
+            height: 52px;
+          }
+
+          .brand b {
+            font-size: 24px;
+          }
+
+          .brand small {
+            font-size: 10px;
+          }
+
+          .header-actions {
+            gap: 12px;
+          }
+
+          .marketplace-button,
+          .account {
+            font-size: 14px;
+            padding: 12px 18px;
+          }
+
+          .hero-content {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 75px 40px 60px;
+          }
+
+          .welcome {
+            font-size: 12px;
+          }
+
+          .hero h1 {
+            font-size: clamp(54px, 6vw, 82px);
+          }
+
+          .script {
+            font-size: 28px;
+          }
+
+          .hero p {
+            max-width: 620px;
+            font-size: 17px;
+          }
+
+          .search {
+            max-width: 720px;
+            height: 58px;
+          }
+
+          .search input {
+            font-size: 15px;
+          }
+
+          .search button {
+            font-size: 14px;
+          }
+
+          .categories,
+          .listings {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 48px 32px;
+          }
+
+          .heading h2 {
+            font-size: 34px;
+          }
+
+          .cat-row {
+            display: grid;
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+            gap: 20px;
+            overflow: visible;
+          }
+
+          .cat {
+            min-width: 0;
+            flex: initial;
+          }
+
+          .cat img {
+            width: 100%;
+            max-width: 112px;
+            height: auto;
+            aspect-ratio: 1;
+          }
+
+          .features {
+            max-width: 1176px;
+            margin: 0 auto 44px;
+            padding: 24px;
+          }
+
+          .feature-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            overflow: visible;
+          }
+
+          .feature {
+            min-width: 0;
+            flex: initial;
+            padding: 18px;
+          }
+
+          .listing-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            overflow: visible;
+          }
+
+          .card {
+            min-width: 0;
+          }
+
+          .card-image {
+            height: clamp(180px, 20vw, 260px);
+          }
+
+          .cta {
+            max-width: 1176px;
+            margin: 0 auto 44px;
+            grid-template-columns: 42% 58%;
+          }
+
+          .cta img {
+            height: 100%;
+            min-height: 280px;
+          }
+
+          .cta > div {
+            padding: 42px;
+          }
+
+          footer {
+            padding: 48px 5% 0;
+          }
+
+          .footer-grid {
+            grid-template-columns: 2fr 1fr 1fr 1.4fr;
+            gap: 32px;
+          }
+
+          .footer-grid > div:first-child,
+          .footer-grid > div:last-child {
+            grid-column: auto;
+          }
+        }
+
+        /* ================= TABLET LAYOUT ================= */
+
+        @media (min-width: 701px) and (max-width: 1024px) {
+          .hero-content {
+            padding: 58px 28px 48px;
+          }
+
+          .categories,
+          .listings {
+            padding: 36px 24px;
+          }
+
+          .cat-row {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+
+          .feature-row {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .listing-row {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .footer-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
         /* ================= MOBILE ================= */
 
         @media (max-width: 700px) {
