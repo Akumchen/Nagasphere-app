@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -19,7 +20,7 @@ type Listing = {
   state: string | null;
   category_id: string | null;
   status: string;
-    image_url: string | null;
+  image_url: string | null;
 };
 
 type Category = {
@@ -46,7 +47,6 @@ export default function ListingPage() {
   const [seller, setSeller] = useState<Seller | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [contacting, setContacting] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function ListingPage() {
       const listingQuery = supabase
         .from("posts")
         .select(
-       "id, owner_id, type, title, description, quantity, unit, budget_min, budget_max, city, state, category_id, status, image_url"  
+          "id, owner_id, type, title, description, quantity, unit, budget_min, budget_max, city, state, category_id, status, image_url"
         )
         .eq("id", id);
 
@@ -109,73 +109,6 @@ export default function ListingPage() {
 
     loadListing();
   }, [id]);
-
-  async function contactSeller() {
-    if (!listing || contacting) return;
-
-    setMessage("");
-    setContacting(true);
-
-    try {
-      const {
-        data: { session },
-        error: authError,
-      } = await supabase.auth.getSession();
-
-      if (authError) {
-        console.error("Auth session error:", authError);
-        setMessage("Unable to verify your account. Please try again.");
-        return;
-      }
-
-      const user = session?.user;
-
-      if (!user) {
-        router.push("/auth");
-        return;
-      }
-
-      if (user.id === listing.owner_id) {
-        setMessage("You cannot contact yourself about your own listing.");
-        return;
-      }
-
-      const { data: conversationId, error: conversationError } =
-        await supabase.rpc("start_conversation", {
-          p_post_id: listing.id,
-        });
-
-      if (conversationError) {
-        console.error("Start conversation error:", conversationError);
-
-        if (conversationError.message?.toLowerCase().includes("blocked")) {
-          setMessage(
-            "This conversation cannot be started because one of the users has blocked the other."
-          );
-        } else {
-          setMessage(
-            "We couldn't start the conversation right now. Please try again."
-          );
-        }
-
-        return;
-      }
-
-      if (!conversationId) {
-        setMessage(
-          "We couldn't create the conversation. Please try again."
-        );
-        return;
-      }
-
-      router.push(`/messages?conversation=${conversationId}`);
-    } catch (error) {
-      console.error("Unexpected contact seller error:", error);
-      setMessage("Something went wrong. Please try again.");
-    } finally {
-      setContacting(false);
-    }
-  }
 
   const pageStyle = {
     width: "100%",
@@ -334,6 +267,7 @@ export default function ListingPage() {
               </p>
             )}
           </header>
+
           <section aria-label="Listing photo" style={{ marginTop: "22px" }}>
             {listing.image_url ? (
               <img
@@ -360,7 +294,8 @@ export default function ListingPage() {
                   minHeight: "150px",
                   borderRadius: "16px",
                   border: "1px dashed rgba(66,91,68,0.22)",
-                  background: "linear-gradient(135deg,rgba(23,103,71,0.07),rgba(216,213,160,0.18))",
+                  background:
+                    "linear-gradient(135deg,rgba(23,103,71,0.07),rgba(216,213,160,0.18))",
                   color: "#5b695b",
                   fontSize: "14px",
                 }}
@@ -599,64 +534,13 @@ export default function ListingPage() {
             </div>
           </section>
 
-                    {listing.type === "have" && (
+          {listing.type === "have" && (
             <OffersPanel
               listingId={listing.id}
               sellerId={listing.owner_id}
               listingStatus={listing.status}
             />
           )}
-          
-          <div style={{ marginTop: "28px" }}>
-            <button
-              type="button"
-              onClick={contactSeller}
-              disabled={contacting || listing.status !== "active"}
-              style={{
-                display: "block",
-                width: "100%",
-                boxSizing: "border-box",
-                padding: "14px 18px",
-                border: "1px solid rgba(255,255,255,0.25)",
-                borderRadius: "13px",
-                background:
-                  contacting || listing.status !== "active"
-                    ? "#899482"
-                    : "linear-gradient(135deg, #405b3d, #294832)",
-                color: "#fff",
-                fontWeight: 750,
-                fontSize: "15px",
-                boxShadow:
-                  contacting || listing.status !== "active"
-                    ? "none"
-                    : "0 8px 20px rgba(41,72,50,0.22)",
-                cursor:
-                  contacting || listing.status !== "active"
-                    ? "not-allowed"
-                    : "pointer",
-              }}
-            >
-              {listing.status !== "active"
-                ? "Listing Not Active"
-                : contacting
-                  ? "Opening conversation..."
-                  : "Contact Seller"}
-            </button>
-
-            {message && (
-              <p
-                role="alert"
-                style={{
-                  marginTop: "12px",
-                  color: "#b42318",
-                  lineHeight: 1.6,
-                  overflowWrap: "anywhere",
-                }}
-              >
-                {message}
-              </p>
-            )}
-          </div>
         </article>
       </div>
     </main>
