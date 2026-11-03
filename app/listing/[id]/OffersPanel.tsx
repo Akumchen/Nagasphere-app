@@ -17,6 +17,15 @@ type Offer = {
   created_at: string;
 };
 
+type Order = {
+  id: string;
+  listing_offer_id: string;
+  subtotal: number | string;
+  platform_fee: number | string;
+  total: number | string;
+  status: string;
+};
+
 type Props = {
   listingId: string;
   sellerId: string;
@@ -54,6 +63,9 @@ export default function OffersPanel({
 }: Props) {
   const [userId, setUserId] = useState("");
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [ordersByOffer, setOrdersByOffer] = useState<
+    Record<string, Order>
+  >({});
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -61,15 +73,17 @@ export default function OffersPanel({
 
   const [amount, setAmount] = useState("");
   const [quantity, setQuantity] = useState("1");
-  
+
   const [counterFor, setCounterFor] = useState<string | null>(null);
   const [counterAmount, setCounterAmount] = useState("");
   const [counterQuantity, setCounterQuantity] = useState("1");
-  
+
   const isSeller = userId !== "" && userId === sellerId;
   const isActive = listingStatus === "active";
 
-  const loadOffers = useCallback(async () => {
+  const loadOffers = useCallback(async (): Promise<
+    Record<string, Order>
+  > => {
     setLoading(true);
     setError("");
 
@@ -81,21 +95,22 @@ export default function OffersPanel({
     if (authError) {
       setError(authError.message);
       setLoading(false);
-      return;
+      return {};
     }
 
     setUserId(user?.id ?? "");
 
     if (!user) {
       setOffers([]);
+      setOrdersByOffer({});
       setLoading(false);
-      return;
+      return {};
     }
 
     const { data, error: queryError } = await supabase
       .from("listing_offers")
       .select(
-      "id, thread_id, post_id, buyer_id, seller_id, created_by, amount, quantity, status, expires_at, created_at"
+        "id, thread_id, post_id, buyer_id, seller_id, created_by, amount, quantity, status, expires_at, created_at"
       )
       .eq("post_id", listingId)
       .order("created_at", { ascending: true });
@@ -106,11 +121,53 @@ export default function OffersPanel({
           queryError.message
       );
       setOffers([]);
-    } else {
-      setOffers((data ?? []) as Offer[]);
+      setOrdersByOffer({});
+      setLoading(false);
+      return {};
     }
 
+    const loadedOffers = (data ?? []) as Offer[];
+    setOffers(loadedOffers);
+
+    const acceptedIds = loadedOffers
+      .filter((offer) => offer.status === "accepted")
+      .map((offer) => offer.id);
+
+    if (acceptedIds.length === 0) {
+      setOrdersByOffer({});
+      setLoading(false);
+      return {};
+    }
+
+    const { data: orderData, error: orderError } = await supabase
+      .from("orders")
+      .select(
+        "id, listing_offer_id, subtotal, platform_fee, total, status"
+      )
+      .in("listing_offer_id", acceptedIds);
+
+    if (orderError) {
+      setOrdersByOffer({});
+      setError(
+        "Offers loaded, but order details could not be retrieved. " +
+          "Please refresh or check your orders. " +
+          orderError.message
+      );
+      setLoading(false);
+      return {};
+    }
+
+    const orderMap: Record<string, Order> = {};
+
+    (orderData ?? []).forEach((order) => {
+      const typedOrder = order as Order;
+      orderMap[typedOrder.listing_offer_id] = typedOrder;
+    });
+
+    setOrdersByOffer(orderMap);
     setLoading(false);
+
+    return orderMap;
   }, [listingId]);
 
   useEffect(() => {
@@ -165,7 +222,7 @@ export default function OffersPanel({
     await loadOffers();
   }
 
-    async function respond(
+  async function respond(
     offer: Offer,
     action: "accept" | "decline" | "withdraw" | "counter",
     counter?: {
@@ -173,7 +230,6 @@ export default function OffersPanel({
       quantity: number;
     }
   ) {
-   
     setError("");
     setMessage("");
 
@@ -195,9 +251,8 @@ export default function OffersPanel({
       }
     );
 
-    setBusy(false);
-
     if (rpcError) {
+      setBusy(false);
       setError(rpcError.message);
       return;
     }
@@ -205,9 +260,25 @@ export default function OffersPanel({
     setCounterFor(null);
     setCounterAmount("");
     setCounterQuantity("1");
-    
+
+    if (action === "accept") {
+      const refreshedOrders = await loadOffers();
+      setBusy(false);
+
+      if (refreshedOrders[offer.id]) {
+        setMessage(
+          "Offer accepted. Your order has been created. Payment is still pending."
+        );
+      } else {
+        setMessage(
+          "Offer accepted. Please refresh this page or check My Orders to confirm the linked order details."
+        );
+      }
+
+      return;
+    }
+
     const successMessages: Record<string, string> = {
-      accept: "Offer accepted.",
       decline: "Offer declined.",
       withdraw: "Offer withdrawn.",
       counter: "Counteroffer submitted.",
@@ -215,6 +286,7 @@ export default function OffersPanel({
 
     setMessage(successMessages[action]);
     await loadOffers();
+    setBusy(false);
   }
 
   function submitCounter(
@@ -273,6 +345,7 @@ export default function OffersPanel({
       <h2 style={{ fontSize: 22, fontWeight: 750, margin: "0 0 6px" }}>
         Offers & Negotiation
       </h2>
+
       <p style={{ margin: "0 0 18px", lineHeight: 1.6, color: "#526456" }}>
         Discuss the price and quantity directly on this listing. Each
         counteroffer is saved in the negotiation history.
@@ -336,10 +409,15 @@ export default function OffersPanel({
 
               <label
                 htmlFor="offer-amount"
-                style={{ display: "block", fontWeight: 650, marginBottom: 6 }}
+                style={{
+                  display: "block",
+                  fontWeight: 650,
+                  marginBottom: 6,
+                }}
               >
                 Total offer amount (₹)
               </label>
+
               <input
                 id="offer-amount"
                 type="number"
@@ -355,10 +433,15 @@ export default function OffersPanel({
 
               <label
                 htmlFor="offer-quantity"
-                style={{ display: "block", fontWeight: 650, margin: "12px 0 6px" }}
+                style={{
+                  display: "block",
+                  fontWeight: 650,
+                  margin: "12px 0 6px",
+                }}
               >
                 Quantity
               </label>
+
               <input
                 id="offer-quantity"
                 type="number"
@@ -422,12 +505,15 @@ export default function OffersPanel({
                 const isPending = offer.status === "pending";
                 const notExpired =
                   new Date(offer.expires_at).getTime() > Date.now();
+
                 const canRespond =
                   Boolean(userId) &&
                   isActive &&
                   isPending &&
                   notExpired &&
                   (isBuyer || isSeller);
+
+                const linkedOrder = ordersByOffer[offer.id];
 
                 return (
                   <article
@@ -449,6 +535,7 @@ export default function OffersPanel({
                       }}
                     >
                       <strong>Offer round {index + 1}</strong>
+
                       <span
                         style={{
                           fontSize: 12,
@@ -467,14 +554,27 @@ export default function OffersPanel({
                       </span>
                     </div>
 
-                    <p style={{ fontSize: 22, fontWeight: 750, margin: "12px 0 4px" }}>
+                    <p
+                      style={{
+                        fontSize: 22,
+                        fontWeight: 750,
+                        margin: "12px 0 4px",
+                      }}
+                    >
                       {money(offer.amount)}
                     </p>
+
                     <p style={{ margin: "0 0 8px", color: "#526456" }}>
                       Quantity: {offer.quantity}
                     </p>
-                    
-                    <p style={{ fontSize: 12, color: "#687568", margin: "8px 0" }}>
+
+                    <p
+                      style={{
+                        fontSize: 12,
+                        color: "#687568",
+                        margin: "8px 0",
+                      }}
+                    >
                       {isCreator
                         ? "Submitted by you"
                         : isBuyer
@@ -482,6 +582,130 @@ export default function OffersPanel({
                           : "Submitted by the buyer"}{" "}
                       · {dateLabel(offer.created_at)}
                     </p>
+
+                    {offer.status === "accepted" && (
+                      <div
+                        style={{
+                          marginTop: 14,
+                          padding: 14,
+                          borderRadius: 12,
+                          background: "#edf5e9",
+                          border: "1px solid #cbdcc6",
+                        }}
+                      >
+                        <h4
+                          style={{
+                            margin: "0 0 8px",
+                            fontSize: 16,
+                            color: "#185c34",
+                          }}
+                        >
+                          Order created
+                        </h4>
+
+                        {linkedOrder ? (
+                          <>
+                            <p
+                              style={{
+                                margin: "0 0 10px",
+                                color: "#526456",
+                                fontSize: 13,
+                              }}
+                            >
+                              Order reference:{" "}
+                              <strong>
+                                {linkedOrder.id.slice(0, 8).toUpperCase()}
+                              </strong>
+                            </p>
+
+                            <div
+                              style={{
+                                display: "grid",
+                                gap: 7,
+                                fontSize: 14,
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  gap: 12,
+                                }}
+                              >
+                                <span>Agreed amount</span>
+                                <strong>{money(linkedOrder.subtotal)}</strong>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  gap: 12,
+                                }}
+                              >
+                                <span>Platform fee</span>
+                                <strong>
+                                  {money(linkedOrder.platform_fee)}
+                                </strong>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  gap: 12,
+                                  borderTop: "1px solid #cbdcc6",
+                                  paddingTop: 8,
+                                }}
+                              >
+                                <strong>Order total</strong>
+                                <strong>{money(linkedOrder.total)}</strong>
+                              </div>
+
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  gap: 12,
+                                  marginTop: 3,
+                                }}
+                              >
+                                <span>Order status</span>
+                                <strong>
+                                  {linkedOrder.status.replace(/_/g, " ")}
+                                </strong>
+                              </div>
+                            </div>
+
+                            <p
+                              style={{
+                                margin: "12px 0 0",
+                                fontSize: 12,
+                                lineHeight: 1.5,
+                                color: "#526456",
+                              }}
+                            >
+                              Payment is not yet collected through the
+                              platform. This order is awaiting the next
+                              payment and fulfilment steps.
+                            </p>
+                          </>
+                        ) : (
+                          <p
+                            style={{
+                              margin: 0,
+                              fontSize: 13,
+                              lineHeight: 1.5,
+                              color: "#526456",
+                            }}
+                          >
+                            This offer is accepted, but its linked order
+                            details could not be loaded. Refresh this page
+                            or check My Orders before proceeding.
+                          </p>
+                        )}
+                      </div>
+                    )}
 
                     {canRespond && (
                       <div
@@ -552,14 +776,21 @@ export default function OffersPanel({
                           borderTop: "1px solid #e0e3d4",
                         }}
                       >
-                        <h4 style={{ margin: "0 0 10px" }}>Your counteroffer</h4>
+                        <h4 style={{ margin: "0 0 10px" }}>
+                          Your counteroffer
+                        </h4>
 
                         <label
                           htmlFor={`counter-amount-${offer.id}`}
-                          style={{ display: "block", fontWeight: 650, marginBottom: 6 }}
+                          style={{
+                            display: "block",
+                            fontWeight: 650,
+                            marginBottom: 6,
+                          }}
                         >
                           Total amount (₹)
                         </label>
+
                         <input
                           id={`counter-amount-${offer.id}`}
                           type="number"
@@ -576,10 +807,15 @@ export default function OffersPanel({
 
                         <label
                           htmlFor={`counter-quantity-${offer.id}`}
-                          style={{ display: "block", fontWeight: 650, margin: "12px 0 6px" }}
+                          style={{
+                            display: "block",
+                            fontWeight: 650,
+                            margin: "12px 0 6px",
+                          }}
                         >
                           Quantity
                         </label>
+
                         <input
                           id={`counter-quantity-${offer.id}`}
                           type="number"
@@ -594,10 +830,21 @@ export default function OffersPanel({
                           style={fieldStyle}
                         />
 
-                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                          <button type="submit" disabled={busy} style={primaryButton}>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: 8,
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <button
+                            type="submit"
+                            disabled={busy}
+                            style={primaryButton}
+                          >
                             {busy ? "Submitting…" : "Send counteroffer"}
                           </button>
+
                           <button
                             type="button"
                             onClick={() => setCounterFor(null)}
@@ -622,9 +869,9 @@ export default function OffersPanel({
               margin: "18px 0 0",
             }}
           >
-            Important: accepting an offer records agreement only. Payment,
-            delivery and paid-order confirmation are not connected to this
-            negotiation feature yet.
+            Accepting an offer creates an order record. Payment collection,
+            delivery tracking and paid-order confirmation are not yet
+            connected to the platform.
           </p>
         </>
       )}
