@@ -47,6 +47,15 @@ const cards = [
     number: "02",
   },
   {
+    title: "My Orders",
+    eyebrow: "YOUR TRANSACTIONS",
+    description:
+      "Track your accepted offers, order totals, payment status, and fulfilment updates.",
+    path: "/orders",
+    icon: "▤",
+    number: "05",
+  },
+  {
     title: "Messages",
     eyebrow: "YOUR CONVERSATIONS",
     description:
