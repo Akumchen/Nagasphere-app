@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 
@@ -8,53 +8,34 @@ export default function AuthPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    if (params.get("mode") === "signup") {
-      setMode("signup");
-    }
-  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setMessage("");
 
-    if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-        setMessage(error.message);
-      } else {
-        setMessage(
-          "Account created. Check your email if confirmation is required."
-        );
-      }
-    } else {
+    try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
 
       if (error) {
         setMessage(error.message);
-      } else {
-        router.push("/");
-        router.refresh();
+        return;
       }
-    }
 
-    setLoading(false);
+      router.push("/");
+      router.refresh();
+    } catch {
+      setMessage("Unable to sign in right now. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -94,9 +75,7 @@ export default function AuthPage() {
         <h1 style={{ marginBottom: "8px" }}>NagaSphere</h1>
 
         <p style={{ color: "#697067", marginBottom: "24px" }}>
-          {mode === "signin"
-            ? "Sign in to your account"
-            : "Create your NagaSphere account"}
+          Sign in to your account
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -127,10 +106,7 @@ export default function AuthPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              minLength={6}
-              autoComplete={
-                mode === "signin" ? "current-password" : "new-password"
-              }
+              autoComplete="current-password"
               style={{
                 width: "100%",
                 padding: "13px",
@@ -157,16 +133,13 @@ export default function AuthPage() {
               cursor: loading ? "wait" : "pointer",
             }}
           >
-            {loading
-              ? "Please wait..."
-              : mode === "signin"
-                ? "Sign in"
-                : "Create account"}
+            {loading ? "Please wait..." : "Sign in"}
           </button>
         </form>
 
         {message && (
           <p
+            role="alert"
             style={{
               marginTop: "18px",
               color: "#59615a",
@@ -176,26 +149,6 @@ export default function AuthPage() {
             {message}
           </p>
         )}
-
-        <div style={{ marginTop: "24px", textAlign: "center" }}>
-          <button
-            type="button"
-            onClick={() => {
-              setMessage("");
-              setMode(mode === "signin" ? "signup" : "signin");
-            }}
-            style={{
-              border: 0,
-              background: "transparent",
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-          >
-            {mode === "signin"
-              ? "Create a new account"
-              : "Already have an account? Sign in"}
-          </button>
-        </div>
       </div>
     </main>
   );
